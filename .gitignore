@@ -3,3 +3,9 @@ __pycache__/
 .venv/
 .review-references/
 outputs/
+APP_DATA_REVIEW.md
+PLAN.md
+PRESENTATION_GUIDE.md
+REVIEW_NOTES.md
+RUNBOOK.md
+.review-references/
