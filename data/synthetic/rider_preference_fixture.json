@@ -1,0 +1,710 @@
+{
+  "schema_version": "0.1-draft",
+  "is_synthetic": true,
+  "provenance": {
+    "kind": "hand_designed_test_fixture",
+    "purpose": "Data-contract and later software smoke tests only",
+    "real_rider_data_used": false,
+    "geography": "Fictional local network; not OSM or actual Taft Avenue",
+    "time_basis": "Independent relative seconds in each scenario",
+    "expected_fields_are_model_inputs": false
+  },
+  "objective": "Learn rider route preferences; travel-time savings are a bonus, not the optimization target",
+  "coordinate_system": "Toy Cartesian metres; no geographic CRS",
+  "graph": {
+    "nodes": [
+      {
+        "node_id": "syn_A",
+        "x_m": 0,
+        "y_m": 0,
+        "traffic_signal": 0
+      },
+      {
+        "node_id": "syn_B",
+        "x_m": 100,
+        "y_m": 0,
+        "traffic_signal": 1
+      },
+      {
+        "node_id": "syn_C",
+        "x_m": 200,
+        "y_m": 0,
+        "traffic_signal": 1
+      },
+      {
+        "node_id": "syn_D",
+        "x_m": 300,
+        "y_m": 0,
+        "traffic_signal": 0
+      },
+      {
+        "node_id": "syn_E",
+        "x_m": 80,
+        "y_m": 100,
+        "traffic_signal": 0
+      },
+      {
+        "node_id": "syn_F",
+        "x_m": 220,
+        "y_m": 100,
+        "traffic_signal": 0
+      }
+    ],
+    "edges": [
+      {
+        "edge_id": "syn_AB",
+        "u": "syn_A",
+        "v": "syn_B",
+        "key": 0,
+        "length_m": 100,
+        "fictional_travel_time_s": 20,
+        "motorcycle_allowed": true
+      },
+      {
+        "edge_id": "syn_BC",
+        "u": "syn_B",
+        "v": "syn_C",
+        "key": 0,
+        "length_m": 100,
+        "fictional_travel_time_s": 20,
+        "motorcycle_allowed": true
+      },
+      {
+        "edge_id": "syn_CD",
+        "u": "syn_C",
+        "v": "syn_D",
+        "key": 0,
+        "length_m": 100,
+        "fictional_travel_time_s": 20,
+        "motorcycle_allowed": true
+      },
+      {
+        "edge_id": "syn_AE",
+        "u": "syn_A",
+        "v": "syn_E",
+        "key": 0,
+        "length_m": 128.06,
+        "fictional_travel_time_s": 30,
+        "motorcycle_allowed": true
+      },
+      {
+        "edge_id": "syn_EF",
+        "u": "syn_E",
+        "v": "syn_F",
+        "key": 0,
+        "length_m": 140,
+        "fictional_travel_time_s": 35,
+        "motorcycle_allowed": true
+      },
+      {
+        "edge_id": "syn_FD",
+        "u": "syn_F",
+        "v": "syn_D",
+        "key": 0,
+        "length_m": 128.06,
+        "fictional_travel_time_s": 30,
+        "motorcycle_allowed": true
+      },
+      {
+        "edge_id": "syn_AD_restricted",
+        "u": "syn_A",
+        "v": "syn_D",
+        "key": 0,
+        "length_m": 300,
+        "fictional_travel_time_s": 15,
+        "motorcycle_allowed": false
+      }
+    ]
+  },
+  "candidate_paths": {
+    "main": [
+      "syn_AB",
+      "syn_BC",
+      "syn_CD"
+    ],
+    "side": [
+      "syn_AE",
+      "syn_EF",
+      "syn_FD"
+    ],
+    "restricted_shortcut": [
+      "syn_AD_restricted"
+    ]
+  },
+  "scenarios": [
+    {
+      "case_id": "syn_case_01",
+      "is_synthetic": true,
+      "scenario": "Intentional preference for the slower side path",
+      "input": {
+        "ride_id": "syn_case_01_ride",
+        "rider_id": "syn_rider_01",
+        "vehicle": "motorcycle",
+        "origin_node_id": "syn_A",
+        "destination_node_id": "syn_D",
+        "decision_time_s": 100,
+        "route_history": [
+          {
+            "route_id": "syn_case_01_initial",
+            "generated_at_s": 0,
+            "type": "Initial Route",
+            "edge_ids": [
+              "syn_AB",
+              "syn_BC",
+              "syn_CD"
+            ]
+          },
+          {
+            "route_id": "syn_case_01_reroute",
+            "generated_at_s": 150,
+            "type": "Regenerated Route",
+            "edge_ids": [
+              "syn_EF",
+              "syn_FD"
+            ]
+          }
+        ],
+        "observed_edge_ids": [
+          "syn_AE",
+          "syn_EF",
+          "syn_FD"
+        ],
+        "trajectory_complete": true,
+        "event": {
+          "reported_route_id": "syn_case_01_reroute",
+          "detected_at_s": 140,
+          "survey_submitted_at_s": 300,
+          "primary_reason": "Avoid Intersection"
+        },
+        "traffic_history": [
+          {
+            "snapshot_id": "syn_case_01_traffic",
+            "observed_at_s": 60,
+            "available_at_s": 65,
+            "main_congestion": "heavy",
+            "side_congestion": "low"
+          }
+        ]
+      },
+      "expected": {
+        "prior_route_id": "syn_case_01_initial",
+        "deviation_label": true,
+        "preference_pair": {
+          "preferred_path_id": "side",
+          "rejected_path_id": "main"
+        },
+        "usable_traffic_count": 1,
+        "quality_flags": [
+          "reported_route_is_post_event",
+          "recover_prior_route_from_history"
+        ]
+      }
+    },
+    {
+      "case_id": "syn_case_02",
+      "is_synthetic": true,
+      "scenario": "Preference reverses when the main path is quiet",
+      "input": {
+        "ride_id": "syn_case_02_ride",
+        "rider_id": "syn_rider_02",
+        "vehicle": "motorcycle",
+        "origin_node_id": "syn_A",
+        "destination_node_id": "syn_D",
+        "decision_time_s": 100,
+        "route_history": [
+          {
+            "route_id": "syn_case_02_initial",
+            "generated_at_s": 0,
+            "type": "Initial Route",
+            "edge_ids": [
+              "syn_AE",
+              "syn_EF",
+              "syn_FD"
+            ]
+          },
+          {
+            "route_id": "syn_case_02_reroute",
+            "generated_at_s": 150,
+            "type": "Regenerated Route",
+            "edge_ids": [
+              "syn_BC",
+              "syn_CD"
+            ]
+          }
+        ],
+        "observed_edge_ids": [
+          "syn_AB",
+          "syn_BC",
+          "syn_CD"
+        ],
+        "trajectory_complete": true,
+        "event": {
+          "reported_route_id": "syn_case_02_reroute",
+          "detected_at_s": 140,
+          "survey_submitted_at_s": 300,
+          "primary_reason": "Shortcut/Faster Route/Personal Preference/Familiar Road"
+        },
+        "traffic_history": [
+          {
+            "snapshot_id": "syn_case_02_traffic",
+            "observed_at_s": 60,
+            "available_at_s": 65,
+            "main_congestion": "low",
+            "side_congestion": "low"
+          }
+        ]
+      },
+      "expected": {
+        "prior_route_id": "syn_case_02_initial",
+        "deviation_label": true,
+        "preference_pair": {
+          "preferred_path_id": "main",
+          "rejected_path_id": "side"
+        },
+        "usable_traffic_count": 1,
+        "quality_flags": [
+          "reported_route_is_post_event",
+          "recover_prior_route_from_history"
+        ]
+      }
+    },
+    {
+      "case_id": "syn_case_03",
+      "is_synthetic": true,
+      "scenario": "Followed suggestion; no inferred preference over unseen alternatives",
+      "input": {
+        "ride_id": "syn_case_03_ride",
+        "rider_id": "syn_rider_03",
+        "vehicle": "motorcycle",
+        "origin_node_id": "syn_A",
+        "destination_node_id": "syn_D",
+        "decision_time_s": 100,
+        "route_history": [
+          {
+            "route_id": "syn_case_03_initial",
+            "generated_at_s": 0,
+            "type": "Initial Route",
+            "edge_ids": [
+              "syn_AB",
+              "syn_BC",
+              "syn_CD"
+            ]
+          }
+        ],
+        "observed_edge_ids": [
+          "syn_AB",
+          "syn_BC",
+          "syn_CD"
+        ],
+        "trajectory_complete": true,
+        "event": null,
+        "traffic_history": [
+          {
+            "snapshot_id": "syn_case_03_traffic",
+            "observed_at_s": 60,
+            "available_at_s": 65,
+            "main_congestion": "low",
+            "side_congestion": "low"
+          }
+        ]
+      },
+      "expected": {
+        "prior_route_id": "syn_case_03_initial",
+        "deviation_label": false,
+        "preference_pair": null,
+        "usable_traffic_count": 1,
+        "quality_flags": []
+      }
+    },
+    {
+      "case_id": "syn_case_04",
+      "is_synthetic": true,
+      "scenario": "Wrong turn is a deviation but not a desired-route demonstration",
+      "input": {
+        "ride_id": "syn_case_04_ride",
+        "rider_id": "syn_rider_04",
+        "vehicle": "motorcycle",
+        "origin_node_id": "syn_A",
+        "destination_node_id": "syn_D",
+        "decision_time_s": 100,
+        "route_history": [
+          {
+            "route_id": "syn_case_04_initial",
+            "generated_at_s": 0,
+            "type": "Initial Route",
+            "edge_ids": [
+              "syn_AB",
+              "syn_BC",
+              "syn_CD"
+            ]
+          },
+          {
+            "route_id": "syn_case_04_reroute",
+            "generated_at_s": 150,
+            "type": "Regenerated Route",
+            "edge_ids": [
+              "syn_EF",
+              "syn_FD"
+            ]
+          }
+        ],
+        "observed_edge_ids": [
+          "syn_AE",
+          "syn_EF",
+          "syn_FD"
+        ],
+        "trajectory_complete": true,
+        "event": {
+          "reported_route_id": "syn_case_04_reroute",
+          "detected_at_s": 140,
+          "survey_submitted_at_s": 300,
+          "primary_reason": "Wrong Turn"
+        },
+        "traffic_history": [
+          {
+            "snapshot_id": "syn_case_04_traffic",
+            "observed_at_s": 60,
+            "available_at_s": 65,
+            "main_congestion": "heavy",
+            "side_congestion": "low"
+          }
+        ]
+      },
+      "expected": {
+        "prior_route_id": "syn_case_04_initial",
+        "deviation_label": true,
+        "preference_pair": null,
+        "usable_traffic_count": 1,
+        "quality_flags": [
+          "reported_route_is_post_event",
+          "recover_prior_route_from_history",
+          "exclude_wrong_turn_from_preference_pairs"
+        ]
+      }
+    },
+    {
+      "case_id": "syn_case_05",
+      "is_synthetic": true,
+      "scenario": "Personal stop changes the trip purpose",
+      "input": {
+        "ride_id": "syn_case_05_ride",
+        "rider_id": "syn_rider_05",
+        "vehicle": "motorcycle",
+        "origin_node_id": "syn_A",
+        "destination_node_id": "syn_D",
+        "decision_time_s": 100,
+        "route_history": [
+          {
+            "route_id": "syn_case_05_initial",
+            "generated_at_s": 0,
+            "type": "Initial Route",
+            "edge_ids": [
+              "syn_AB",
+              "syn_BC",
+              "syn_CD"
+            ]
+          },
+          {
+            "route_id": "syn_case_05_reroute",
+            "generated_at_s": 150,
+            "type": "Regenerated Route",
+            "edge_ids": [
+              "syn_EF",
+              "syn_FD"
+            ]
+          }
+        ],
+        "observed_edge_ids": [
+          "syn_AE",
+          "syn_EF",
+          "syn_FD"
+        ],
+        "trajectory_complete": true,
+        "event": {
+          "reported_route_id": "syn_case_05_reroute",
+          "detected_at_s": 140,
+          "survey_submitted_at_s": 300,
+          "primary_reason": "Personal Stop (Meal, Restroom, Break, Refueling, etc.)",
+          "personal_stop_reason": "Meal"
+        },
+        "traffic_history": [
+          {
+            "snapshot_id": "syn_case_05_traffic",
+            "observed_at_s": 60,
+            "available_at_s": 65,
+            "main_congestion": "heavy",
+            "side_congestion": "low"
+          }
+        ]
+      },
+      "expected": {
+        "prior_route_id": "syn_case_05_initial",
+        "deviation_label": true,
+        "preference_pair": null,
+        "usable_traffic_count": 1,
+        "quality_flags": [
+          "reported_route_is_post_event",
+          "recover_prior_route_from_history",
+          "exclude_personal_stop_from_destination_only_preferences"
+        ]
+      }
+    },
+    {
+      "case_id": "syn_case_06",
+      "is_synthetic": true,
+      "scenario": "Intentional detour with unknown traffic",
+      "input": {
+        "ride_id": "syn_case_06_ride",
+        "rider_id": "syn_rider_06",
+        "vehicle": "motorcycle",
+        "origin_node_id": "syn_A",
+        "destination_node_id": "syn_D",
+        "decision_time_s": 100,
+        "route_history": [
+          {
+            "route_id": "syn_case_06_initial",
+            "generated_at_s": 0,
+            "type": "Initial Route",
+            "edge_ids": [
+              "syn_AB",
+              "syn_BC",
+              "syn_CD"
+            ]
+          },
+          {
+            "route_id": "syn_case_06_reroute",
+            "generated_at_s": 150,
+            "type": "Regenerated Route",
+            "edge_ids": [
+              "syn_EF",
+              "syn_FD"
+            ]
+          }
+        ],
+        "observed_edge_ids": [
+          "syn_AE",
+          "syn_EF",
+          "syn_FD"
+        ],
+        "trajectory_complete": true,
+        "event": {
+          "reported_route_id": "syn_case_06_reroute",
+          "detected_at_s": 140,
+          "survey_submitted_at_s": 300,
+          "primary_reason": "Avoid Intersection"
+        },
+        "traffic_history": []
+      },
+      "expected": {
+        "prior_route_id": "syn_case_06_initial",
+        "deviation_label": true,
+        "preference_pair": {
+          "preferred_path_id": "side",
+          "rejected_path_id": "main"
+        },
+        "usable_traffic_count": 0,
+        "quality_flags": [
+          "reported_route_is_post_event",
+          "recover_prior_route_from_history",
+          "traffic_unknown"
+        ]
+      }
+    },
+    {
+      "case_id": "syn_case_07",
+      "is_synthetic": true,
+      "scenario": "Incomplete observation prevents reliable path labels",
+      "input": {
+        "ride_id": "syn_case_07_ride",
+        "rider_id": "syn_rider_07",
+        "vehicle": "motorcycle",
+        "origin_node_id": "syn_A",
+        "destination_node_id": "syn_D",
+        "decision_time_s": 100,
+        "route_history": [
+          {
+            "route_id": "syn_case_07_initial",
+            "generated_at_s": 0,
+            "type": "Initial Route",
+            "edge_ids": [
+              "syn_AB",
+              "syn_BC",
+              "syn_CD"
+            ]
+          },
+          {
+            "route_id": "syn_case_07_reroute",
+            "generated_at_s": 150,
+            "type": "Regenerated Route",
+            "edge_ids": [
+              "syn_EF",
+              "syn_FD"
+            ]
+          }
+        ],
+        "observed_edge_ids": null,
+        "trajectory_complete": false,
+        "event": {
+          "reported_route_id": "syn_case_07_reroute",
+          "detected_at_s": 140,
+          "survey_submitted_at_s": 300,
+          "primary_reason": "Avoid Intersection"
+        },
+        "traffic_history": [
+          {
+            "snapshot_id": "syn_case_07_traffic",
+            "observed_at_s": 60,
+            "available_at_s": 65,
+            "main_congestion": "heavy",
+            "side_congestion": "low"
+          }
+        ],
+        "gps_gap_s": 180
+      },
+      "expected": {
+        "prior_route_id": "syn_case_07_initial",
+        "deviation_label": null,
+        "preference_pair": null,
+        "usable_traffic_count": 1,
+        "quality_flags": [
+          "reported_route_is_post_event",
+          "recover_prior_route_from_history",
+          "incomplete_trajectory_exclude_choice_labels"
+        ]
+      }
+    },
+    {
+      "case_id": "syn_case_08",
+      "is_synthetic": true,
+      "scenario": "Only the rerouted suggestion survives; original route cannot be recovered",
+      "input": {
+        "ride_id": "syn_case_08_ride",
+        "rider_id": "syn_rider_08",
+        "vehicle": "motorcycle",
+        "origin_node_id": "syn_A",
+        "destination_node_id": "syn_D",
+        "decision_time_s": 100,
+        "route_history": [
+          {
+            "route_id": "syn_case_08_reroute",
+            "generated_at_s": 150,
+            "type": "Regenerated Route",
+            "edge_ids": [
+              "syn_EF",
+              "syn_FD"
+            ]
+          }
+        ],
+        "observed_edge_ids": [
+          "syn_AE",
+          "syn_EF",
+          "syn_FD"
+        ],
+        "trajectory_complete": true,
+        "event": {
+          "reported_route_id": "syn_case_08_reroute",
+          "detected_at_s": 140,
+          "survey_submitted_at_s": 300,
+          "primary_reason": "Avoid Intersection"
+        },
+        "traffic_history": [
+          {
+            "snapshot_id": "syn_case_08_traffic",
+            "observed_at_s": 60,
+            "available_at_s": 65,
+            "main_congestion": "heavy",
+            "side_congestion": "low"
+          }
+        ]
+      },
+      "expected": {
+        "prior_route_id": null,
+        "deviation_label": null,
+        "preference_pair": null,
+        "usable_traffic_count": 1,
+        "quality_flags": [
+          "reported_route_is_post_event",
+          "missing_prior_route_exclude_choice_labels"
+        ]
+      }
+    },
+    {
+      "case_id": "syn_case_09",
+      "is_synthetic": true,
+      "scenario": "Traffic observation arrived after the choice",
+      "input": {
+        "ride_id": "syn_case_09_ride",
+        "rider_id": "syn_rider_09",
+        "vehicle": "motorcycle",
+        "origin_node_id": "syn_A",
+        "destination_node_id": "syn_D",
+        "decision_time_s": 100,
+        "route_history": [
+          {
+            "route_id": "syn_case_09_initial",
+            "generated_at_s": 0,
+            "type": "Initial Route",
+            "edge_ids": [
+              "syn_AB",
+              "syn_BC",
+              "syn_CD"
+            ]
+          },
+          {
+            "route_id": "syn_case_09_reroute",
+            "generated_at_s": 150,
+            "type": "Regenerated Route",
+            "edge_ids": [
+              "syn_EF",
+              "syn_FD"
+            ]
+          }
+        ],
+        "observed_edge_ids": [
+          "syn_AE",
+          "syn_EF",
+          "syn_FD"
+        ],
+        "trajectory_complete": true,
+        "event": {
+          "reported_route_id": "syn_case_09_reroute",
+          "detected_at_s": 140,
+          "survey_submitted_at_s": 300,
+          "primary_reason": "Avoid Intersection"
+        },
+        "traffic_history": [
+          {
+            "snapshot_id": "syn_case_09_traffic",
+            "observed_at_s": 90,
+            "available_at_s": 180,
+            "main_congestion": "heavy",
+            "side_congestion": "low"
+          }
+        ]
+      },
+      "expected": {
+        "prior_route_id": "syn_case_09_initial",
+        "deviation_label": true,
+        "preference_pair": {
+          "preferred_path_id": "side",
+          "rejected_path_id": "main"
+        },
+        "usable_traffic_count": 0,
+        "quality_flags": [
+          "reported_route_is_post_event",
+          "recover_prior_route_from_history",
+          "exclude_late_arriving_traffic",
+          "traffic_unknown_at_decision"
+        ]
+      }
+    }
+  ],
+  "routing_assertions": {
+    "forbidden_edge_ids": [
+      "syn_AD_restricted"
+    ],
+    "slower_preferred_case_id": "syn_case_01",
+    "preferred_path_id": "side",
+    "shorter_time_path_id": "main"
+  }
+}

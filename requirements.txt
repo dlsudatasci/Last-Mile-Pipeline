@@ -1,0 +1,6 @@
+# Tested in an existing Windows CPU environment; Python >=3.12.
+torch==2.13.0
+torch-geometric==2.8.0.post1
+networkx>=3.4,<4
+pyproj>=3.7,<4
+shapely>=2.1,<3
