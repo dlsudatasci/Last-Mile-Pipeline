@@ -1,7 +1,7 @@
 """Read-only aggregate audit of the current rider exports.
 
-This stage intentionally creates no preference labels. Route geometries and
-GPS trajectories must be aligned to a fixed road graph first.
+This command creates no preference labels. Route geometries and GPS
+trajectories must first be aligned to a fixed road graph.
 """
 
 from __future__ import annotations
@@ -22,6 +22,7 @@ REQUIRED = {
     "deviations_clean.csv": {"deviationId", "rideId", "routeId", "timestamp", "originalRouteEdge", "deviatedEdge"},
     "deviationResponses_clean.csv": {"deviationId", "rideId", "primaryReason"},
     "map_points_clean.csv": {"rideId", "timestamp", "latitude", "longitude"},
+    "postTripQuestionnaire_clean.csv": {"rideId", "arrival", "etaRating", "stressRating"},
 }
 
 
@@ -45,6 +46,7 @@ def audit_exports(data_dir: Path) -> dict:
     deviations = tables["deviations_clean.csv"]
     responses = tables["deviationResponses_clean.csv"]
     points = tables["map_points_clean.csv"]
+    questionnaires = tables["postTripQuestionnaire_clean.csv"]
 
     ride_ids = {row["id"] for row in rides}
     route_by_id = {row["routeId"]: row for row in routes}
@@ -163,8 +165,10 @@ def audit_exports(data_dir: Path) -> dict:
 
     responses_per_deviation = Counter(row["deviationId"] for row in responses)
     deviations_with_no_response = sum(responses_per_deviation[row["deviationId"]] == 0 for row in deviations)
+    deviation_ride_ids = {row["rideId"] for row in deviations}
+    questionnaire_ride_ids = {row["rideId"] for row in questionnaires}
     return {
-        "provenance": "Aggregate read-only audit of exported rider data; no synthetic data mixed in",
+        "provenance": "Aggregate read-only audit of the official exported rider data",
         "counts": {
             "rides": len(rides),
             "riders_in_rides": len({row["userId"] for row in rides}),
@@ -172,6 +176,7 @@ def audit_exports(data_dir: Path) -> dict:
             "reported_deviations": len(deviations),
             "deviation_responses": len(responses),
             "gps_points": len(points),
+            "post_trip_questionnaires": len(questionnaires),
         },
         "route_references": {
             "refer_to_route_generated_after_event": referenced_future_routes,
@@ -186,7 +191,23 @@ def audit_exports(data_dir: Path) -> dict:
             "deviations_with_multiple_responses": sum(responses_per_deviation[row["deviationId"]] > 1 for row in deviations),
             "orphan_route_ride_ids": sum(row["rideId"] not in ride_ids for row in routes),
             "orphan_point_ride_ids": sum(row["rideId"] not in ride_ids for row in points),
+            "orphan_questionnaire_ride_ids": sum(row["rideId"] not in ride_ids for row in questionnaires),
+            "rides_missing_post_trip_questionnaire": len(ride_ids - questionnaire_ride_ids),
             "missing_gps_accuracy_column": "accuracy" not in points[0] if points else True,
+        },
+        "label_yield": {
+            "rides_with_reported_deviation": len(deviation_ride_ids),
+            "rides_without_reported_deviation": len(ride_ids - deviation_ride_ids),
+            "deviation_primary_reason_counts": dict(sorted(Counter(
+                row["primaryReason"] for row in responses
+            ).items())),
+            "rides_with_post_trip_questionnaire": len(ride_ids & questionnaire_ride_ids),
+            "post_trip_questionnaire_completion_percent": round(
+                100.0 * len(ride_ids & questionnaire_ride_ids) / len(ride_ids), 1
+            ) if ride_ids else None,
+            "arrival_counts": dict(sorted(Counter(row["arrival"] for row in questionnaires).items())),
+            "eta_rating_counts": dict(sorted(Counter(row["etaRating"] for row in questionnaires).items())),
+            "stress_rating_counts": dict(sorted(Counter(row["stressRating"] for row in questionnaires).items())),
         },
         "geometry_screen": {
             "route_polylines_parseable": len(route_geometry),
@@ -217,8 +238,23 @@ def audit_exports(data_dir: Path) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("data_dir", type=Path, help="Directory containing the seven cleaned rider CSVs")
+    parser.add_argument("--output", type=Path, default=Path("outputs/rider_data_audit.json"))
     args = parser.parse_args()
-    print(json.dumps(audit_exports(args.data_dir), indent=2))
+    report = audit_exports(args.data_dir)
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    counts = report["counts"]
+    quality = report["quality"]
+    label_yield = report["label_yield"]
+    print(f"Data audit saved to {args.output}")
+    print(f"Rides: {counts['rides']} | GPS points: {counts['gps_points']} | "
+          f"reported deviations: {counts['reported_deviations']}")
+    print(f"GPS gaps over 60 seconds: {quality['gps_intervals_over_60_seconds']} | "
+          f"deviations without a response: {quality['deviations_without_response']}")
+    print(f"Rides with deviation: {label_yield['rides_with_reported_deviation']} | "
+          f"post-trip questionnaires: {counts['post_trip_questionnaires']}/{counts['rides']} "
+          f"({label_yield['post_trip_questionnaire_completion_percent']:.1f}%)")
+    print(f"Pre-map-match candidates: {report['geometry_screen']['pre_map_match_candidates']}")
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import unittest
 
-from stgat_lstm.review_map import render_review_html
+from stgat_lstm.create_review_map import render_review_html
 
 
 class ReviewMapTests(unittest.TestCase):

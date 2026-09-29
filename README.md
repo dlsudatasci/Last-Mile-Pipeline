@@ -1,28 +1,49 @@
 # STGAT-LSTM rider preference prototype
 
-This repository now contains the first executable model slice. It learns **rider route preferences** from path comparisons, produces positive road costs, and passes those costs to a shortest-path router. Travel-time savings are an optional secondary outcome, not the training target. The current trained artifacts use only a fictional six-node graph and four designed preference pairs; they are software checks, not evidence about Metro Manila riders.
+**Interactive demonstration:** activate your environment, run `python -m stgat_lstm dashboard`, and open http://127.0.0.1:8765. Select two points to see the learned route and shortest-distance comparison on your supplied OSM network. The complete training, evaluation, and traffic commands are included below.
+
+The repository layout separates command files, automatically imported implementation files, official real inputs, tests, and generated outputs. Required OSM and rider-export inputs are stored under `data/real/`, so normal commands do not depend on sibling project folders.
+
+Detailed project notes are limited to the [project plan](docs/PLAN.md), [command runbook](docs/RUNBOOK.md), [presentation guide](docs/PRESENTATION_GUIDE.md), and [complete model explanation](docs/MODEL_EXPLANATION.md).
+
+The training, inference, routing, and local visualization connections are implemented. Archived traffic can now supply timestamp-aligned LSTM histories during training. This does not establish temporal usefulness without actual coverage, or rider generalization without further held-out data. The router enforces graph direction/access flags; OSM turn restrictions are outside the agreed research scope and are not represented. It remains a research prototype.
+
+Command-line tools keep the full result in JSON (or HTML for the map views) and print a shorter explanation in the terminal. The terminal is for quick checking; the saved artifact is the record used for review, training, and reporting.
+
+Evaluation reports balanced accuracy, per-class precision/recall/F1, macro-F1, AP, ROC-AUC, Brier score, log loss, confusion counts, and held-out preference ranking. `python -m stgat_lstm evaluate --temporal-ablation` adds a matched LSTM latest-only control when histories contain observed traffic variation; otherwise it records why temporal evidence is insufficient.
+
+This repository contains an executable rider-choice pipeline. It reconstructs reviewable road choices, trains a GATv2-LSTM road-deviation classifier and path-preference model, produces positive road costs, and passes those costs to a shortest-path router. Travel-time savings are an optional secondary outcome, not the training target. The current real checkpoint was trained on 28 supervised road choices reconstructed from eight approved examples and six riders; its results are in-sample pipeline evidence, not a generalization result.
+
+## Repository layout
+
+The modules reflect separate data, modeling, review, evaluation, and routing stages. Start with these files:
+
+| Area | Primary files | Purpose |
+|---|---|---|
+| Candidate construction | `build_deviation_candidates.py`, `build_decision_candidates.py` | Reconstruct strict deviation paths, then combine followed and deviated local choices |
+| Candidate validation | `create_review_map.py`, `review_decisions.py` | Apply reproducible survey/GPS rules and optionally display candidate paths |
+| Model and evaluation | `model.py`, `train_model.py`, `evaluate_model.py` | Define and train the models, then compare held-out riders across baselines |
+| Inference and routing | `predict_route.py` | Reload the checkpoint, predict deviation, score edges, and run Dijkstra |
+| Real graph and traffic | `graph_data.py`, `mapbox_traffic.py` | Build OSM tensors and align current Mapbox observations to edges |
+
+Supporting modules such as `geometry.py`, `map_matching.py`, `audit_road_network.py`, `audit_map_matching.py`, and `preference_pairs.py` are imported by those primary files. They are not duplicate entry points. `audit_rider_data.py` is an optional diagnostic. `__main__.py` provides the single `python -m stgat_lstm` command interface. Files under `tests` verify the real-data pipeline with small in-memory graphs. Files under `outputs` are generated artifacts rather than source code.
 
 ## What runs
 
-- `stgat_lstm/fixture.py` reconstructs the suggested route that existed before a choice, screens incomplete trajectories and excluded reasons, and keeps only traffic available at decision time.
-- `stgat_lstm/features.py` builds graph and temporal features for the **synthetic fixture**. Its main/side traffic mapping is deliberately toy-specific. Real Mapbox traffic requires alignment to OSM edges.
 - `stgat_lstm/model.py` contains a two-layer GATv2 graph encoder, an LSTM across graph snapshots and a learned edge preference cost. It also provides simple GAT and GCN baselines under the same preference loss. The output represents cost per road length integrated over each edge; it is dimensionless, not travel seconds.
-- The same module provides `DecisionPreferenceModel`, which shares the STGAT-LSTM edge representation between a binary follow/deviate head and the learned edge-cost head. Suggested-route features are available at inference; later observed paths and surveys are labels only.
-- `stgat_lstm/decision_training.py` trains both heads, saves a checkpoint and refuses real decision artifacts that have not passed the hash-bound manual review.
+- The same module provides `DecisionPreferenceModel`, which shares the STGAT-LSTM edge representation between a per-road deviation head and the learned edge-cost head. It returns one logit and one cost for every directed OSM edge. Suggested roads are available at inference; later observed paths and surveys are labels only.
+- `stgat_lstm/train_model.py` trains both heads, saves a checkpoint and refuses real decision artifacts that have not passed hash-bound validation.
 - The GAT and GATv2 operators explicitly use the standard attention `negative_slope=0.2` for their internal LeakyReLU attention calculation. The model applies ELU after attention layers; it does not apply a second LeakyReLU to their outputs.
-- `stgat_lstm/training.py` trains directly on observed-versus-suggested intentional choices. Lower learned cost means preferred. Surveys determine which comparisons are suitable; a future survey answer is never required as a model input at route time.
-- `stgat_lstm/routing.py` uses Dijkstra on learned positive costs and removes roads marked inaccessible to motorcycles.
-- `stgat_lstm/predict.py` reloads a saved synthetic checkpoint and uses its learned scores to route in a separate process. It builds a routing request from pre-choice context and does not consume the observed path or later survey response.
-- `stgat_lstm/audit.py` reads the current real CSV exports and reports aggregate readiness checks without mixing them into synthetic training. It parses route geometry, measures deviation locations against the latest pre-event route, checks route endpoints and summarizes GPS coverage around each event.
-- `stgat_lstm/osm_audit.py` checks whether the supplied projected, directed OSM graph can support map matching, measures route/GPS distance to its edges, verifies the separate node-feature join, and quantifies how much of the current collection actually falls inside the provisional Taft Avenue corridor.
+- `stgat_lstm/audit_rider_data.py` reads the official real CSV exports and reports aggregate readiness checks. It parses route geometry, measures deviation locations against the latest pre-event route, checks route endpoints and summarizes GPS coverage around each event.
+- `stgat_lstm/audit_road_network.py` checks whether the supplied projected, directed OSM graph can support map matching, measures route/GPS distance to its edges, verifies the separate node-feature join, and quantifies how much of the current collection actually falls inside the provisional Taft Avenue corridor.
 - `stgat_lstm/map_matching.py` implements directed, sequence-aware HMM/Viterbi map matching. It combines GPS-to-road distance with network-versus-observed displacement and retains the complete traversed edge sequence, including connector edges between observations.
 - `stgat_lstm/preference_pairs.py` finds shared directed edges before and after a deviation, then extracts different observed and suggested paths with exactly the same origin and destination.
-- `stgat_lstm/build_real_candidates.py` creates a pseudonymous, coordinate-free review artifact from the real export. It does not feed unreviewed candidates into training.
-- `stgat_lstm/build_decision_dataset.py` creates conservative local follow-versus-deviate candidates. Follow labels require GPS agreement through a real branching node; deviation labels come from the stricter divergence/rejoin pipeline. Later GPS and surveys are label evidence only.
-- `stgat_lstm/real_data.py` extracts a 1 km Taft Avenue OSM corridor, joins POI features, builds configurable model tensors, marks absent historical traffic as unknown, and refuses to load review-required choices for training.
-- `stgat_lstm/real_routing.py` sends real OSM tensors through the configured preference model and runs Dijkstra over the resulting positive directed-edge costs, excluding edges explicitly tagged with restricted access.
+- `stgat_lstm/build_deviation_candidates.py` creates a pseudonymous, coordinate-free review artifact from the real export. It does not feed unreviewed candidates into training.
+- `stgat_lstm/build_decision_candidates.py` creates conservative local follow-versus-deviate candidates. Follow labels require GPS agreement through a real branching node; deviation labels come from the stricter divergence/rejoin pipeline. Later GPS and surveys are label evidence only.
+- `stgat_lstm/graph_data.py` extracts a 1 km Taft Avenue OSM corridor, joins POI features, builds configurable model tensors, marks absent historical traffic as unknown, and refuses to load review-required choices for training.
+- `stgat_lstm/predict_route.py` reloads real checkpoints, scores OSM edges and runs Dijkstra over positive directed-edge costs, excluding edges explicitly tagged with restricted access.
 - `stgat_lstm/mapbox_traffic.py` collects timestamped Mapbox `driving-traffic` annotations without storing the token, aligns observed route segments to directed OSM edges, and keeps speed and congestion availability separate.
-- `stgat_lstm/review_decisions.py` creates a review-decision template and compiles completed approve/reject decisions into a hash-bound training artifact. Pending or stale decisions cannot enter training.
+- `stgat_lstm/review_decisions.py` automatically accepts supported intentional reasons and strong followed examples after directed-path and GPS checks. It excludes unsupported reasons, missing traffic severity and inconsistent geometry, then creates a hash-bound training artifact. Manual templates remain available for exceptional audits.
 
 For a matched chosen path \(P_c\) and rejected suggestion \(P_s\), the training loss is `softplus(cost(P_c) - cost(P_s))`. The model receives gradients from this loss, so rider choices change its trainable parameters. At routing time, the model scores the accessible graph and the search algorithm selects a connected path with the lowest learned cost. The model does not impose a faster-path preference.
 
@@ -37,27 +58,22 @@ call .venv\Scripts\activate.bat
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 python -m unittest discover -s tests -v
-python -m stgat_lstm.demo --epochs 60 --output-dir outputs/synthetic_demo
-python -m stgat_lstm.predict outputs/synthetic_demo/stgat_lstm_synthetic.pt --case-id syn_case_01
-python -m stgat_lstm.audit "..\\ExportLMD\\clean_data"
-python -m stgat_lstm.osm_audit "..\\ExportLMD\\clean_data" "..\\OSM\\data\\osm\\graphs\\metro_manila_processed.graphml" --node-features "..\\OSM\\data\\features\\road_node_features.csv"
-python -m stgat_lstm.map_match_audit "..\\ExportLMD\\clean_data" "..\\OSM\\data\\osm\\graphs\\metro_manila_processed.graphml"
-python -m stgat_lstm.build_real_candidates "..\\ExportLMD\\clean_data" "..\\OSM\\data\\osm\\graphs\\metro_manila_processed.graphml" --output outputs\\real_candidate_pairs.json --geojson-output outputs\\real_candidate_pairs.geojson
-python -m stgat_lstm.build_decision_dataset "..\\ExportLMD\\clean_data" "..\\OSM\\data\\osm\\graphs\\metro_manila_processed.graphml" --deviation-candidates outputs\\real_candidate_pairs.json --output outputs\\real_decision_candidates.json --geojson-output outputs\\real_decision_candidates.geojson
-python -m stgat_lstm.review_map outputs\\real_decision_candidates.geojson --output outputs\\real_decision_review.html
-python -m stgat_lstm.review_decisions init outputs\\real_decision_candidates.json --output outputs\\real_decision_decisions.json
-python -m stgat_lstm.review_map outputs\\real_candidate_pairs.geojson --output outputs\\real_candidate_review.html
-python -m stgat_lstm.real_data "..\\OSM\\data\\osm\\graphs\\metro_manila_processed.graphml" "..\\OSM\\data\\features\\road_node_features.csv" outputs\\real_candidate_pairs.json
-python -m stgat_lstm.review_decisions init outputs\\real_candidate_pairs.json --output outputs\\real_candidate_decisions.json
-REM After reviewing the map, edit every pending decision in real_candidate_decisions.json.
-python -m stgat_lstm.review_decisions finalize outputs\\real_candidate_pairs.json outputs\\real_candidate_decisions.json --output outputs\\real_approved_pairs.json
-REM After reviewing all 8 local decisions, edit every pending decision in real_decision_decisions.json.
-python -m stgat_lstm.review_decisions finalize outputs\\real_decision_candidates.json outputs\\real_decision_decisions.json --output outputs\\real_approved_decisions.json
-python -m stgat_lstm.decision_training synthetic --epochs 200 --output outputs\\multitask_synthetic.pt
-python -m stgat_lstm.decision_training real "..\\OSM\\data\\osm\\graphs\\metro_manila_processed.graphml" "..\\OSM\\data\\features\\road_node_features.csv" outputs\\real_approved_decisions.json --epochs 40 --output outputs\\multitask_real.pt
+python -m stgat_lstm audit-data "data\real\rider_exports"
+python -m stgat_lstm audit-network "data\real\rider_exports" "data\real\osm\metro_manila_processed.graphml" --node-features "data\real\osm\road_node_features.csv"
+python -m stgat_lstm audit-matching "data\real\rider_exports" "data\real\osm\metro_manila_processed.graphml"
+python -m stgat_lstm build-deviations "data\real\rider_exports" "data\real\osm\metro_manila_processed.graphml" --output outputs\deviation_candidates.json --geojson-output outputs\deviation_candidates.geojson
+python -m stgat_lstm build-decisions "data\real\rider_exports" "data\real\osm\metro_manila_processed.graphml" --deviation-candidates outputs\deviation_candidates.json --output outputs\decision_candidates.json --geojson-output outputs\decision_candidates.geojson
+python -m stgat_lstm review-map outputs\decision_candidates.geojson --output outputs\candidate_review_map.html
+python -m stgat_lstm review auto outputs\decision_candidates.json --output outputs\approved_training_examples.json
+python -m stgat_lstm train real "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --epochs 100 --output outputs\gatv2_lstm_checkpoint.pt
+python -m stgat_lstm evaluate "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --epochs 40 --output outputs\rider_holdout_evaluation.json
+python -m stgat_lstm predict outputs\gatv2_lstm_checkpoint.pt "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json
 set MAPBOX_ACCESS_TOKEN=pk.your_token_here
-python -m stgat_lstm.mapbox_traffic "120.9820,14.5560;120.9830,14.5570" --output outputs\\traffic\\taft_001.json
+python -m stgat_lstm traffic "120.9820,14.5560;120.9830,14.5570" --output outputs\traffic\current_traffic.json
+python -m stgat_lstm predict outputs\gatv2_lstm_checkpoint.pt "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" --origin-node 400 --destination-node 6 --live-traffic --traffic-archive outputs\traffic_archive
 ```
+
+The aggregate audits are required whenever the official rider exports or OSM inputs change.
 
 The traffic command uses Mapbox Directions `driving-traffic` and requests GeoJSON geometry plus congestion, speed, and duration annotations. Set `MAPBOX_ACCESS_TOKEN` only in the cmd session or a local secret manager; never commit it. Each output is timestamped and can be converted with `build_edge_snapshot(...)` in `stgat_lstm.mapbox_traffic` before calling `RealGraphData.build_model_input(..., temporal_edge_features=(snapshot,))`. A request covers only its returned route; unobserved Taft edges remain masked as unknown.
 
@@ -67,13 +83,15 @@ If the `py -3.12` launcher is unavailable, use `python -m venv .venv` instead. A
 
 On the reviewed machine, the existing `C:\Users\Vince\Downloads\THESIS_APP\finalGNNT3\venv\Scripts\python.exe` already has both model libraries and can run these commands in place of `python`. The default system Python does not currently have PyTorch installed.
 
-The audit uses only the Python standard library, so it can run with a separate Python installation even before ML dependencies are installed. The demo saves three clearly named synthetic checkpoints and `synthetic_report.json`. The prediction command requires a checkpoint from the exact fixture version. Its ranking count is **in sample**. There is no meaningful test set in nine constructed cases.
+The audit uses only the Python standard library, so it can run with a separate Python installation even before ML dependencies are installed.
 
 ## Verified behavior and limits
 
-The automated suite exercises prior-route reconstruction, exclusion of wrong turns and personal stops, missing and late traffic, incomplete GPS observations, local follow-choice construction, all three model forward/backward paths, motorcycle access, pre-choice inference isolation and an end-to-end learned route choice. With 60 training epochs, the STGAT-LSTM fit the four designed preference pairs and selected the slower side route in one case and the main route in a different context. This establishes that the code and model-to-router interface work on those examples only.
+The automated suite exercises prior-route reconstruction, exclusion of wrong turns and personal stops, missing and late traffic, incomplete GPS observations, local follow-choice construction, all model forward/backward paths, motorcycle access, pre-choice inference isolation, review hashes, evaluation, and learned-cost routing.
 
-The real export audit currently finds 55 rides, 167 saved routes, 34 reported deviations and 11,350 GPS points. All 34 deviation records reference a route generated after their event timestamp. Each has one candidate prior route by timestamp. The geometry screen reports how many route snapshots parse successfully, whether GPS exists immediately around the event, how far the event lies from each route, and whether the old and regenerated routes appear to share a destination. These checks produce pre-map-match candidates only. The audit therefore reports **zero real preference examples ready for training** until GPS and route versions are matched to the same directed OSM graph and the relevant path alternatives are reconstructed.
+The preliminary leave-one-rider-out command compares a training-prevalence baseline, GCN, original GAT, spatial-only GATv2, and GATv2-LSTM. On the current 28 road decisions reconstructed from eight examples, held-out classification is poor and unstable; all four graph architectures rank two of the three held-out deviated paths correctly. These counts justify further collection and do not establish model superiority. The spatial-only GATv2 baseline is necessary because the historical examples have one unknown traffic snapshot, so the current comparison cannot demonstrate a temporal LSTM benefit.
+
+The official real export contains 56 rides from 12 riders, 170 saved routes, 34 reported deviations, 34 completed deviation responses, and 11,435 GPS points. All 34 deviation records reference a route generated after their event timestamp, so the pipeline reconstructs the latest route that existed before each event and then performs directed sequence map matching. The completed decision artifact still contains eight approved local examples from six riders: five followed and three intentionally deviated. They produce 28 supervised road choices: 25 followed and three rejected.
 
 The OSM compatibility command can take several seconds because it loads the 74 MB Metro Manila graph and spatially checks every saved route and GPS point. Its independent nearest-edge results are quality diagnostics. They are not sequence-aware map matching and must not be used directly as rider-choice targets.
 
@@ -85,10 +103,10 @@ The stricter candidate builder additionally requires shared directed edges befor
 
 The decision-dataset builder uses one local route choice as the common prediction unit. A followed example must traverse the suggested path through an OSM node with at least two outgoing road choices. A deviated example must have an intentional survey response plus a GPS-supported divergence and rejoin. On the current export it produces 8 review-required candidates from 6 riders: 5 followed and 3 deviated. This class balance is suitable for pipeline development only, not a thesis performance claim or a stable train/test split.
 
-The review-map command creates a local HTML page with a candidate selector, path details, and separate styling for the observed and rejected paths. It uses OpenStreetMap tiles and Leaflet from their public servers when the page is opened, so the basemap requires an internet connection. The embedded candidate layer contains OSM path geometry, not raw GPS.
+The review-map command creates a local HTML page with a candidate selector, path details, embedded OSM context roads, and separate styling for the observed and suggested paths. It loads the Leaflet library from a CDN but does not request public map tiles. The embedded candidate layer contains OSM path geometry, not raw GPS.
 
-On the current export, this strict stage retains 3 candidates from 3 rides and 3 riders. One is a shorter familiar/shortcut path; two are longer paths associated with a reported road blockage and intersection avoidance. Path length alone does not approve or reject them. All three remain marked `review_required` until their mapped geometry and event context are reviewed.
+On the current export, the strict deviation stage retains three candidates from three rides and three riders. One is a shorter familiar/shortcut path; two are longer paths associated with a reported road blockage and intersection avoidance. They feed the unified eight-example decision artifact, whose entries were reviewed and approved before real training.
 
-The current shortest-path implementation assumes additive edge costs. Turn-dependent restrictions and costs require an augmented search state. The toy graph uses invented road access and traffic values; it makes no claim about Taft Avenue. `PLAN.md`, `REVIEW_NOTES.md` and `APP_DATA_REVIEW.md` record the project scope and remaining data decisions.
+The current shortest-path implementation assumes additive edge costs. Turn-dependent restrictions and costs require an augmented search state. The toy graph uses invented road access and traffic values; it makes no claim about Taft Avenue.
 
 The model implementation draws on the [original GAT paper](https://arxiv.org/abs/1710.10903), [GATv2 paper](https://arxiv.org/abs/2105.14491) and [PyTorch Geometric operators](https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.nn.conv.GATv2Conv.html). These are component references, not claims that the current architecture reproduces a full published traffic model.

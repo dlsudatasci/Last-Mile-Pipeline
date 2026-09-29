@@ -24,7 +24,7 @@ from shapely.geometry import LineString, Point
 from shapely.ops import unary_union
 from torch import Tensor
 
-from .features import ModelInput
+from .model import ModelInput
 
 
 NODE_CONTEXT_COLUMNS = (
@@ -257,6 +257,24 @@ def _restricted_access(raw) -> float:
     return float(any(value.lower() in {"no", "private"} for value in _tag_values(raw)))
 
 
+def path_choice_edge_ids(graph_data: RealGraphData, path_edge_ids: tuple[str, ...]) -> tuple[str, ...]:
+    """Return path edges whose source node offers at least two accessible next roads."""
+    available = set(graph_data.edge_ids)
+    choices = []
+    for edge_id in path_edge_ids:
+        if edge_id not in available:
+            raise ValueError(f"Path has unavailable edge: {edge_id}")
+        source, _, _ = edge_id.split("|", 2)
+        successors = {
+            str(destination)
+            for _, destination, _, data in graph_data.graph.out_edges(source, keys=True, data=True)
+            if _restricted_access(data.get("access")) == 0
+        }
+        if len(successors) >= 2:
+            choices.append(edge_id)
+    return tuple(choices)
+
+
 def build_real_graph_data_from_graph(
     graph: nx.MultiDiGraph,
     node_feature_rows: dict[str, dict[str, float]],
@@ -420,7 +438,7 @@ def load_approved_preferences(path: Path, graph_data: RealGraphData) -> list[Rea
 
 
 def load_approved_decisions(path: Path, graph_data: RealGraphData) -> list[RealDecisionExample]:
-    """Load only manually approved follow/deviate examples."""
+    """Load only validated follow/deviate examples."""
     document = json.loads(path.read_text(encoding="utf-8"))
     if document.get("status") != "approved_for_training":
         raise ValueError("Real decision artifact has not been approved for training")
@@ -507,13 +525,23 @@ def main() -> None:
     parser.add_argument("node_features", type=Path)
     parser.add_argument("candidates", type=Path)
     parser.add_argument("--corridor-buffer-m", type=float, default=1_000.0)
+    parser.add_argument("--output", type=Path, default=Path("outputs/model_features_audit.json"))
     args = parser.parse_args()
     graph_data = build_real_graph_data(
         args.graphml,
         args.node_features,
         corridor_buffer_m=args.corridor_buffer_m,
     )
-    print(json.dumps(audit_feature_pipeline(graph_data, args.candidates), indent=2))
+    report = audit_feature_pipeline(graph_data, args.candidates)
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    graph = report["corridor_graph"]
+    print(f"Feature audit saved to {args.output}")
+    print(f"Corridor graph: {graph['nodes']} nodes, {graph['edges']} directed edges")
+    print(f"Candidate paths covered: {report['candidate_pairs_fully_covered']}/"
+          f"{report['candidate_pairs_total']}")
+    print(f"Candidate status: {report['candidate_status']} | training allowed: "
+          f"{'yes' if report['training_allowed'] else 'no'}")
 
 
 if __name__ == "__main__":

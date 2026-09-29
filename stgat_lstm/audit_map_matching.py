@@ -1,7 +1,7 @@
 """Run the HMM map matcher on provisional Taft Avenue deviation candidates.
 
-The output is aggregate screening evidence. It intentionally does not write
-matched rider trajectories or promote candidates to training labels.
+The output contains aggregate screening results. It does not write matched
+rider trajectories or promote candidates to training labels.
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ import networkx as nx
 
 from .geometry import GeoPoint, parse_gps_location, parse_route_points
 from .map_matching import HiddenMarkovMatcher, MapMatchResult, TimedObservation
-from .osm_audit import RoadEdgeIndex, _is_taft_edge
+from .audit_road_network import RoadEdgeIndex, _is_taft_edge
 
 
 EXCLUDED_REASONS = {
@@ -206,8 +206,17 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("data_dir", type=Path)
     parser.add_argument("graphml", type=Path)
+    parser.add_argument("--output", type=Path, default=Path("outputs/map_matching_audit.json"))
     args = parser.parse_args()
-    print(json.dumps(audit_sequence_matches(args.data_dir, args.graphml), indent=2))
+    report = audit_sequence_matches(args.data_dir, args.graphml)
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    screen = report["screen"]
+    print(f"Map-match audit saved to {args.output}")
+    print(f"Eligible events: {screen['eligible_intentional_events_in_taft_corridor']} | "
+          f"successful sequence matches: {screen['successful_gps_prior_new_match_triplets']}")
+    print(f"Review candidates: {screen['sequence_review_candidates']} | "
+          f"median GPS match distance: {screen['median_gps_observation_distance_m']} m")
 
 
 if __name__ == "__main__":

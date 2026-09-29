@@ -1,7 +1,7 @@
-"""Build pseudonymous real preference-pair candidates for manual review.
+"""Build pseudonymous real preference-pair candidates for validation.
 
 This command writes no coordinates or direct user identifiers. Its output is
-explicitly marked review-required and is not consumed by the training module.
+explicitly marked validation-required and is not consumed by the training module.
 """
 
 from __future__ import annotations
@@ -20,9 +20,9 @@ from shapely.geometry import LineString, MultiLineString, mapping
 from shapely.ops import transform
 
 from .geometry import GeoPoint, parse_gps_location, parse_route_points
-from .map_match_audit import EXCLUDED_REASONS, _edge_overlap, _sample_points
+from .audit_map_matching import EXCLUDED_REASONS, _edge_overlap, _sample_points
 from .map_matching import EdgeId, HiddenMarkovMatcher, TimedObservation
-from .osm_audit import RoadEdgeIndex, _is_taft_edge
+from .audit_road_network import RoadEdgeIndex, _is_taft_edge
 from .preference_pairs import DivergencePair, extract_divergence_pair
 
 
@@ -290,7 +290,7 @@ def build_candidates(data_dir: Path, graphml_path: Path) -> dict:
     candidate_rides = {candidate["ride_group"] for candidate in candidates}
     document = {
         "schema_version": 1,
-        "provenance": "Real rider export plus supplied OSM graph; no synthetic observations mixed in",
+        "provenance": "Official rider export plus supplied OSM graph",
         "status": "review_required_not_training_ready",
         "graph": {
             "source": str(graphml_path),
@@ -352,16 +352,14 @@ def main() -> None:
         geojson_temporary = args.geojson_output.with_suffix(args.geojson_output.suffix + ".tmp")
         geojson_temporary.write_text(json.dumps(geojson), encoding="utf-8")
         geojson_temporary.replace(args.geojson_output)
-    print(
-        json.dumps(
-            {
-                "output": str(args.output),
-                "geojson_output": str(args.geojson_output) if args.geojson_output else None,
-                **result["summary"],
-            },
-            indent=2,
-        )
-    )
+    summary = result["summary"]
+    print(f"Candidate pairs saved to {args.output}")
+    if args.geojson_output:
+        print(f"Review geometry saved to {args.geojson_output}")
+    print(f"Reported deviations: {summary['reported_deviations']} | "
+          f"eligible Taft events: {summary['eligible_intentional_taft_events']}")
+    print(f"Review candidates: {summary['review_candidates']} from "
+          f"{summary['candidate_riders']} riders")
 
 
 if __name__ == "__main__":

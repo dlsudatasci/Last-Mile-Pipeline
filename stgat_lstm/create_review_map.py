@@ -119,7 +119,9 @@ def main() -> None:
     temporary = args.output.with_suffix(args.output.suffix + ".tmp")
     temporary.write_text(rendered, encoding="utf-8")
     temporary.replace(args.output)
-    print(json.dumps({"output": str(args.output), "features": len(geojson.get("features", []))}, indent=2))
+    print(f"Review map saved to {args.output}")
+    print(f"Map features: {len(geojson.get('features', []))}")
+    print("Open the HTML file in a browser to inspect the candidate paths.")
 
 
 if __name__ == "__main__":

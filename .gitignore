@@ -1,11 +1,45 @@
+# Python environments and caches
 __pycache__/
 *.py[cod]
 .venv/
-.review-references/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Packaging artifacts
+build/
+dist/
+*.egg-info/
+
+# Local credentials and machine-specific settings
+.env
+.env.*
+!.env.example
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Private rider data, generated reports, and model weights
+data/raw/
+data/private/
+data/real/
 outputs/
-APP_DATA_REVIEW.md
-PLAN.md
-PRESENTATION_GUIDE.md
-REVIEW_NOTES.md
-RUNBOOK.md
+*.pt
+*.pth
+*.ckpt
+
+# Temporary files
+*.log
+*.tmp
+*.bak
+.ipynb_checkpoints/
+
+# Local research notes and cloned reference repositories
 .review-references/
+*.md
+!/README.md
+!/docs/
+!/docs/*.md

@@ -6,7 +6,7 @@ import unittest
 
 import networkx as nx
 
-from stgat_lstm.build_decision_dataset import _agreement, _follow_choice_window
+from stgat_lstm.build_decision_candidates import _agreement, _follow_choice_window
 from stgat_lstm.geometry import GeoPoint
 from stgat_lstm.map_matching import MapMatchResult, MatchState, TimedObservation
 

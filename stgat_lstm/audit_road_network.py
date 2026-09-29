@@ -236,8 +236,19 @@ def main() -> None:
     parser.add_argument("data_dir", type=Path)
     parser.add_argument("graphml", type=Path)
     parser.add_argument("--node-features", type=Path)
+    parser.add_argument("--output", type=Path, default=Path("outputs/road_network_audit.json"))
     args = parser.parse_args()
-    print(json.dumps(audit_osm_compatibility(args.data_dir, args.graphml, args.node_features), indent=2))
+    report = audit_osm_compatibility(args.data_dir, args.graphml, args.node_features)
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    graph = report["graph"]
+    corridor = report["taft_avenue_corridor"]
+    print(f"OSM audit saved to {args.output}")
+    print(f"Graph: {graph['nodes']} nodes, {graph['edges']} directed edges, CRS {graph['crs']}")
+    print(f"Taft coverage: {corridor['rides_with_any_point_within_500m']}/{corridor['rides_total']} rides "
+          f"have at least one GPS point within 500 m")
+    print(f"Eligible deviation events in the corridor: "
+          f"{corridor['eligible_pre_map_match_events_within_500m']}")
 
 
 if __name__ == "__main__":

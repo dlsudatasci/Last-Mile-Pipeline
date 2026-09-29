@@ -3,7 +3,7 @@
 Each example represents the decision presented by an initial suggested route.
 Only information available at that time may become a model input. The later GPS
 trajectory and deviation survey are retained as label evidence, not features.
-The output is review-required and cannot be used directly for training.
+The output is validation-required and cannot be used directly for training.
 """
 
 from __future__ import annotations
@@ -21,11 +21,11 @@ from shapely import from_wkt
 from shapely.geometry import LineString, MultiLineString, mapping
 from shapely.ops import transform, unary_union
 
-from .build_real_candidates import _path_payload, _sha256
+from .build_deviation_candidates import _path_payload, _sha256
 from .geometry import GeoPoint, parse_route_points
-from .map_match_audit import EXCLUDED_REASONS, _sample_points
+from .audit_map_matching import EXCLUDED_REASONS, _sample_points
 from .map_matching import HiddenMarkovMatcher, MapMatchResult, TimedObservation
-from .osm_audit import RoadEdgeIndex, _is_taft_edge
+from .audit_road_network import RoadEdgeIndex, _is_taft_edge
 
 
 def _read_csv(path: Path) -> list[dict[str, str]]:
@@ -375,10 +375,10 @@ def build_decision_candidates(
     label_counts = Counter(example["target"]["label"] for example in examples)
     document = {
         "schema_version": 1,
-        "provenance": "Real rider export plus supplied OSM graph; no synthetic observations mixed in",
+        "provenance": "Official rider export plus supplied OSM graph",
         "status": "review_required_not_training_ready",
-        "prediction_target": "whether the rider follows or intentionally deviates from the suggested route at a local route choice",
-        "decision_point": "before traversing an upcoming branching route segment",
+        "prediction_target": "probability that the rider rejects each suggested outgoing road at an eligible local branch",
+        "decision_point": "before traversing a suggested road from a node with multiple accessible successors",
         "graph": {
             "source": str(graphml_path),
             "sha256": _sha256(graphml_path),
@@ -436,16 +436,14 @@ def main() -> None:
         temporary_geojson = args.geojson_output.with_suffix(args.geojson_output.suffix + ".tmp")
         temporary_geojson.write_text(json.dumps(geojson), encoding="utf-8")
         temporary_geojson.replace(args.geojson_output)
-    print(
-        json.dumps(
-            {
-                "output": str(args.output),
-                "geojson_output": str(args.geojson_output) if args.geojson_output else None,
-                **result["summary"],
-            },
-            indent=2,
-        )
-    )
+    summary = result["summary"]
+    labels = summary["label_counts"]
+    print(f"Decision candidates saved to {args.output}")
+    if args.geojson_output:
+        print(f"Review geometry saved to {args.geojson_output}")
+    print(f"Candidates: {summary['candidate_examples']} from {summary['candidate_riders']} riders | "
+          f"followed: {labels.get('followed', 0)} | deviated: {labels.get('deviated', 0)}")
+    print("Status: automatic validation required before training")
 
 
 if __name__ == "__main__":

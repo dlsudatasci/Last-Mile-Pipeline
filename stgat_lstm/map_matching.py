@@ -20,7 +20,7 @@ import networkx as nx
 from shapely.geometry import Point
 
 from .geometry import GeoPoint
-from .osm_audit import RoadEdgeIndex
+from .audit_road_network import RoadEdgeIndex
 
 
 EdgeId = tuple[str, str, str]

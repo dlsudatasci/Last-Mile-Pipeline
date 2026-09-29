@@ -8,7 +8,7 @@ import networkx as nx
 
 from stgat_lstm.geometry import GeoPoint
 from stgat_lstm.map_matching import HiddenMarkovMatcher, TimedObservation
-from stgat_lstm.osm_audit import RoadEdgeIndex
+from stgat_lstm.audit_road_network import RoadEdgeIndex
 
 
 class HiddenMarkovMatcherTests(unittest.TestCase):

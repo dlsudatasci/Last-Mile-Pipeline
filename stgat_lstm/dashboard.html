@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Taft rider preference routes</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font:15px system-ui,sans-serif;color:#20342c;background:#eef2ef;display:grid;grid-template-columns:340px 1fr;height:100vh}
+aside{background:white;padding:24px;overflow:auto;border-right:1px solid #d0d9d2}h1{font-size:25px;margin-top:0}p{line-height:1.5}.note{background:#fff6dd;padding:12px;border-radius:8px;font-size:13px}
+button{padding:12px;border:0;border-radius:7px;background:#147443;color:white;font:inherit;cursor:pointer;margin:5px 0}button.secondary{background:#e7ece8;color:#20342c}button:disabled{opacity:.5;cursor:wait}
+main{position:relative;overflow:hidden}svg{width:100%;height:100%;touch-action:none;background:#f3f6f2}polyline{fill:none;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}.road{stroke:#b9c5bd;stroke-width:1.4}.restricted{stroke:#dadbd9}
+.baseline{stroke:#4973b8;stroke-width:6;stroke-dasharray:9 6}.learned{stroke:#13834d;stroke-width:4}.marker{vector-effect:non-scaling-stroke;stroke:white;stroke-width:2}
+.tools{position:absolute;top:12px;right:16px;display:flex;gap:6px}.tools button{background:white;color:#20342c;box-shadow:0 2px 8px #0002}#status{min-height:40px;color:#385747}#results{line-height:1.6}.legend{font-size:13px;margin:14px 0}.green{color:#13834d}.blue{color:#4973b8}
+@media(max-width:760px){body{grid-template-columns:1fr;grid-template-rows:300px 1fr}aside{padding:15px;border-right:0}}
+</style>
+</head>
+<body>
+<aside><h1>Taft rider preference routes</h1><p>Choose a start and destination on the road map. The green route uses the model's learned rider preferences.</p>
+<p class="note">Research prototype trained on a small pilot dataset. Routes show model behavior; turn restrictions are outside this study's scope.</p>
+<div id="selection">Start: not selected<br>Destination: not selected</div>
+<button id="generate" disabled>Generate route</button> <button id="clear" class="secondary">Clear</button>
+<p><label><input id="compare" type="checkbox" checked> Show shortest-distance comparison</label></p>
+<div class="legend"><span class="green">Green: learned preference route</span><br><span class="blue">Blue dashed: shortest-distance route</span></div>
+<p id="status" role="status" aria-live="polite">Loading the road network…</p><div id="results"></div>
+<p style="font-size:12px">Scroll to zoom; drag to pan. Roads come from the supplied OSM graph. No public map tiles are requested.</p></aside>
+<main><svg id="map" aria-label="Interactive Taft road network"><g id="roads"></g><g id="baseline"></g><g id="learned"></g><g id="markers"></g></svg>
+<div class="tools"><button id="zoomIn" aria-label="Zoom in">+</button><button id="zoomOut" aria-label="Zoom out">−</button><button id="fit">Fit roads</button></div></main>
+<script>
+const svg=document.querySelector('#map'),status=document.querySelector('#status'),selection=document.querySelector('#selection'),generate=document.querySelector('#generate');
+const ns='http://www.w3.org/2000/svg';let network,edgeLookup,view,chosen=[],drag=null,controller=null,version=0;
+function element(tag,attrs){const el=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));return el;}
+function updateView(){svg.setAttribute('viewBox',view.join(' '));drawMarkers();}
+function drawMarkers(){const group=document.querySelector('#markers');group.replaceChildren();chosen.forEach((node,i)=>{group.append(element('circle',{cx:node.x,cy:node.y,r:view[2]*.009,fill:i?'#3266b2':'#147443',class:'marker'}));});}
+function updateSelection(){selection.replaceChildren();chosen.forEach((node,i)=>{const line=document.createElement('div');line.textContent=(i?'Destination':'Start')+': '+node.id;selection.append(line);});if(chosen.length<2){const line=document.createElement('div');line.textContent=chosen.length?'Destination: not selected':'Start and destination: not selected';selection.append(line);}generate.disabled=chosen.length!==2||controller!==null;drawMarkers();}
+function point(event){const point=svg.createSVGPoint();point.x=event.clientX;point.y=event.clientY;return point.matrixTransform(svg.getScreenCTM().inverse());}
+function zoom(factor){if(!view)return;const [x,y,w,h]=view;const nw=w*factor,nh=h*factor;if(nw<20||nw>network.bounds[2]*8)return;view=[x+(w-nw)/2,y+(h-nh)/2,nw,nh];updateView();}
+document.querySelector('#zoomIn').onclick=()=>zoom(.75);document.querySelector('#zoomOut').onclick=()=>zoom(1.3);document.querySelector('#fit').onclick=()=>{if(!network)return;view=[...network.bounds];updateView();};
+svg.addEventListener('wheel',event=>{event.preventDefault();zoom(event.deltaY>0?1.15:.87);},{passive:false});
+svg.addEventListener('pointerdown',event=>{if(!network)return;drag={x:event.clientX,y:event.clientY,view:[...view],moved:false};svg.setPointerCapture(event.pointerId);});
+svg.addEventListener('pointermove',event=>{if(!drag)return;const dx=event.clientX-drag.x,dy=event.clientY-drag.y;drag.moved=drag.moved||Math.abs(dx)+Math.abs(dy)>5;const scale=Math.max(drag.view[2]/svg.clientWidth,drag.view[3]/svg.clientHeight);view=[drag.view[0]-dx*scale,drag.view[1]-dy*scale,drag.view[2],drag.view[3]];updateView();});
+svg.addEventListener('pointerup',event=>{if(!drag)return;const moved=drag.moved;drag=null;if(moved)return;const p=point(event);const nearest=network.nodes.reduce((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)<Math.hypot(b.x-p.x,b.y-p.y)?a:b);if(Math.hypot(nearest.x-p.x,nearest.y-p.y)>150){status.textContent='Choose a point within 150 metres of a road node.';return;}if(chosen.length===2)chosen=[];chosen.push(nearest);version++;if(controller)controller.abort();document.querySelector('#results').replaceChildren();document.querySelector('#learned').replaceChildren();document.querySelector('#baseline').replaceChildren();status.textContent=chosen.length===2?'Ready to generate a route.':'Choose the destination.';updateSelection();});
+svg.addEventListener('pointercancel',()=>drag=null);
+document.querySelector('#clear').onclick=()=>{version++;if(controller)controller.abort();chosen=[];document.querySelector('#learned').replaceChildren();document.querySelector('#baseline').replaceChildren();document.querySelector('#results').replaceChildren();status.textContent='Choose the start.';updateSelection();};
+document.querySelector('#compare').onchange=event=>document.querySelector('#baseline').style.display=event.target.checked?'':'none';
+function drawRoute(id,route,cls){const group=document.querySelector(id);group.replaceChildren();route.edge_ids.forEach(edgeId=>group.append(element('polyline',{points:edgeLookup.get(edgeId).points.map(p=>p.join(',')).join(' '),class:cls})));}
+generate.onclick=async()=>{const requestVersion=version;controller=new AbortController();generate.disabled=true;status.textContent='Generating the route…';try{const response=await fetch('/route?'+new URLSearchParams({origin:chosen[0].id,destination:chosen[1].id}),{signal:controller.signal});const result=await response.json();if(!response.ok)throw Error(result.error||'Route request failed');if(requestVersion!==version)return;drawRoute('#baseline',result.distance_baseline,'baseline');drawRoute('#learned',result.recommended_route,'learned');const rows=[['Learned route',(result.recommended_route.distance_m/1000).toFixed(2)+' km'],['Shortest-distance route',(result.distance_baseline.distance_m/1000).toFixed(2)+' km'],['Roads',result.recommended_route.road_names.join(' → ')],['Traffic',result.traffic.observed_edges_per_step.some(n=>n>0)?'Recorded observations; '+result.traffic.steps+' history steps':'Unavailable — treated as unknown'],['Calculation time',result.elapsed_seconds.toFixed(2)+' seconds']];const output=document.querySelector('#results');output.replaceChildren();rows.forEach(([title,value])=>{const p=document.createElement('p'),strong=document.createElement('strong');strong.textContent=title+': ';p.append(strong,document.createTextNode(value));output.append(p);});status.textContent='Route generated.';}catch(error){if(error.name!=='AbortError')status.textContent=error.message;}finally{controller=null;updateSelection();}};
+fetch('/network').then(response=>{if(!response.ok)throw Error('Unable to load the road network');return response.json();}).then(data=>{network=data;edgeLookup=new Map(data.edges.map(edge=>[edge.id,edge]));view=[...data.bounds];const group=document.querySelector('#roads');data.edges.forEach(edge=>group.append(element('polyline',{points:edge.points.map(p=>p.join(',')).join(' '),class:edge.restricted?'road restricted':'road'})));updateView();status.textContent='Choose the start.';}).catch(error=>status.textContent=error.message);
+</script></body></html>

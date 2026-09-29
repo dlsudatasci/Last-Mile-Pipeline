@@ -4,32 +4,49 @@ Research basis:
 - Veličković et al., Graph Attention Networks, https://arxiv.org/abs/1710.10903
 - Brody et al., How Attentive are Graph Attention Networks?,
   https://arxiv.org/abs/2105.14491 (GATv2 dynamic attention)
+- PyTorch Geometric GATv2Conv,
+  https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.nn.conv.GATv2Conv.html
+  (maintained library implementation used below)
 - Kipf and Welling, Semi-Supervised Classification with Graph Convolutional
   Networks, https://arxiv.org/abs/1609.02907 (GCN baseline)
 
 This is a task-specific composition of spatial attention, edge context and
-PyTorch LSTM. It does not copy a complete model from either paper.
+PyTorch LSTM. It uses the library GATv2 operator rather than copying the
+authors' experimental repository, and it does not reproduce a complete model
+from any one paper.
 """
 
 from __future__ import annotations
+
+from dataclasses import dataclass
 
 import torch
 from torch import Tensor, nn
 from torch.nn import functional as F
 from torch_geometric.nn import GATConv, GATv2Conv, GCNConv
 
-from .features import ModelInput
-
-
 DEFAULT_ATTENTION_NEGATIVE_SLOPE = 0.2
+
+
+@dataclass(frozen=True)
+class ModelInput:
+    """Tensors consumed by every spatial or spatiotemporal model."""
+
+    node_features: Tensor
+    edge_index: Tensor
+    edge_static: Tensor
+    temporal_edge_features: tuple[Tensor, ...]
+    destination_features: Tensor
+    edge_ids: tuple[str, ...]
 
 
 class PreferenceModel(nn.Module):
     """Produce nonnegative, dimensionless preference costs per directed edge.
 
     ``stgat_lstm`` encodes each available graph snapshot with GATv2 and then
-    applies an LSTM per road edge. ``gat`` and ``gcn`` are spatial baselines
-    using the latest available snapshot and the same pairwise choice loss.
+    applies an LSTM per road edge. ``gatv2``, ``gat`` and ``gcn`` are spatial
+    baselines using the latest available snapshot and the same pairwise choice
+    loss. The spatial-only GATv2 baseline isolates the LSTM's contribution.
     """
 
     def __init__(
@@ -43,7 +60,7 @@ class PreferenceModel(nn.Module):
         destination_feature_dim: int = 2,
     ):
         super().__init__()
-        if architecture not in {"stgat_lstm", "gat", "gcn"}:
+        if architecture not in {"stgat_lstm", "gatv2", "gat", "gcn"}:
             raise ValueError(f"Unknown architecture: {architecture}")
         if hidden_channels < 2:
             raise ValueError("hidden_channels must be at least 2")
@@ -66,7 +83,7 @@ class PreferenceModel(nn.Module):
         self.destination_feature_dim = destination_feature_dim
         attention_edge_dim = edge_static_dim + edge_dynamic_dim
         self.node_projection = nn.Linear(node_feature_dim, hidden_channels)
-        if architecture == "stgat_lstm":
+        if architecture in {"stgat_lstm", "gatv2"}:
             self.spatial_1 = GATv2Conv(
                 hidden_channels,
                 hidden_channels,
@@ -196,37 +213,24 @@ def preference_loss(edge_costs: Tensor, preferred: tuple[str, ...], rejected: tu
 
 
 class DecisionPreferenceModel(nn.Module):
-    """Shared STGAT-LSTM with decision classification and edge-cost heads."""
+    """Shared STGAT-LSTM with edge-deviation and routing-cost heads."""
 
     def __init__(self, **preference_configuration):
         super().__init__()
         self.backbone = PreferenceModel(**preference_configuration)
         hidden = self.backbone.hidden_channels
-        self.decision_head = nn.Sequential(
+        self.edge_deviation_head = nn.Sequential(
             nn.Linear(hidden, hidden),
             nn.ReLU(),
             nn.Linear(hidden, 1),
         )
 
-    @staticmethod
-    def _path_indices(path_edge_ids: tuple[str, ...], available_edge_ids: tuple[str, ...]) -> list[int]:
-        lookup = {edge_id: index for index, edge_id in enumerate(available_edge_ids)}
-        try:
-            indices = [lookup[edge_id] for edge_id in path_edge_ids]
-        except KeyError as exc:
-            raise ValueError(f"Suggested path has unavailable edge: {exc.args[0]}") from exc
-        if not indices:
-            raise ValueError("Suggested path cannot be empty")
-        return indices
-
-    def forward(self, inputs: ModelInput, suggested_edge_ids: tuple[str, ...]) -> tuple[Tensor, Tensor]:
+    def forward(self, inputs: ModelInput) -> tuple[Tensor, Tensor]:
+        """Return a cost and a deviation logit for every directed road edge."""
         edge_embeddings = self.backbone.encode_edges(inputs)
         edge_costs = self.backbone.costs_from_embeddings(edge_embeddings, inputs)
-        indices = self._path_indices(suggested_edge_ids, inputs.edge_ids)
-        lengths = inputs.edge_static[indices, 0].clamp_min(1e-6)
-        path_embedding = (edge_embeddings[indices] * lengths.unsqueeze(-1)).sum(dim=0) / lengths.sum()
-        deviation_logit = self.decision_head(path_embedding).squeeze(-1)
-        return edge_costs, deviation_logit
+        edge_deviation_logits = self.edge_deviation_head(edge_embeddings).squeeze(-1)
+        return edge_costs, edge_deviation_logits
 
     def configuration(self) -> dict:
-        return {"model_type": "decision_preference_multitask", "backbone": self.backbone.configuration()}
+        return {"model_type": "edge_deviation_preference_multitask", "backbone": self.backbone.configuration()}
