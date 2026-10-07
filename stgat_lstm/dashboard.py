@@ -1,7 +1,7 @@
 """Local road-network dashboard for origin/destination preference routing.
 
 Run python -m stgat_lstm dashboard and open the printed localhost URL.
-Uses the supplied OSM graph and can request server-side Mapbox traffic when enabled.
+Uses the supplied OSM graph and can apply historical rider-GPS speed profiles.
 """
 
 from __future__ import annotations
@@ -17,6 +17,7 @@ from urllib.parse import parse_qs, urlparse
 import torch
 
 from .mapbox_traffic import TrafficArchive, collect_live_route_observation
+from .gps_traffic import GPSTrafficArchive
 from .graph_data import build_real_graph_data, _edge_geometry
 from .predict_route import load_decision_checkpoint, route_request
 
@@ -27,7 +28,10 @@ PROJECT = Path(__file__).resolve().parents[1]
 class DashboardApplication:
     def __init__(self, checkpoint: Path, graphml: Path, node_features: Path,
                  traffic_archive: Path | None = None, *, live_traffic: bool = False,
-                 token_env: str = "MAPBOX_ACCESS_TOKEN"):
+                 token_env: str = "MAPBOX_ACCESS_TOKEN", gps_traffic_data: Path | None = None,
+                 max_detour_ratio: float = 1.30):
+        if gps_traffic_data is not None and (traffic_archive is not None or live_traffic):
+            raise ValueError("Choose rider GPS traffic or Mapbox traffic, not both")
         self.data = build_real_graph_data(graphml, node_features)
         self.model = load_decision_checkpoint(checkpoint, self.data)
         payload = torch.load(checkpoint, map_location="cpu", weights_only=True)
@@ -38,8 +42,10 @@ class DashboardApplication:
                 raise ValueError("Graph/features differ from checkpoint provenance; retrain before using this dashboard")
         self.policy = provenance.get("traffic_policy", {"steps": 6, "interval_s": 300, "max_age_s": 900})
         self.traffic_archive = traffic_archive
+        self.gps_archive = GPSTrafficArchive.from_exports(self.data, gps_traffic_data) if gps_traffic_data else None
         self.live_traffic = live_traffic
         self.token_env = token_env
+        self.max_detour_ratio = max_detour_ratio
         self.network = self._network()
 
     def _network(self) -> dict:
@@ -61,7 +67,15 @@ class DashboardApplication:
         temporal = None
         traffic = {"status": "unknown", "observed_edges_per_step": []}
         live_observation = None
-        if self.live_traffic:
+        if getattr(self, "gps_archive", None) is not None:
+            temporal, traffic = self.gps_archive.profile_sequence(
+                int(time.time() * 1000),
+                steps=int(self.policy.get("steps", 6)),
+                interval_s=int(self.policy.get("interval_s", 300)),
+                profile_bin_s=int(self.policy.get("profile_bin_s", 300)),
+            )
+            traffic["status"] = "historical_rider_gps"
+        elif self.live_traffic:
             if self.traffic_archive is None:
                 raise ValueError("Live traffic requires a traffic archive directory")
             path, _ = collect_live_route_observation(
@@ -70,10 +84,18 @@ class DashboardApplication:
             live_observation = path.name
         if self.traffic_archive is not None:
             archive = TrafficArchive.from_directory(self.data, self.traffic_archive)
-            temporal, traffic = archive.sequence(int(time.time() * 1000), **self.policy)
+            temporal, traffic = archive.sequence(
+                int(time.time() * 1000),
+                steps=int(self.policy.get("steps", 6)),
+                interval_s=int(self.policy.get("interval_s", 300)),
+                max_age_s=int(self.policy.get("max_age_s", 900)),
+            )
             traffic["status"] = "live_mapbox" if live_observation else "archived_mapbox"
             traffic["live_observation_file"] = live_observation
-        result = route_request(self.model, self.data, origin, destination, temporal)
+        result = route_request(
+            self.model, self.data, origin, destination, temporal,
+            max_detour_ratio=getattr(self, "max_detour_ratio", 1.30),
+        )
         result["traffic"] = traffic
         return result
 
@@ -118,9 +140,12 @@ def main():
     parser.add_argument("--graphml", type=Path, default=PROJECT / "data/real/osm/metro_manila_processed.graphml")
     parser.add_argument("--node-features", type=Path, default=PROJECT / "data/real/osm/road_node_features.csv")
     parser.add_argument("--traffic-archive", type=Path)
+    parser.add_argument("--gps-traffic-data", type=Path,
+                        help="rider export directory for historical GPS road-speed profiles")
     parser.add_argument("--live-traffic", action="store_true",
                         help="request current Mapbox traffic for every route and append it to the archive")
     parser.add_argument("--token-env", default="MAPBOX_ACCESS_TOKEN")
+    parser.add_argument("--max-detour-ratio", type=float, default=1.30)
     parser.add_argument("--port", type=int, default=8765)
     args = parser.parse_args()
     if not 1 <= args.port <= 65535:
@@ -129,6 +154,8 @@ def main():
     traffic_archive = args.traffic_archive
     if args.live_traffic and traffic_archive is None:
         traffic_archive = PROJECT / "outputs/traffic_archive"
+    if args.gps_traffic_data and (args.traffic_archive or args.live_traffic):
+        parser.error("Choose --gps-traffic-data or Mapbox traffic options")
     app = DashboardApplication(
         args.checkpoint,
         args.graphml,
@@ -136,6 +163,8 @@ def main():
         traffic_archive,
         live_traffic=args.live_traffic,
         token_env=args.token_env,
+        gps_traffic_data=args.gps_traffic_data,
+        max_detour_ratio=args.max_detour_ratio,
     )
     with HTTPServer(("127.0.0.1", args.port), handler_for(app)) as server:
         print(f"Open http://127.0.0.1:{args.port} in your browser. Press Ctrl+C to stop.", flush=True)

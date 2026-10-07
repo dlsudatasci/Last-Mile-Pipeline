@@ -1,0 +1,65 @@
+{
+  "provenance": "Aggregate read-only audit of the official exported rider data",
+  "counts": {
+    "rides": 96,
+    "riders_in_rides": 12,
+    "generated_routes": 144,
+    "reported_deviations": 48,
+    "deviation_responses": 48,
+    "gps_points": 7691,
+    "post_trip_questionnaires": 96
+  },
+  "route_references": {
+    "refer_to_route_generated_after_event": 0,
+    "refer_to_route_available_at_event": 48,
+    "missing_or_other_ride": 0,
+    "single_latest_prior_route_by_timestamp": 48,
+    "ambiguous_latest_prior_route_timestamps": 0
+  },
+  "quality": {
+    "gps_intervals_over_60_seconds": 0,
+    "deviations_without_response": 0,
+    "deviations_with_multiple_responses": 0,
+    "orphan_route_ride_ids": 0,
+    "orphan_point_ride_ids": 0,
+    "orphan_questionnaire_ride_ids": 0,
+    "rides_missing_post_trip_questionnaire": 0,
+    "missing_gps_accuracy_column": true
+  },
+  "label_yield": {
+    "rides_with_reported_deviation": 48,
+    "rides_without_reported_deviation": 48,
+    "deviation_primary_reason_counts": {
+      "Shortcut/Faster Route/Personal Preference/Familiar Road": 48
+    },
+    "rides_with_post_trip_questionnaire": 96,
+    "post_trip_questionnaire_completion_percent": 100.0,
+    "arrival_counts": {
+      "On time": 96
+    },
+    "eta_rating_counts": {
+      "4": 96
+    },
+    "stress_rating_counts": {
+      "2": 96
+    }
+  },
+  "geometry_screen": {
+    "route_polylines_parseable": 144,
+    "route_polyline_parse_errors": 0,
+    "invalid_gps_points": 0,
+    "deviations_with_parseable_event_location": 48,
+    "deviations_with_parseable_prior_route": 48,
+    "deviations_with_parseable_referenced_route": 48,
+    "deviations_with_gps_within_60s_before_and_after": 48,
+    "prior_and_referenced_routes_end_within_100m": 48,
+    "median_event_distance_to_prior_route_m": 107.0,
+    "median_event_distance_to_referenced_route_m": 0.0,
+    "median_prior_to_referenced_destination_distance_m": 0.0,
+    "excluded_reason_counts": {},
+    "pre_map_match_candidates": 48,
+    "candidate_definition": "Unique prior and referenced polylines; endpoints within 100 m; GPS within 60 s before and after; survey reason is neither missing, Other, nor Personal Stop. These remain candidates, not labels."
+  },
+  "routing_preference_examples_ready": 0,
+  "next_data_step": "Validate prior-route geometry against GPS, then map-match GPS and suggestions to the same directed graph before labeling rider choices."
+}

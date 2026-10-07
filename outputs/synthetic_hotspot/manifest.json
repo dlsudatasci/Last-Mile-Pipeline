@@ -1,0 +1,68 @@
+{
+  "synthetic": true,
+  "warning": "Use only as a controlled learning/capacity test. Do not combine its metrics with real riders.",
+  "trainable_artifact": "approved_training_examples.json",
+  "files": {
+    "rides_clean.csv": "3b41ef0fa767a72c3d61bb4d66ecbd88062ee385995b2e0108d6ad909fc45745",
+    "map_points_clean.csv": "4ac6aba91df6b442632b2a2ed7bab77bc3b21217a010ec24f4c589a972ac8456",
+    "generated_routes_clean.csv": "f6faa49e3383f2a70e3959ae9949dc96ac9dfe218303d3ac0cfe7e75c16cb792",
+    "deviations_clean.csv": "d4bf0b024eed487aee18ea64524e647969740b0cbd74533281bba1005dda6675",
+    "deviationResponses_clean.csv": "7a964595040d334c3244929dc1bd8c8bddef904ab0049991138fdf2bda47f9d7",
+    "postTripQuestionnaire_clean.csv": "7597e927f70795ea12e8762179340dce0fdca016d90746f5be84b9e4ec6e45cd",
+    "approved_training_examples.json": "ffc380ac011fd45cd5e46530edc3d43ccb8ac5b38b01070df06d148ceed5fd97"
+  },
+  "experiment": {
+    "purpose": "capacity check across real-shaped Taft choices with controlled traffic context",
+    "hotspots": [
+      {
+        "origin_node_id": "400",
+        "destination_node_id": "6",
+        "suggested_roads": [
+          "Taft Avenue",
+          "Pablo Ocampo Street",
+          "Roxas Boulevard Service Road"
+        ],
+        "observed_roads": [
+          "Taft Avenue",
+          "Menlo Street",
+          "Leveriza Street",
+          "Gotamco Street",
+          "E. Rodriguez Street"
+        ]
+      },
+      {
+        "origin_node_id": "644",
+        "destination_node_id": "8883",
+        "suggested_roads": [
+          "A. Roxas Street",
+          "Dian Street"
+        ],
+        "observed_roads": [
+          "Arellano Avenue",
+          "Zobel Roxas Street"
+        ]
+      }
+    ],
+    "preference_pattern_riders": 8,
+    "traffic_probe_riders": 5,
+    "hotspot_rides_per_rider": 6,
+    "control_rides_per_rider": 6,
+    "traffic_regimes": {
+      "deviation_history_speed_mps": 3.0,
+      "follow_history_speed_mps": 11.0
+    },
+    "gps_interval_seconds": 2
+  },
+  "summary": {
+    "source_rides": 138,
+    "training_examples": 96,
+    "training_riders": 8,
+    "preference_pattern_rides": 96,
+    "traffic_probe_rides": 42,
+    "all_decision_rides_have_ground_truth_labels": true,
+    "label_counts": {
+      "deviated": 48,
+      "followed": 48
+    }
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "provenance": "Read-only compatibility screen of real exports against the supplied OSM graph; no labels created",
+  "graph": {
+    "path": "data\\real\\osm\\metro_manila_processed.graphml",
+    "created_date": "2026-07-21 20:42:01",
+    "created_with": "OSMnx 2.1.0",
+    "crs": "EPSG:32651",
+    "directed": true,
+    "multigraph": true,
+    "nodes": 36375,
+    "edges": 104019,
+    "taft_named_edges": 92
+  },
+  "edge_attribute_coverage": {
+    "geometry": {
+      "count": 104019,
+      "percent": 100.0
+    },
+    "length": {
+      "count": 104019,
+      "percent": 100.0
+    },
+    "highway": {
+      "count": 104019,
+      "percent": 100.0
+    },
+    "name": {
+      "count": 94144,
+      "percent": 90.5
+    },
+    "oneway": {
+      "count": 104019,
+      "percent": 100.0
+    },
+    "lanes": {
+      "count": 58938,
+      "percent": 56.7
+    },
+    "maxspeed": {
+      "count": 27166,
+      "percent": 26.1
+    },
+    "access": {
+      "count": 14984,
+      "percent": 14.4
+    }
+  },
+  "nearest_osm_edge_distance": {
+    "saved_route_polyline_points": {
+      "count": 12905,
+      "median_m": 0.0,
+      "p95_m": 2.1,
+      "within_10m": 12501,
+      "within_20m": 12630,
+      "within_35m": 12734
+    },
+    "recorded_gps_points": {
+      "count": 11435,
+      "median_m": 4.1,
+      "p95_m": 36.8,
+      "within_10m": 9501,
+      "within_20m": 10494,
+      "within_35m": 10843
+    },
+    "deviation_event_points": {
+      "count": 34,
+      "median_m": 4.2,
+      "p95_m": 11.8,
+      "within_10m": 31,
+      "within_20m": 33,
+      "within_35m": 33
+    }
+  },
+  "taft_avenue_corridor": {
+    "corridor_definition": "Distance to an OSM edge whose name contains 'Taft Avenue'; provisional 500 m threshold.",
+    "gps_points_within_500m": 5106,
+    "gps_points_total": 11435,
+    "rides_with_any_point_within_500m": 46,
+    "rides_fully_within_500m": 17,
+    "rides_total": 56,
+    "deviation_events_within_500m": 18,
+    "eligible_pre_map_match_events_within_500m": 17
+  },
+  "node_features": {
+    "rows": 36375,
+    "graph_nodes": 36375,
+    "duplicate_osmid_rows": 0,
+    "feature_ids_missing_from_graph": 0,
+    "graph_nodes_missing_feature_row": 0,
+    "feature_columns": [
+      "street_count",
+      "commercial_hubs",
+      "service_hubs",
+      "financial_service",
+      "civic_facilities",
+      "educational_facilities",
+      "medical_facilities",
+      "driver_utility",
+      "religious",
+      "residential"
+    ],
+    "note": "These POI counts are node features; road properties and learned preference costs belong on directed edges."
+  },
+  "training_examples_ready": 0,
+  "next_step": "Run sequence-aware map matching on the Taft-corridor subset, reconstruct contiguous old and chosen paths, then split evaluation by rider before training."
+}

@@ -12,11 +12,15 @@ import json
 import math
 from dataclasses import replace
 from pathlib import Path
+from typing import Callable
 
 import torch
 
-from .train_model import PreparedDecision, prepare_real, train_decision_model
+from .train_model import (PreparedDecision, attach_gps_traffic, prepare_real,
+                          train_decision_model)
 from .model import path_cost
+from .graph_data import build_real_graph_data
+from .gps_traffic import GPSTrafficArchive
 
 
 ARCHITECTURES = ("gcn", "gat", "gatv2", "stgat_lstm")
@@ -45,7 +49,7 @@ def rider_disjoint_folds(
     return tuple(folds)
 
 
-def classification_metrics(predictions: list[dict]) -> dict:
+def classification_metrics(predictions: list[dict], threshold: float = 0.5) -> dict:
     """Compute dependency-free binary metrics from held-out probabilities."""
     if not predictions:
         raise ValueError("No held-out predictions")
@@ -55,7 +59,9 @@ def classification_metrics(predictions: list[dict]) -> dict:
     probabilities = [float(item["probability_deviated"]) for item in predictions]
     if any(not math.isfinite(value) or not 0 <= value <= 1 for value in probabilities):
         raise ValueError("Prediction probabilities must be finite and between zero and one")
-    classes = [int(probability >= 0.5) for probability in probabilities]
+    if not 0.0 <= threshold <= 1.0:
+        raise ValueError("Classification threshold must be between zero and one")
+    classes = [int(probability >= threshold) for probability in probabilities]
     tp = sum(predicted == 1 and label == 1 for predicted, label in zip(classes, labels))
     tn = sum(predicted == 0 and label == 0 for predicted, label in zip(classes, labels))
     fp = sum(predicted == 1 and label == 0 for predicted, label in zip(classes, labels))
@@ -109,7 +115,7 @@ def classification_metrics(predictions: list[dict]) -> dict:
             previous_recall = recall_at_threshold
     return {
         "examples": len(labels),
-        "threshold": 0.5,
+        "threshold": threshold,
         "class_support": {"followed": negatives, "deviated": positives},
         "class_prevalence_deviated": positives / len(labels),
         "accuracy": (tp + tn) / len(labels),
@@ -129,6 +135,21 @@ def classification_metrics(predictions: list[dict]) -> dict:
                          "f1": followed_f1, "support": negatives},
         },
     }
+
+
+def validation_threshold(predictions: list[dict]) -> float:
+    """Choose a balanced-accuracy threshold without consulting test labels."""
+    probabilities = sorted({float(item["probability_deviated"]) for item in predictions})
+    candidates = [0.0, 1.0]
+    candidates.extend((left + right) / 2.0 for left, right in zip(probabilities, probabilities[1:]))
+    return max(
+        candidates,
+        key=lambda threshold: (
+            classification_metrics(predictions, threshold)["balanced_accuracy"] or 0.0,
+            classification_metrics(predictions, threshold)["f1"],
+            -abs(threshold - 0.5),
+        ),
+    )
 
 
 def latest_only_history(prepared: list[PreparedDecision]) -> list[PreparedDecision]:
@@ -207,6 +228,171 @@ def lstm_comparison(models: dict, evidence: dict, requested: bool) -> dict:
                 "benefit. No observed variation means this run cannot establish temporal value.")}
 
 
+def _model_predictions(model, examples: list[PreparedDecision]) -> tuple[list[dict], dict]:
+    predictions = []
+    ranking = []
+    model.eval()
+    with torch.no_grad():
+        for example in examples:
+            costs, edge_logits = model(example.inputs)
+            lookup = {edge_id: index for index, edge_id in enumerate(example.inputs.edge_ids)}
+            for edge_id, label in example.edge_targets:
+                predictions.append({
+                    "rider_group": example.rider_group,
+                    "example_key": example.example_key,
+                    "edge_id": edge_id,
+                    "label": label,
+                    "probability_deviated": float(torch.sigmoid(edge_logits[lookup[edge_id]])),
+                })
+            if example.preferred_edge_ids is not None and example.rejected_edge_ids is not None:
+                preferred = path_cost(costs, example.preferred_edge_ids, example.inputs.edge_ids)
+                rejected = path_cost(costs, example.rejected_edge_ids, example.inputs.edge_ids)
+                ranking.append(bool(preferred < rejected))
+    return predictions, {
+        "pairs": len(ranking),
+        "correct": sum(ranking),
+        "accuracy": sum(ranking) / len(ranking) if ranking else None,
+    }
+
+
+def evaluate_synthetic_fixed_split(
+    prepared: list[PreparedDecision],
+    model_configuration: dict,
+    *,
+    epochs: int = 10,
+    learning_rate: float = 0.005,
+    preference_weight: float = 1.0,
+    seed: int = 17,
+    batch_size: int = 8,
+    traffic_schema: tuple[str, ...] | None = None,
+    gps_archive: GPSTrafficArchive | None = None,
+    history_steps: int = 6,
+    history_interval_s: int = 60,
+    gps_profile_bin_s: int = 60,
+    progress: Callable[[str], None] | None = None,
+) -> dict:
+    """Fast capacity check with fixed, class-bearing rider-disjoint splits."""
+    by_rider: dict[str, list[PreparedDecision]] = {}
+    for example in prepared:
+        by_rider.setdefault(example.rider_group, []).append(example)
+    class_bearing_riders = sorted(
+        rider for rider, examples in by_rider.items()
+        if {example.label for example in examples} == {0, 1}
+    )
+    if len(class_bearing_riders) < 6:
+        raise ValueError(
+            "Synthetic fixed split requires at least six riders with both followed and deviated examples"
+        )
+    validation_riders = set(class_bearing_riders[-4:-2])
+    test_riders = set(class_bearing_riders[-2:])
+    training_riders = set(by_rider) - validation_riders - test_riders
+    held_out_riders = validation_riders | test_riders
+
+    traffic_reports = None
+    if gps_archive is not None:
+        prepared, traffic_reports = attach_gps_traffic(
+            prepared,
+            gps_archive,
+            excluded_riders=held_out_riders,
+            history_steps=history_steps,
+            history_interval_s=history_interval_s,
+            gps_profile_bin_s=gps_profile_bin_s,
+        )
+    train = [example for example in prepared if example.rider_group in training_riders]
+    validation = [example for example in prepared if example.rider_group in validation_riders]
+    test = [example for example in prepared if example.rider_group in test_riders]
+    for name, examples in (("training", train), ("validation", validation), ("test", test)):
+        if {example.label for example in examples} != {0, 1}:
+            raise ValueError(f"Synthetic {name} split must contain both route-level classes")
+
+    training_targets = [label for example in train for _, label in example.edge_targets]
+    prevalence = sum(training_targets) / len(training_targets)
+
+    def prevalence_predictions(examples: list[PreparedDecision]) -> list[dict]:
+        return [
+            {"rider_group": example.rider_group, "example_key": example.example_key,
+             "edge_id": edge_id, "label": label, "probability_deviated": prevalence}
+            for example in examples for edge_id, label in example.edge_targets
+        ]
+
+    models = {
+        "prevalence": {
+            "validation": {"classification": classification_metrics(prevalence_predictions(validation))},
+            "test": {"classification": classification_metrics(prevalence_predictions(test))},
+        }
+    }
+    evidence = temporal_evidence_report(test, traffic_schema)
+    architectures = ["gatv2", "stgat_lstm"]
+    if evidence["examples_with_observed_value_changes"] > 0:
+        architectures.append("stgat_lstm_latest_only")
+    for architecture in architectures:
+        if progress is not None:
+            progress(f"Synthetic fixed split | training {architecture}")
+        controlled = architecture == "stgat_lstm_latest_only"
+        configuration = {
+            **model_configuration,
+            "architecture": "stgat_lstm" if controlled else architecture,
+        }
+        training_examples = latest_only_history(train) if controlled else train
+        validation_examples = latest_only_history(validation) if controlled else validation
+        test_examples = latest_only_history(test) if controlled else test
+        model, _ = train_decision_model(
+            training_examples,
+            configuration,
+            epochs=epochs,
+            learning_rate=learning_rate,
+            preference_weight=preference_weight,
+            seed=seed,
+            batch_size=batch_size,
+        )
+        validation_predictions, validation_ranking = _model_predictions(model, validation_examples)
+        test_predictions, test_ranking = _model_predictions(model, test_examples)
+        threshold = validation_threshold(validation_predictions)
+        models[architecture] = {
+            "threshold_selection": {
+                "source": "validation balanced accuracy",
+                "threshold": threshold,
+                "test_labels_used": False,
+            },
+            "validation": {
+                "classification": classification_metrics(validation_predictions, threshold),
+                "preference_ranking": validation_ranking,
+            },
+            "test": {
+                "classification": classification_metrics(test_predictions, threshold),
+                "preference_ranking": test_ranking,
+                "predictions": test_predictions,
+            },
+        }
+    return {
+        "schema_version": 1,
+        "evaluation": "controlled_synthetic_fixed_rider_split",
+        "split": {
+            "training_riders": sorted(training_riders),
+            "validation_riders": sorted(validation_riders),
+            "test_riders": sorted(test_riders),
+            "training_examples": len(train),
+            "validation_examples": len(validation),
+            "test_examples": len(test),
+        },
+        "training": {
+            "epochs": epochs, "learning_rate": learning_rate,
+            "preference_weight": preference_weight, "seed": seed, "batch_size": batch_size,
+        },
+        "models": models,
+        "temporal_evidence": evidence,
+        "traffic_reports": traffic_reports,
+        "traffic_input_protocol": (
+            "Historical profiles exclude all validation and test riders"
+            if gps_archive is not None else "No GPS traffic archive supplied"
+        ),
+        "interpretation": (
+            "Controlled synthetic capacity check. Test riders are absent from model training and traffic "
+            "profiles, but repeated artificial patterns are not evidence of real-rider generalization."
+        ),
+    }
+
+
 def evaluate_rider_disjoint(
     prepared: list[PreparedDecision],
     model_configuration: dict,
@@ -217,20 +403,55 @@ def evaluate_rider_disjoint(
     seed: int = 17,
     temporal_ablation: bool = False,
     traffic_schema: tuple[str, ...] | None = None,
+    gps_archive: GPSTrafficArchive | None = None,
+    history_steps: int = 6,
+    history_interval_s: int = 300,
+    gps_profile_bin_s: int = 300,
+    batch_size: int = 8,
+    progress: Callable[[str], None] | None = None,
 ) -> dict:
     """Compare simple and graph models on leave-one-rider-out predictions."""
     folds = rider_disjoint_folds(prepared)
-    evidence = temporal_evidence_report(prepared, traffic_schema)
+    evidence_examples = prepared
+    if gps_archive is not None:
+        evidence_examples = []
+        for example in prepared:
+            attached, _ = attach_gps_traffic(
+                [example], gps_archive,
+                excluded_riders={example.rider_group},
+                history_steps=history_steps,
+                history_interval_s=history_interval_s,
+                gps_profile_bin_s=gps_profile_bin_s,
+            )
+            evidence_examples.extend(attached)
+    evidence = temporal_evidence_report(evidence_examples, traffic_schema)
     architectures = list(ARCHITECTURES)
     if temporal_ablation and evidence["examples_with_observed_value_changes"] > 0:
         architectures.append("stgat_lstm_latest_only")
     all_predictions: dict[str, list[dict]] = {"prevalence": []}
     ranking: dict[str, list[bool]] = {}
+    fold_traffic = {}
     for architecture in architectures:
         all_predictions[architecture] = []
         ranking[architecture] = []
 
     for fold_index, (rider, train, test) in enumerate(folds):
+        if gps_archive is not None:
+            train, train_reports = attach_gps_traffic(
+                train, gps_archive,
+                excluded_riders={rider},
+                history_steps=history_steps,
+                history_interval_s=history_interval_s,
+                gps_profile_bin_s=gps_profile_bin_s,
+            )
+            test, test_reports = attach_gps_traffic(
+                test, gps_archive,
+                excluded_riders={rider},
+                history_steps=history_steps,
+                history_interval_s=history_interval_s,
+                gps_profile_bin_s=gps_profile_bin_s,
+            )
+            fold_traffic[rider] = {"training": train_reports, "test": test_reports}
         training_targets = [label for example in train for _, label in example.edge_targets]
         training_prevalence = sum(training_targets) / len(training_targets)
         for example in test:
@@ -244,6 +465,10 @@ def evaluate_rider_disjoint(
                 })
 
         for architecture in architectures:
+            if progress is not None:
+                progress(
+                    f"Fold {fold_index + 1}/{len(folds)} | held-out rider {rider} | {architecture}"
+                )
             controlled = architecture == "stgat_lstm_latest_only"
             configuration = {**model_configuration, "architecture": "stgat_lstm" if controlled else architecture}
             training_examples = latest_only_history(train) if controlled else train
@@ -255,6 +480,7 @@ def evaluate_rider_disjoint(
                 learning_rate=learning_rate,
                 preference_weight=preference_weight,
                 seed=seed + fold_index,
+                batch_size=batch_size,
             )
             model.eval()
             with torch.no_grad():
@@ -307,6 +533,7 @@ def evaluate_rider_disjoint(
             "learning_rate": learning_rate,
             "preference_weight": preference_weight,
             "base_seed": seed,
+            "batch_size": batch_size,
         },
         "models": models,
         "metric_protocol": {"primary": "balanced_accuracy", "secondary":
@@ -316,6 +543,11 @@ def evaluate_rider_disjoint(
             "zero_division": "undefined class precision/F1 is zero; two-class metrics are null if a class is absent",
             "tuning": "do not choose hyperparameters or threshold using these held-out predictions"},
         "lstm_comparison": lstm_comparison(models, evidence, temporal_ablation),
+        "gps_traffic_fold_provenance": fold_traffic if gps_archive is not None else None,
+        "traffic_input_protocol": (
+            "GPS profiles are rebuilt per fold using only pre-decision records and excluding the held-out rider"
+            if gps_archive is not None else "traffic inputs supplied during preparation"
+        ),
         "interpretation": (
             "Held-out-rider experiment; assess sample size and class balance before claiming generalization. "
             "Inspect provenance traffic_history for actual pre-decision coverage. Unknown traffic, "
@@ -334,15 +566,23 @@ def main() -> None:
     parser.add_argument("--learning-rate", type=float, default=0.005)
     parser.add_argument("--preference-weight", type=float, default=1.0)
     parser.add_argument("--seed", type=int, default=17)
+    parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--temporal-ablation", action="store_true",
                         help="Add a matched LSTM latest-only control when observed histories vary")
+    parser.add_argument("--synthetic-fixed-split", action="store_true",
+                        help="Use the faster fixed rider-disjoint split for a controlled synthetic dataset")
     parser.add_argument("--traffic-archive", type=Path)
+    parser.add_argument("--gps-traffic-data", type=Path,
+                        help="rider exports used for leakage-safe GPS speed profiles")
     parser.add_argument("--history-steps", type=int, default=6)
     parser.add_argument("--history-interval-seconds", type=int, default=300)
     parser.add_argument("--traffic-max-age-seconds", type=int, default=900)
+    parser.add_argument("--gps-profile-bin-seconds", type=int, default=300)
     parser.add_argument("--output", type=Path, default=Path("outputs/rider_holdout_evaluation.json"))
     args = parser.parse_args()
     torch.set_num_threads(1)
+    if args.traffic_archive and args.gps_traffic_data:
+        parser.error("Choose --traffic-archive or --gps-traffic-data")
     prepared, configuration, provenance = prepare_real(
         args.graphml,
         args.node_features,
@@ -350,29 +590,86 @@ def main() -> None:
         traffic_archive=args.traffic_archive, history_steps=args.history_steps,
         history_interval_s=args.history_interval_seconds, traffic_max_age_s=args.traffic_max_age_seconds,
     )
-    report = evaluate_rider_disjoint(
-        prepared,
-        configuration,
-        epochs=args.epochs,
-        learning_rate=args.learning_rate,
-        preference_weight=args.preference_weight,
-        seed=args.seed,
-        temporal_ablation=args.temporal_ablation,
-        traffic_schema=tuple(provenance["edge_dynamic_schema"]),
-    )
+    gps_archive = None
+    if args.gps_traffic_data:
+        graph_data = build_real_graph_data(args.graphml, args.node_features)
+        gps_archive = GPSTrafficArchive.from_exports(graph_data, args.gps_traffic_data)
+        provenance["traffic"] = (
+            "fold-specific historical rider-GPS speed profiles; held-out rider and future records excluded"
+        )
+        provenance["gps_traffic_build"] = gps_archive.summary
+        provenance["traffic_policy"] = {
+            "steps": args.history_steps,
+            "interval_s": args.history_interval_seconds,
+            "profile_bin_s": args.gps_profile_bin_seconds,
+            "held_out_rider_allowed": False,
+            "future_records_allowed": False,
+        }
+    if args.synthetic_fixed_split:
+        if not provenance.get("synthetic"):
+            parser.error("--synthetic-fixed-split requires an artifact marked synthetic")
+        report = evaluate_synthetic_fixed_split(
+            prepared,
+            configuration,
+            epochs=args.epochs,
+            learning_rate=args.learning_rate,
+            preference_weight=args.preference_weight,
+            seed=args.seed,
+            traffic_schema=tuple(provenance["edge_dynamic_schema"]),
+            gps_archive=gps_archive,
+            history_steps=args.history_steps,
+            history_interval_s=args.history_interval_seconds,
+            gps_profile_bin_s=args.gps_profile_bin_seconds,
+            batch_size=args.batch_size,
+            progress=print,
+        )
+    else:
+        report = evaluate_rider_disjoint(
+            prepared,
+            configuration,
+            epochs=args.epochs,
+            learning_rate=args.learning_rate,
+            preference_weight=args.preference_weight,
+            seed=args.seed,
+            temporal_ablation=args.temporal_ablation,
+            traffic_schema=tuple(provenance["edge_dynamic_schema"]),
+            gps_archive=gps_archive,
+            history_steps=args.history_steps,
+            history_interval_s=args.history_interval_seconds,
+            gps_profile_bin_s=args.gps_profile_bin_seconds,
+            batch_size=args.batch_size,
+            progress=print,
+        )
     report["provenance"] = {
         **provenance,
-        "evaluation": "every reported prediction is from a fold that excludes that rider",
+        "evaluation": (
+            "fixed rider-disjoint synthetic train/validation/test split"
+            if args.synthetic_fixed_split
+            else "every reported prediction is from a fold that excludes that rider"
+        ),
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     temporary = args.output.with_suffix(args.output.suffix + ".tmp")
     temporary.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     temporary.replace(args.output)
+    def display(value):
+        return f"{value:.3f}" if value is not None else "n/a"
+    if args.synthetic_fixed_split:
+        split = report["split"]
+        print(f"Saved {args.output}: {split['training_examples']} train, "
+              f"{split['validation_examples']} validation, {split['test_examples']} test examples")
+        print(f"{'Model':27} {'Threshold':>9} {'Balanced acc':>12} {'F1 deviation':>12} {'AP':>7} {'ROC-AUC':>8} {'Rank':>7}")
+        for name, result in report["models"].items():
+            metrics = result["test"]["classification"]
+            rank = result["test"].get("preference_ranking", {}).get("accuracy")
+            print(f"{name:27} {display(metrics['threshold']):>9} {display(metrics['balanced_accuracy']):>12} {display(metrics['f1']):>12} "
+                  f"{display(metrics['average_precision']):>7} {display(metrics['roc_auc']):>8} {display(rank):>7}")
+        print(f"Temporal evidence: {report['temporal_evidence']['status']}")
+        print("Controlled synthetic test; do not combine these metrics with official rider results.")
+        return
     print(f"Saved {args.output}: {report['examples']} examples, {report['road_decisions']} road decisions, "
           f"{report['riders']} held-out rider folds")
     print(f"{'Model':27} {'Balanced acc':>12} {'F1 deviation':>12} {'AP':>7} {'ROC-AUC':>8} {'Rank':>7}")
-    def display(value):
-        return f"{value:.3f}" if value is not None else "n/a"
     for name, result in report["models"].items():
         metrics = result["classification"]
         rank = result.get("held_out_preference_ranking", {}).get("accuracy")

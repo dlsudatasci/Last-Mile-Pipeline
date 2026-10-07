@@ -293,6 +293,10 @@ def build_decision_candidates(
             failures["missing_initial_route"] += 1
             continue
         initial_route = min(ride_routes, key=lambda item: int(item["generatedAt"]))
+        ride_deviations = deviations_by_ride.get(ride_id, [])
+        if ride_deviations:
+            failures["deviation_ride_handled_by_strict_event_pipeline"] += 1
+            continue
         gps = _sample_gps(gps_by_ride.get(ride_id, []))
         if len(gps) < 4:
             failures["insufficient_unique_gps"] += 1
@@ -316,10 +320,6 @@ def build_decision_candidates(
             failures[category] += 1
             continue
 
-        ride_deviations = deviations_by_ride.get(ride_id, [])
-        if ride_deviations:
-            failures["deviation_ride_handled_by_strict_event_pipeline"] += 1
-            continue
         agreement = _agreement(observed_match, suggested_match)
         if agreement["observed_edge_agreement"] < 0.8 or agreement["edge_jaccard"] < 0.7:
             failures["unreported_route_disagreement"] += 1
@@ -371,11 +371,25 @@ def build_decision_candidates(
             }
         )
 
+    deviation_document = (
+        json.loads(deviation_candidates_path.read_text(encoding="utf-8"))
+        if deviation_candidates_path else {}
+    )
     examples.extend(_load_deviation_examples(deviation_candidates_path))
     label_counts = Counter(example["target"]["label"] for example in examples)
+    manifest_path = data_dir / "manifest.json"
+    synthetic = bool(deviation_document.get("synthetic"))
+    if manifest_path.exists():
+        synthetic = synthetic or bool(
+            json.loads(manifest_path.read_text(encoding="utf-8")).get("synthetic")
+        )
     document = {
         "schema_version": 1,
-        "provenance": "Official rider export plus supplied OSM graph",
+        "provenance": (
+            "Controlled synthetic export plus supplied OSM graph"
+            if synthetic else "Official rider export plus supplied OSM graph"
+        ),
+        "synthetic": synthetic,
         "status": "review_required_not_training_ready",
         "prediction_target": "probability that the rider rejects each suggested outgoing road at an eligible local branch",
         "decision_point": "before traversing a suggested road from a node with multiple accessible successors",

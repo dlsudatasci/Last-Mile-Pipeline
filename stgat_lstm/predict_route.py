@@ -17,6 +17,7 @@ from pyproj import Transformer
 from shapely.geometry import Point
 
 from .mapbox_traffic import TrafficArchive, collect_live_route_observation
+from .gps_traffic import GPSTrafficArchive
 from .model import PreferenceModel, DecisionPreferenceModel, path_cost
 from .graph_data import (
     RealGraphData,
@@ -206,10 +207,13 @@ def route_deviation_probability(predictions: list[dict]) -> float | None:
 
 def route_request(model: DecisionPreferenceModel, graph_data: RealGraphData,
                   origin_node_id: str, destination_node_id: str,
-                  temporal_edge_features: tuple[torch.Tensor, ...] | None = None) -> dict:
+                  temporal_edge_features: tuple[torch.Tensor, ...] | None = None,
+                  *, max_detour_ratio: float = 1.30) -> dict:
     """Route a new OD without GPS labels, surveys or approved-example files."""
     if origin_node_id == destination_node_id:
         raise ValueError("Start and destination snap to the same node; choose different points")
+    if not math.isfinite(max_detour_ratio) or max_detour_ratio < 1.0:
+        raise ValueError("Maximum detour ratio must be a finite value of at least 1.0")
     started = time.perf_counter()
     length_column = graph_data.schema.edge_static.index("length_per_100m")
     distance_costs = {edge_id: max(float(graph_data.edge_static[row, length_column]) * 100, 1e-6)
@@ -221,15 +225,24 @@ def route_request(model: DecisionPreferenceModel, graph_data: RealGraphData,
         scores, edge_logits = model(inputs)
     costs = {edge_id: float(scores[row]) for row, edge_id in enumerate(graph_data.edge_ids)}
     learned = shortest_real_preference_path(graph_data, costs, origin_node_id, destination_node_id)
-    recommended = route_geometry(graph_data, learned.edge_ids)
-    recommended["total_learned_preference_cost"] = learned.total_preference_cost
+    unconstrained = route_geometry(graph_data, learned.edge_ids)
+    baseline_result = route_geometry(graph_data, baseline.edge_ids)
+    maximum_distance_m = baseline_result["distance_m"] * max_detour_ratio
+    constraint_applied = unconstrained["distance_m"] > maximum_distance_m + 1e-6
+    if constraint_applied:
+        selected_edges = baseline.edge_ids
+        selected_cost = sum(costs[edge_id] for edge_id in selected_edges)
+    else:
+        selected_edges = learned.edge_ids
+        selected_cost = learned.total_preference_cost
+    recommended = route_geometry(graph_data, selected_edges)
+    recommended["total_learned_preference_cost"] = selected_cost
     recommended["road_deviation_predictions"] = road_deviation_predictions(
-        graph_data, learned.edge_ids, edge_logits
+        graph_data, selected_edges, edge_logits
     )
     recommended["route_deviation_probability"] = route_deviation_probability(
         recommended["road_deviation_predictions"]
     )
-    baseline_result = route_geometry(graph_data, baseline.edge_ids)
     baseline_result["road_deviation_predictions"] = road_deviation_predictions(
         graph_data, baseline.edge_ids, edge_logits
     )
@@ -238,6 +251,13 @@ def route_request(model: DecisionPreferenceModel, graph_data: RealGraphData,
     )
     return {"origin_node_id": origin_node_id, "destination_node_id": destination_node_id,
             "recommended_route": recommended, "distance_baseline": baseline_result,
+            "detour_constraint": {
+                "max_detour_ratio": max_detour_ratio,
+                "maximum_distance_m": maximum_distance_m,
+                "unconstrained_learned_distance_m": unconstrained["distance_m"],
+                "applied": constraint_applied,
+                "action": "distance_baseline_fallback" if constraint_applied else "learned_route_accepted",
+            },
             "elapsed_seconds": time.perf_counter() - started,
             "interpretation": ("Prototype preference route. Each probability refers to rejecting that "
                 "suggested road when its source is reached; non-branching roads are marked not applicable. "
@@ -255,6 +275,10 @@ def _save_prediction(result: dict, output: Path, *, fresh_route: bool) -> None:
               f"learned: {route['distance_m'] / 1000:.2f} km | "
               f"distance baseline: {baseline['distance_m'] / 1000:.2f} km")
         print(f"Roads: {' -> '.join(route['road_names']) or 'unnamed roads'}")
+        constraint = result.get("detour_constraint", {})
+        if constraint.get("applied"):
+            print("Detour constraint applied: unconstrained learned route exceeded "
+                  f"{constraint['max_detour_ratio']:.2f}x the shortest-distance route")
         risk = route["route_deviation_probability"]
         print(f"Recommended-route deviation probability: "
               f"{risk:.3f}" if risk is not None else "Recommended route has no branching decision")
@@ -284,12 +308,17 @@ def main() -> None:
     parser.add_argument("--example-key")
     parser.add_argument("--traffic-observation", type=Path, action="append", default=[])
     parser.add_argument("--traffic-archive", type=Path)
+    parser.add_argument("--gps-traffic-data", type=Path,
+                        help="rider exports used to build historical GPS road-speed profiles")
     parser.add_argument("--live-traffic", action="store_true",
                         help="request current Mapbox traffic before routing and save it in the archive")
     parser.add_argument("--token-env", default="MAPBOX_ACCESS_TOKEN")
     parser.add_argument("--history-steps", type=int, default=6)
     parser.add_argument("--history-interval-seconds", type=int, default=300)
     parser.add_argument("--traffic-max-age-seconds", type=int, default=900)
+    parser.add_argument("--gps-profile-bin-seconds", type=int, default=300)
+    parser.add_argument("--max-detour-ratio", type=float, default=1.30,
+                        help="maximum learned-route distance divided by shortest-route distance")
     parser.add_argument("--origin-node")
     parser.add_argument("--destination-node")
     parser.add_argument("--origin", help="longitude,latitude")
@@ -301,8 +330,11 @@ def main() -> None:
     graph_data = build_real_graph_data(args.graphml, args.node_features)
     temporal = None
     traffic_report = {"status": "unknown"}
-    if args.traffic_archive and args.traffic_observation:
-        parser.error("Choose --traffic-archive or --traffic-observation")
+    traffic_sources = sum(bool(value) for value in (
+        args.traffic_archive, args.traffic_observation, args.gps_traffic_data, args.live_traffic
+    ))
+    if traffic_sources > 1 and not (args.live_traffic and args.traffic_archive and traffic_sources == 2):
+        parser.error("Choose one traffic source: GPS exports, Mapbox archive, observation, or live Mapbox")
     fresh = any((args.origin_node, args.destination_node, args.origin, args.destination))
     if args.live_traffic and not fresh:
         parser.error("--live-traffic is only valid for a fresh route request")
@@ -320,7 +352,16 @@ def main() -> None:
             origin_distance = destination_distance = 0.0
         else:
             parser.error("Provide both --origin and --destination, or both node IDs")
-        if args.live_traffic:
+        if args.gps_traffic_data:
+            gps_archive = GPSTrafficArchive.from_exports(graph_data, args.gps_traffic_data)
+            temporal, traffic_report = gps_archive.profile_sequence(
+                int(time.time() * 1000),
+                steps=args.history_steps,
+                interval_s=args.history_interval_seconds,
+                profile_bin_s=args.gps_profile_bin_seconds,
+            )
+            traffic_report["status"] = "historical_rider_gps"
+        elif args.live_traffic:
             traffic_directory = args.traffic_archive or Path("outputs/traffic_archive")
             live_path, _ = collect_live_route_observation(
                 graph_data, origin, destination, traffic_directory, token_env=args.token_env
@@ -342,7 +383,10 @@ def main() -> None:
             if args.live_traffic:
                 traffic_report["live_observation_file"] = live_path.name
         model = load_decision_checkpoint(args.checkpoint, graph_data)
-        result = route_request(model, graph_data, origin, destination, temporal)
+        result = route_request(
+            model, graph_data, origin, destination, temporal,
+            max_detour_ratio=args.max_detour_ratio,
+        )
         result["traffic"] = traffic_report
         result["snap_distance_m"] = {
             "origin": origin_distance,
@@ -362,7 +406,18 @@ def main() -> None:
     else:
         example = decisions[0]
 
-    if args.traffic_archive:
+    if args.gps_traffic_data:
+        gps_archive = GPSTrafficArchive.from_exports(graph_data, args.gps_traffic_data)
+        temporal, traffic_report = gps_archive.profile_sequence(
+            example.decision_timestamp_ms,
+            steps=args.history_steps,
+            interval_s=args.history_interval_seconds,
+            profile_bin_s=args.gps_profile_bin_seconds,
+            exclude_rider_groups={example.rider_group},
+            exclude_ride_groups={example.ride_group},
+        )
+        traffic_report["status"] = "historical_rider_gps"
+    elif args.traffic_archive:
         archive = TrafficArchive.from_directory(graph_data, args.traffic_archive)
     elif args.traffic_observation:
         archive = TrafficArchive(graph_data, args.traffic_observation)
@@ -380,6 +435,8 @@ def main() -> None:
             "pre-decision archive" if args.traffic_archive
             else "current-input demonstration; not historical traffic evidence"
         )
+    elif args.gps_traffic_data:
+        traffic_note = "historical rider-GPS speed profile; target rider and ride excluded"
 
     inputs = graph_data.build_model_input(
         example.destination_node_id, temporal_edge_features=temporal

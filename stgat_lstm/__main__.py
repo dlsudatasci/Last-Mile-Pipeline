@@ -15,6 +15,8 @@ COMMANDS = {
     "review-map": ("create_review_map", "create the local review map"),
     "review": ("review_decisions", "initialize or finalize review decisions"),
     "traffic": ("mapbox_traffic", "collect one Mapbox traffic observation"),
+    "gps-traffic": ("gps_traffic", "derive historical road-speed context from rider GPS"),
+    "synthetic-hotspot": ("synthetic_hotspot", "build a controlled Taft learning experiment"),
     "train": ("train_model", "train the decision-preference model"),
     "evaluate": ("evaluate_model", "run rider-disjoint evaluation"),
     "predict": ("predict_route", "predict and route with a real checkpoint"),

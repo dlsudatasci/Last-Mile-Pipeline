@@ -1,0 +1,253 @@
+{
+  "schema_version": 2,
+  "candidate_artifact_sha256": "09e64db9b88cc64c72ab53659066598a95cad0dff98f570f56b80279f479a9d8",
+  "carried_forward_from_sha256": "770d4e3c6bf972a3b8c9400a806d776fb25d6e857fbf77041ad8f2c7f9404ec1",
+  "instructions": "Review every pending row. Set it to approve or reject and add a short note.",
+  "summary": {
+    "candidates": 8,
+    "carried_forward": 8,
+    "pending": 0
+  },
+  "decisions": [
+    {
+      "example_key": "9d8b7bf677b875c5",
+      "candidate_sha256": "bd6a7f72890aae5e9db228a1e5e909f6507cc7a8abcc33bcb4d0107de1ed0082",
+      "review_context": {
+        "candidate_number": 1,
+        "expected_label": "followed",
+        "label_basis": "no logged deviation and GPS follows the suggestion through a branching node",
+        "suggested_roads": [
+          "Taft Avenue",
+          "Menlo Street"
+        ],
+        "suggested_length_m": 844.5,
+        "observed_roads": [
+          "Taft Avenue",
+          "Menlo Street"
+        ],
+        "observed_length_m": 844.5,
+        "quality": {
+          "observed_edge_agreement": 1.0,
+          "suggested_edge_coverage": 0.786,
+          "edge_jaccard": 0.786,
+          "gps_mean_match_distance_m": 6.25,
+          "gps_max_match_distance_m": 15.7,
+          "taft_gps_fraction": 1.0,
+          "sampled_gps_points": 60
+        }
+      },
+      "decision": "approve",
+      "review_note": ""
+    },
+    {
+      "example_key": "fe40c13cde670e01",
+      "candidate_sha256": "d335088bff58e9a654f48aadde07eeae0ab60a259c4568105ffa649833dac731",
+      "review_context": {
+        "candidate_number": 2,
+        "expected_label": "followed",
+        "label_basis": "no logged deviation and GPS follows the suggestion through a branching node",
+        "suggested_roads": [
+          "San Andres Street",
+          "Leon Guinto Street",
+          "Quirino Avenue",
+          "Taft Avenue"
+        ],
+        "suggested_length_m": 336.0,
+        "observed_roads": [
+          "San Andres Street",
+          "Leon Guinto Street",
+          "Quirino Avenue",
+          "Taft Avenue"
+        ],
+        "observed_length_m": 336.0,
+        "quality": {
+          "observed_edge_agreement": 1.0,
+          "suggested_edge_coverage": 1.0,
+          "edge_jaccard": 1.0,
+          "gps_mean_match_distance_m": 10.68,
+          "gps_max_match_distance_m": 37.57,
+          "taft_gps_fraction": 1.0,
+          "sampled_gps_points": 60
+        }
+      },
+      "decision": "approve",
+      "review_note": ""
+    },
+    {
+      "example_key": "f26b013dda58e426",
+      "candidate_sha256": "63f6e6bf2a76f06cf3f1124372b53fea4ae7a38be3a469b5c27729b4b99e59bf",
+      "review_context": {
+        "candidate_number": 3,
+        "expected_label": "followed",
+        "label_basis": "no logged deviation and GPS follows the suggestion through a branching node",
+        "suggested_roads": [
+          "Taft Avenue",
+          "Dagonoy Street",
+          "Leon Guinto Street"
+        ],
+        "suggested_length_m": 483.7,
+        "observed_roads": [
+          "Taft Avenue",
+          "Dagonoy Street",
+          "Leon Guinto Street"
+        ],
+        "observed_length_m": 483.7,
+        "quality": {
+          "observed_edge_agreement": 0.938,
+          "suggested_edge_coverage": 1.0,
+          "edge_jaccard": 0.938,
+          "gps_mean_match_distance_m": 3.27,
+          "gps_max_match_distance_m": 17.83,
+          "taft_gps_fraction": 1.0,
+          "sampled_gps_points": 60
+        }
+      },
+      "decision": "approve",
+      "review_note": ""
+    },
+    {
+      "example_key": "cf736fccb501412b",
+      "candidate_sha256": "7f8b494cda38d933cdd7f45f895106b96a56b2468de36d8eecf359eb80979e7d",
+      "review_context": {
+        "candidate_number": 4,
+        "expected_label": "followed",
+        "label_basis": "no logged deviation and GPS follows the suggestion through a branching node",
+        "suggested_roads": [
+          "Taft Avenue",
+          "Menlo Street",
+          "Donada Street",
+          "Pablo Ocampo Street"
+        ],
+        "suggested_length_m": 593.8,
+        "observed_roads": [
+          "Taft Avenue",
+          "Menlo Street",
+          "Donada Street",
+          "Pablo Ocampo Street"
+        ],
+        "observed_length_m": 593.8,
+        "quality": {
+          "observed_edge_agreement": 1.0,
+          "suggested_edge_coverage": 0.889,
+          "edge_jaccard": 0.889,
+          "gps_mean_match_distance_m": 3.46,
+          "gps_max_match_distance_m": 11.61,
+          "taft_gps_fraction": 1.0,
+          "sampled_gps_points": 60
+        }
+      },
+      "decision": "approve",
+      "review_note": ""
+    },
+    {
+      "example_key": "1dbf260f252a39b0",
+      "candidate_sha256": "76e5ac9c382fc30abc26a57f8c9ae28b63c43378bf386381dcad45c368991be2",
+      "review_context": {
+        "candidate_number": 5,
+        "expected_label": "followed",
+        "label_basis": "no logged deviation and GPS follows the suggestion through a branching node",
+        "suggested_roads": [
+          "Dominga Street"
+        ],
+        "suggested_length_m": 590.1,
+        "observed_roads": [
+          "Dominga Street"
+        ],
+        "observed_length_m": 590.1,
+        "quality": {
+          "observed_edge_agreement": 1.0,
+          "suggested_edge_coverage": 1.0,
+          "edge_jaccard": 1.0,
+          "gps_mean_match_distance_m": 3.78,
+          "gps_max_match_distance_m": 10.02,
+          "taft_gps_fraction": 1.0,
+          "sampled_gps_points": 60
+        }
+      },
+      "decision": "approve",
+      "review_note": ""
+    },
+    {
+      "example_key": "11930c364eaa39de",
+      "candidate_sha256": "a46fc7386f657b5555e1b8f87554965e144d77eb3ad07d5a266a7ca5ae29180f",
+      "review_context": {
+        "candidate_number": 6,
+        "expected_label": "deviated",
+        "label_basis": "intentional surveyed deviation with a GPS-supported divergence and rejoin",
+        "suggested_roads": [
+          "Taft Avenue",
+          "Pablo Ocampo Street",
+          "Roxas Boulevard Service Road"
+        ],
+        "suggested_length_m": 2220.3,
+        "observed_roads": [
+          "Taft Avenue",
+          "Menlo Street",
+          "Leveriza Street",
+          "Gotamco Street",
+          "E. Rodriguez Street"
+        ],
+        "observed_length_m": 1391.7,
+        "quality": {
+          "gps_edge_overlap_with_prior": 0.133,
+          "gps_edge_overlap_with_regenerated": 0.733,
+          "mean_gps_to_matched_edge_m": 4.85
+        }
+      },
+      "decision": "approve",
+      "review_note": ""
+    },
+    {
+      "example_key": "33fc9d0edd61ebaa",
+      "candidate_sha256": "0558d80f2259ebb2302c9badeed98b84a28de88a032d1c0c361682135620b587",
+      "review_context": {
+        "candidate_number": 7,
+        "expected_label": "deviated",
+        "label_basis": "intentional surveyed deviation with a GPS-supported divergence and rejoin",
+        "suggested_roads": [
+          "A. Roxas Street",
+          "Dian Street"
+        ],
+        "suggested_length_m": 324.2,
+        "observed_roads": [
+          "Arellano Avenue",
+          "Zobel Roxas Street"
+        ],
+        "observed_length_m": 444.9,
+        "quality": {
+          "gps_edge_overlap_with_prior": 0.333,
+          "gps_edge_overlap_with_regenerated": 0.75,
+          "mean_gps_to_matched_edge_m": 4.65
+        }
+      },
+      "decision": "approve",
+      "review_note": ""
+    },
+    {
+      "example_key": "2222bc21d470f3b9",
+      "candidate_sha256": "eec7644db18d8a91bb829a8ac955e3b3f2d0072a0e409708e37cd7c3d6829b63",
+      "review_context": {
+        "candidate_number": 8,
+        "expected_label": "deviated",
+        "label_basis": "intentional surveyed deviation with a GPS-supported divergence and rejoin",
+        "suggested_roads": [
+          "Conchu Street",
+          "A. Estrada Street"
+        ],
+        "suggested_length_m": 315.6,
+        "observed_roads": [
+          "Pablo Ocampo Street",
+          "Arellano Avenue"
+        ],
+        "observed_length_m": 386.9,
+        "quality": {
+          "gps_edge_overlap_with_prior": 0.286,
+          "gps_edge_overlap_with_regenerated": 0.571,
+          "mean_gps_to_matched_edge_m": 4.28
+        }
+      },
+      "decision": "approve",
+      "review_note": ""
+    }
+  ]
+}

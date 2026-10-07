@@ -143,7 +143,12 @@ This removes the present situation in which five followed examples update the cl
 
 ### Current temporal-data assumption
 
-The architecture accepts multiple historical traffic snapshots, but the current eight approved examples have no contemporaneous historical traffic. Each currently uses one explicit “unknown traffic” frame.
+The app requests a GPS fix every two seconds. In the current export the measured
+median interval is 2.001 seconds. Consecutive fixes are direction-matched to OSM
+roads and converted to historical motorcycle speed records. For each decision,
+the model builds six time-of-day frames using only records that predate the
+decision and excluding the target ride. During held-out-rider evaluation, the
+held-out rider is also excluded.
 
 ```python
 if temporal_edge_features is None:
@@ -156,12 +161,14 @@ if temporal_edge_features is None:
     temporal_edge_features = (unknown,)
 ```
 
-Therefore:
-
-- GATv2 and the remaining network are trained and operational.
-- The LSTM is present, receives gradients, and can accept a sequence.
-- Current real results do not prove that temporal history improves prediction.
-- Meaningful LSTM evidence requires traffic snapshots collected before and during future rider decisions, followed by retraining and temporal ablation.
+If no GPS observations cover a road and time slot, the existing unknown frame
+logic applies. The current archive contains 6,657 matched speed segments on 494
+directed roads from 48 rides, but coverage at the eight approved decisions is
+sparse and uneven: five of eight examples have at least one observed edge-time
+slot, totaling 52 observed edge slots and 389 matched speed records across all
+six-frame histories. The LSTM is trained on real sequences now; a temporal
+ablation and more independent decisions are still required before claiming that
+history improves prediction.
 
 ## 3. Expected final outputs
 
@@ -221,7 +228,7 @@ Let:
 | $G=(V,E)$ | Directed road graph | 1,368 nodes; 3,418 edges |
 | $N$ | Number of nodes | 1,368 |
 | $M$ | Number of directed edges | 3,418 |
-| $T$ | Number of traffic snapshots | currently 1; planned default 6 |
+| $T$ | Number of traffic snapshots | 6 with GPS history; 1 unknown frame without it |
 | $F_n$ | Node feature dimension | 13 |
 | $F_s$ | Static edge feature dimension | 19 |
 | $F_d$ | Dynamic edge feature dimension | 5 |
@@ -360,13 +367,15 @@ edge_dynamic=(
 )
 ```
 
-- Congestion is Mapbox numeric congestion divided by 100.
-- Speed is Mapbox speed divided by the edge’s OSM reference speed and capped at 2.
-- Separate masks say whether congestion and speed were actually observed.
-- Age is elapsed time divided by one hour and capped at 1.
+- For rider GPS, `speed_ratio_to_reference` is median observed motorcycle speed divided by the edge's OSM reference speed and capped at 2.
+- For rider GPS, `congestion_normalized` is the slowdown proxy `1 - min(speed_ratio, 1)`.
+- Separate masks say whether slowdown and speed were actually observed.
+- GPS observation age is scaled over 30 days and capped at 1 because the frames are historical time-of-day profiles.
 - Unknown traffic has zero values, zero observation masks, and age 1.
 
-The masks are essential. Without them, a zero could incorrectly mean “free flow” when the API returned no measurement.
+The masks are essential. Without them, a zero could incorrectly mean free flow
+when there was no rider observation. These features describe motorcycle probe
+speeds and must not be called complete network-wide traffic.
 
 ### Destination features: 2 per road
 
@@ -629,7 +638,13 @@ h_t=o_t\odot\tanh(c_t).
 
 The final edge state $h_e^{(T)}$ is used by both output heads.
 
-The intended traffic policy is six snapshots at five-minute intervals, with observations rejected when they are future, received too late, or stale. The current real checkpoint saw one unknown frame per decision, so its LSTM behaves as a learnable transformation rather than demonstrated temporal memory.
+The current policy uses six snapshots at five-minute intervals. Each snapshot
+aggregates earlier rides near the corresponding local time of day, separating
+weekdays from weekends. Future records, the target ride, and held-out riders are
+excluded. The controlled synthetic experiment uses one-minute spacing so its
+short routes provide visible temporal variation. The design follows the broad
+spatial-then-temporal order of Zhang, Yu, and Liu (2019), while the prediction
+target and rider-choice losses are specific to this project.
 
 ## 10. Positive edge-cost head
 
@@ -773,17 +788,17 @@ L_{BCE,i}
 ~~~
 
 
-The implementation uses $\lambda=1$ by default. It pools road-classification targets across the approved examples and averages the available route-ranking pairs:
+The implementation uses $\lambda=1$ by default. It applies the global positive-class weight to every mini-batch and averages the available route-ranking pairs in that batch:
 
 ```python
-classification = F.binary_cross_entropy_with_logits(
+classification_loss = F.binary_cross_entropy_with_logits(
     torch.cat(classification_logits),
     torch.cat(classification_labels),
     pos_weight=positive_weight,
 )
-loss = classification
+loss = classification_loss
 if ranking_losses:
-    loss = loss + preference_weight * torch.stack(ranking_losses).mean()
+    loss += preference_weight * torch.stack(ranking_losses).mean()
 ```
 
 The shared backbone receives gradients from both tasks. The road-deviation head receives classification gradients. The cost head receives ranking gradients from the three approved deviations.
@@ -800,10 +815,13 @@ optimizer = torch.optim.Adam(
 
 for epoch in range(epochs):
     model.train()
-    optimizer.zero_grad()
-    # Compute road-classification and route-ranking losses.
-    loss.backward()
-    optimizer.step()
+    for batch in shuffled_decision_batches:
+        # Disconnected graph components share no messages.
+        optimizer.zero_grad()
+        loss = classification_and_ranking_loss(batch)
+        loss.backward()
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=5.0)
+        optimizer.step()
 ```
 
 Current settings:
@@ -817,7 +835,7 @@ Current settings:
 | Seed | 17 |
 | Hidden channels | 16 |
 | Dropout | none |
-| Mini-batching | none; one averaged update per epoch |
+| Batch size | 8 disconnected graph examples |
 
 The main training command fits all eight approved examples. It is used to produce the deployable checkpoint. It does not provide held-out accuracy; evaluation is a separate command.
 
@@ -879,12 +897,12 @@ The deviation probability is descriptive. The learned route is selected from the
 
 ### Training report
 
-The current complete-data training run reports:
+The current GPS-history complete-data training run reports:
 
 - 8 approved examples from 6 riders;
 - 28 road choices: 25 followed and 3 deviated;
-- loss reduced from 1.996 to 0.129 after 100 epochs;
-- 27/28 in-sample road classifications correct;
+- loss reduced from 1.998 to 0.728 after 100 epochs;
+- 19/28 in-sample road classifications correct at the fixed 0.5 threshold;
 - 3/3 in-sample deviation pairs ranked correctly.
 
 These numbers show that the implementation can fit the current examples. They are not evidence of unseen-rider generalization.
@@ -918,14 +936,42 @@ Current GATv2-LSTM held-out results are weak:
 
 | Metric | Current result |
 |---|---:|
-| Balanced accuracy | 0.307 |
-| Deviation F1 | 0.091 |
-| ROC-AUC | 0.093 |
-| Held-out preference ranking | 2/3 |
+| Balanced accuracy | 0.387 |
+| Deviation F1 | 0.111 |
+| ROC-AUC | 0.293 |
+| Held-out preference ranking | 3/3 |
+
+The matched latest-only LSTM reaches 0.553 balanced accuracy and 0.211
+deviation F1 with the same 0.293 ROC-AUC and 3/3 ranking. Therefore, the six
+historical frames do not add measured value in this pilot. That negative result
+is expected to remain provisional until the dataset contains more riders,
+positive choices, and denser road-time coverage.
 
 The correct interpretation is:
 
 > The pipeline is operational, but 28 correlated road labels from eight examples, including only three deviations, are insufficient to claim reliable rider generalization or an LSTM benefit.
+
+### Controlled hotspot capacity check
+
+The separated synthetic experiment preserves the app's six CSV schemas and
+two-second GPS structure. It creates 96 labeled decisions from eight artificial
+riders: 48 deviations across two approved in-corridor Taft choice patterns and
+48 follows across five approved follow-route structures. Forty-two separate
+traffic-only rides inject slow morning and free-flow late-morning motorcycle
+probe histories. All 96 decision rides survive the same directed map matching,
+candidate construction, and automatic validation used for official data.
+
+A fixed rider-disjoint experiment trains on 48 examples from four riders, uses
+24 examples from two riders for validation, and tests on 24 examples from two
+other riders. Classification thresholds are selected from validation balanced
+accuracy and frozen before testing. On unseen synthetic riders, GATv2 and
+full-history ST-GAT-LSTM obtain 1.000 deviation F1, AP, ROC-AUC, balanced
+accuracy, and route-ranking accuracy. The latest-only LSTM obtains 0.923 F1,
+0.929 AP, 0.983 ROC-AUC, 0.983 balanced accuracy, and 1.000 ranking accuracy.
+Full-history ST-GAT-LSTM separates its hardest followed and deviated test scores
+by 0.424, compared with 0.002 in the earlier one-hotspot experiment. This shows
+that the implementation can learn multiple injected road patterns and use the
+constructed temporal history. Synthetic performance is not real-rider evidence.
 
 ## 16. Current implementation limits
 
@@ -933,19 +979,19 @@ State these directly if asked:
 
 1. **Very small training set:** only eight approved examples, producing 28 correlated road labels.
 2. **Only three route-ranking pairs:** the edge-cost head has limited direct supervision.
-3. **No useful historical traffic yet:** the current checkpoint cannot demonstrate temporal improvement.
+3. **Sparse historical GPS context:** temporal frames now exist, but coverage at the approved decisions is too uneven to establish an LSTM improvement.
 4. **No rider embedding:** behavior is learned across riders rather than personalized to one rider.
 5. **No turn restrictions:** routing is edge-additive.
 6. **No calibrated probability:** only three positive road-deviation labels are available.
 7. **No hyperparameter tuning set:** current held-out folds must not also be used repeatedly to choose settings.
-8. **No travel-time objective:** the learned route represents preference cost.
+8. **No travel-time objective:** the learned route represents preference cost. A hard 1.30-times-shortest-distance guard prevents excessive detours.
 9. **Limited route context:** the road head sees graph, destination, edge, and traffic context, but it does not yet encode a rider-specific history or the complete prefix of the current trip.
 
 ## 17. Compact top-to-bottom explanation
 
 Use this when asked “How does the whole model work?”
 
-> We represent Taft Avenue as a directed OSM graph. Every intersection has normalized location and surrounding-context features. Every road has static OSM attributes, optional timestamped traffic attributes, and a vector toward the destination. For every traffic snapshot, two GATv2 layers aggregate neighboring road context using dynamic attention informed by node and edge attributes. We then form a road embedding from its source node, destination node, static attributes, traffic, and destination direction. An LSTM processes each road's sequence of spatial embeddings. One head maps each final road embedding to a positive preference cost, while the other maps it to the probability that the rider rejects that road at a branch. Training combines road-level weighted binary cross-entropy with a pairwise ranking loss that encourages an intentionally chosen route to cost less than the rejected suggestion. At inference, the model reports road probabilities, scores all accessible directed roads, and Dijkstra finds the connected route with the lowest total learned preference cost.
+> We represent Taft Avenue as a directed OSM graph. Every intersection has normalized location and surrounding-context features. Every road has static OSM attributes, optional timestamped traffic attributes, and a vector toward the destination. For every traffic snapshot, two GATv2 layers aggregate neighboring road context using dynamic attention informed by node and edge attributes. We then form a road embedding from its source node, destination node, static attributes, traffic, and destination direction. An LSTM processes each road's sequence of spatial embeddings. One head maps each final road embedding to a positive preference cost, while the other maps it to the probability that the rider rejects that road at a branch. Training combines road-level weighted binary cross-entropy with a pairwise ranking loss that encourages an intentionally chosen route to cost less than the rejected suggestion. At inference, the model reports road probabilities, scores all accessible directed roads, and Dijkstra finds the connected route with the lowest total learned preference cost. A hard detour guard falls back to the shortest-distance route if the learned route exceeds 1.30 times that distance.
 
 ## 18. Code files to open during the presentation
 
@@ -957,8 +1003,18 @@ Use this when asked “How does the whole model work?”
 | Two model outputs | `model.py:DecisionPreferenceModel` |
 | Classification and ranking loss | `train_model.py:train_decision_model` |
 | Real approved-example preparation | `train_model.py:prepare_real` |
+| GPS-to-road temporal profiles | `gps_traffic.py:GPSTrafficArchive` |
+| Controlled hotspot capacity test | `synthetic_hotspot.py:generate_hotspot_experiment` |
 | Held-out-rider metrics | `evaluate_model.py:evaluate_rider_disjoint` |
 | Model-to-Dijkstra connection | `predict_route.py:route_request` |
 | Routing implementation | `predict_route.py:shortest_real_preference_path` |
 
-The architecture is a task-specific composition. GATv2 comes from Brody et al. and is used through PyTorch Geometric. The LSTM is PyTorch's standard implementation. The per-road deviation head, destination-conditioned edge construction, pairwise preference objective, and learned-cost routing connection are the project-specific composition.
+The architecture is a task-specific composition. GATv2 comes from Brody et al.
+and is used through PyTorch Geometric. The LSTM is PyTorch's standard
+implementation following Hochreiter and Schmidhuber (1997). The
+spatial-then-temporal order is closest to Zhang, Yu, and Liu, *Spatial-Temporal
+Graph Attention Networks: A Deep Learning Approach for Traffic Forecasting*
+(2019), DOI 10.1109/ACCESS.2019.2953888. The per-road deviation head,
+destination-conditioned edge construction, GPS-derived motorcycle profiles,
+pairwise preference objective, and learned-cost routing connection are
+project-specific.

@@ -1,0 +1,498 @@
+{
+  "schema_version": 1,
+  "provenance": "Official rider export plus supplied OSM graph",
+  "status": "review_required_not_training_ready",
+  "graph": {
+    "source": "data\\real\\osm\\metro_manila_processed.graphml",
+    "sha256": "b3e3b09db14dd6f0d75eba6e08faba6400cb870149f3994327089d278b35260b",
+    "created_date": "2026-07-21 20:42:01",
+    "crs": "EPSG:32651",
+    "nodes": 36375,
+    "edges": 104019
+  },
+  "source_sha256": {
+    "rides_clean.csv": "33d2880d1208617e6da5afc3957a94b89ddcc985cc67ff9a98394b5777d22ae6",
+    "generated_routes_clean.csv": "2716152a887c7f0c81a4eb87305e7e5d8547993f09d40a308484517f20b6b50e",
+    "deviations_clean.csv": "2cdd7fb0d8d21fb63d576cc57009e56dcbf3d41946e582b1ae4e4b62df39aa85",
+    "deviationResponses_clean.csv": "13294637de04a856a3daa86d08dbb377975a37da723846aff1ad37fb2117db1d",
+    "map_points_clean.csv": "6a5b11f00eb58ea21113dfc0923c1a51b6098cdae0c928ff32e0e0fdfe4febd6"
+  },
+  "rules": {
+    "taft_corridor_m": 500,
+    "gps_before_event_s": 60,
+    "gps_after_event_s": 180,
+    "stop_at_next_deviation": true,
+    "require_intentional_reason": true,
+    "require_gps_to_favor_regenerated_route": true,
+    "require_shared_directed_edge_before_and_after": true
+  },
+  "summary": {
+    "reported_deviations": 34,
+    "eligible_intentional_taft_events": 17,
+    "review_candidates": 3,
+    "candidate_rides": 3,
+    "candidate_riders": 3,
+    "failure_counts": {
+      "excluded_reason": 2,
+      "gps_does_not_favor_regenerated_route": 5,
+      "map_match_failure": 2,
+      "no_feasible_directed_transition": 6,
+      "no_shared_divergence_rejoin_boundaries": 1,
+      "outside_taft_corridor": 15
+    }
+  },
+  "candidates": [
+    {
+      "status": "review_required",
+      "event_key": "11930c364eaa39de",
+      "ride_group": "34bb3505367170c8",
+      "rider_group": "65e4a975a046cab1",
+      "decision_timestamp_ms": 1785152472973,
+      "survey": {
+        "primary_reason": "Shortcut/Faster Route/Personal Preference/Familiar Road",
+        "traffic_severity": null,
+        "deviate_again": "Often"
+      },
+      "common_od": {
+        "origin_node_id": "400",
+        "destination_node_id": "6"
+      },
+      "preferred_observed_path": {
+        "edges": [
+          {
+            "u": "400",
+            "v": "678",
+            "key": "0"
+          },
+          {
+            "u": "678",
+            "v": "12971",
+            "key": "0"
+          },
+          {
+            "u": "12971",
+            "v": "12968",
+            "key": "0"
+          },
+          {
+            "u": "12968",
+            "v": "12967",
+            "key": "0"
+          },
+          {
+            "u": "12967",
+            "v": "12969",
+            "key": "0"
+          },
+          {
+            "u": "12969",
+            "v": "12970",
+            "key": "0"
+          },
+          {
+            "u": "12970",
+            "v": "12954",
+            "key": "0"
+          },
+          {
+            "u": "12954",
+            "v": "5303",
+            "key": "0"
+          },
+          {
+            "u": "5303",
+            "v": "12955",
+            "key": "0"
+          },
+          {
+            "u": "12955",
+            "v": "28637",
+            "key": "0"
+          },
+          {
+            "u": "28637",
+            "v": "35637",
+            "key": "0"
+          },
+          {
+            "u": "35637",
+            "v": "35634",
+            "key": "0"
+          },
+          {
+            "u": "35634",
+            "v": "6",
+            "key": "0"
+          }
+        ],
+        "length_m": 1391.7,
+        "road_names": [
+          "Taft Avenue",
+          "Menlo Street",
+          "Leveriza Street",
+          "Gotamco Street",
+          "E. Rodriguez Street"
+        ]
+      },
+      "rejected_prior_suggestion": {
+        "edges": [
+          {
+            "u": "400",
+            "v": "401",
+            "key": "0"
+          },
+          {
+            "u": "401",
+            "v": "12255",
+            "key": "0"
+          },
+          {
+            "u": "12255",
+            "v": "401",
+            "key": "0"
+          },
+          {
+            "u": "401",
+            "v": "400",
+            "key": "0"
+          },
+          {
+            "u": "400",
+            "v": "677",
+            "key": "0"
+          },
+          {
+            "u": "677",
+            "v": "32304",
+            "key": "0"
+          },
+          {
+            "u": "32304",
+            "v": "709",
+            "key": "0"
+          },
+          {
+            "u": "709",
+            "v": "936",
+            "key": "0"
+          },
+          {
+            "u": "936",
+            "v": "619",
+            "key": "0"
+          },
+          {
+            "u": "619",
+            "v": "618",
+            "key": "0"
+          },
+          {
+            "u": "618",
+            "v": "8",
+            "key": "0"
+          },
+          {
+            "u": "8",
+            "v": "13195",
+            "key": "0"
+          },
+          {
+            "u": "13195",
+            "v": "7",
+            "key": "0"
+          },
+          {
+            "u": "7",
+            "v": "4007",
+            "key": "0"
+          },
+          {
+            "u": "4007",
+            "v": "6",
+            "key": "0"
+          }
+        ],
+        "length_m": 2220.3,
+        "road_names": [
+          "Taft Avenue",
+          "Pablo Ocampo Street",
+          "Roxas Boulevard Service Road"
+        ]
+      },
+      "boundary_edges": {
+        "shared_before": {
+          "u": "678",
+          "v": "400",
+          "key": "0"
+        },
+        "shared_after": {
+          "u": "6",
+          "v": "1313",
+          "key": "0"
+        }
+      },
+      "quality": {
+        "gps_edge_overlap_with_prior": 0.133,
+        "gps_edge_overlap_with_regenerated": 0.733,
+        "mean_gps_to_matched_edge_m": 4.85
+      }
+    },
+    {
+      "status": "review_required",
+      "event_key": "33fc9d0edd61ebaa",
+      "ride_group": "499920bd8a3ee26c",
+      "rider_group": "d6e652b7ac86909a",
+      "decision_timestamp_ms": 1784907881417,
+      "survey": {
+        "primary_reason": "Road Blockage/Hazard (Flood, Accident, Poor road condition)",
+        "traffic_severity": null,
+        "deviate_again": "Always"
+      },
+      "common_od": {
+        "origin_node_id": "644",
+        "destination_node_id": "8883"
+      },
+      "preferred_observed_path": {
+        "edges": [
+          {
+            "u": "644",
+            "v": "1792",
+            "key": "0"
+          },
+          {
+            "u": "1792",
+            "v": "1795",
+            "key": "0"
+          },
+          {
+            "u": "1795",
+            "v": "8879",
+            "key": "0"
+          },
+          {
+            "u": "8879",
+            "v": "8882",
+            "key": "0"
+          },
+          {
+            "u": "8882",
+            "v": "12709",
+            "key": "0"
+          },
+          {
+            "u": "12709",
+            "v": "12708",
+            "key": "0"
+          },
+          {
+            "u": "12708",
+            "v": "8887",
+            "key": "0"
+          },
+          {
+            "u": "8887",
+            "v": "8883",
+            "key": "0"
+          }
+        ],
+        "length_m": 444.9,
+        "road_names": [
+          "Arellano Avenue",
+          "Zobel Roxas Street"
+        ]
+      },
+      "rejected_prior_suggestion": {
+        "edges": [
+          {
+            "u": "644",
+            "v": "10951",
+            "key": "0"
+          },
+          {
+            "u": "10951",
+            "v": "10952",
+            "key": "0"
+          },
+          {
+            "u": "10952",
+            "v": "12721",
+            "key": "0"
+          },
+          {
+            "u": "12721",
+            "v": "5251",
+            "key": "0"
+          },
+          {
+            "u": "5251",
+            "v": "5254",
+            "key": "0"
+          },
+          {
+            "u": "5254",
+            "v": "8886",
+            "key": "0"
+          },
+          {
+            "u": "8886",
+            "v": "3952",
+            "key": "0"
+          },
+          {
+            "u": "3952",
+            "v": "8883",
+            "key": "0"
+          }
+        ],
+        "length_m": 324.2,
+        "road_names": [
+          "A. Roxas Street",
+          "Dian Street"
+        ]
+      },
+      "boundary_edges": {
+        "shared_before": {
+          "u": "642",
+          "v": "644",
+          "key": "0"
+        },
+        "shared_after": {
+          "u": "8883",
+          "v": "3955",
+          "key": "0"
+        }
+      },
+      "quality": {
+        "gps_edge_overlap_with_prior": 0.333,
+        "gps_edge_overlap_with_regenerated": 0.75,
+        "mean_gps_to_matched_edge_m": 4.65
+      }
+    },
+    {
+      "status": "review_required",
+      "event_key": "2222bc21d470f3b9",
+      "ride_group": "c88053a8bf97841d",
+      "rider_group": "3fe3e2506088e487",
+      "decision_timestamp_ms": 1785487223415,
+      "survey": {
+        "primary_reason": "Avoid Intersection",
+        "traffic_severity": "4 = Heavy",
+        "deviate_again": "Sometimes"
+      },
+      "common_od": {
+        "origin_node_id": "5252",
+        "destination_node_id": "658"
+      },
+      "preferred_observed_path": {
+        "edges": [
+          {
+            "u": "5252",
+            "v": "5250",
+            "key": "0"
+          },
+          {
+            "u": "5250",
+            "v": "690",
+            "key": "0"
+          },
+          {
+            "u": "690",
+            "v": "692",
+            "key": "0"
+          },
+          {
+            "u": "692",
+            "v": "642",
+            "key": "0"
+          },
+          {
+            "u": "642",
+            "v": "643",
+            "key": "0"
+          },
+          {
+            "u": "643",
+            "v": "13189",
+            "key": "0"
+          },
+          {
+            "u": "13189",
+            "v": "704",
+            "key": "0"
+          },
+          {
+            "u": "704",
+            "v": "658",
+            "key": "0"
+          }
+        ],
+        "length_m": 386.9,
+        "road_names": [
+          "Pablo Ocampo Street",
+          "Arellano Avenue"
+        ]
+      },
+      "rejected_prior_suggestion": {
+        "edges": [
+          {
+            "u": "5252",
+            "v": "5253",
+            "key": "0"
+          },
+          {
+            "u": "5253",
+            "v": "3947",
+            "key": "0"
+          },
+          {
+            "u": "3947",
+            "v": "5256",
+            "key": "0"
+          },
+          {
+            "u": "5256",
+            "v": "3968",
+            "key": "0"
+          },
+          {
+            "u": "3968",
+            "v": "5244",
+            "key": "0"
+          },
+          {
+            "u": "5244",
+            "v": "660",
+            "key": "0"
+          },
+          {
+            "u": "660",
+            "v": "658",
+            "key": "0"
+          }
+        ],
+        "length_m": 315.6,
+        "road_names": [
+          "Conchu Street",
+          "A. Estrada Street"
+        ]
+      },
+      "boundary_edges": {
+        "shared_before": {
+          "u": "3951",
+          "v": "5252",
+          "key": "0"
+        },
+        "shared_after": {
+          "u": "658",
+          "v": "659",
+          "key": "0"
+        }
+      },
+      "quality": {
+        "gps_edge_overlap_with_prior": 0.286,
+        "gps_edge_overlap_with_regenerated": 0.571,
+        "mean_gps_to_matched_edge_m": 4.28
+      }
+    }
+  ]
+}

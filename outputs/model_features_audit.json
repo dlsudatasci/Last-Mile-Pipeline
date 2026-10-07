@@ -1,0 +1,91 @@
+{
+  "provenance": "OSM feature readiness only; no model training performed",
+  "corridor_graph": {
+    "nodes": 1368,
+    "edges": 3418
+  },
+  "feature_dimensions": {
+    "node": 13,
+    "edge_static": 19,
+    "edge_dynamic": 5,
+    "destination": 2
+  },
+  "feature_names": {
+    "node": [
+      "x_normalized",
+      "y_normalized",
+      "traffic_signal",
+      "street_count",
+      "commercial_hubs",
+      "service_hubs",
+      "financial_service",
+      "civic_facilities",
+      "educational_facilities",
+      "medical_facilities",
+      "driver_utility",
+      "religious",
+      "residential"
+    ],
+    "edge_static": [
+      "length_per_100m",
+      "reference_time_minutes",
+      "oneway",
+      "lanes_scaled",
+      "lanes_known",
+      "maxspeed_scaled",
+      "maxspeed_known",
+      "bridge",
+      "tunnel",
+      "access_restricted",
+      "highway_motorway_trunk",
+      "highway_primary",
+      "highway_secondary",
+      "highway_tertiary",
+      "highway_residential",
+      "highway_service",
+      "highway_unclassified",
+      "highway_living_street",
+      "highway_other"
+    ],
+    "edge_dynamic": [
+      "congestion_normalized",
+      "speed_ratio_to_reference",
+      "congestion_observed",
+      "speed_observed",
+      "traffic_age_scaled"
+    ],
+    "destination": [
+      "destination_dx",
+      "destination_dy"
+    ]
+  },
+  "candidate_pairs_fully_covered": 3,
+  "candidate_pairs_total": 3,
+  "traffic_state": "unknown snapshot with explicit observation mask and staleness flag",
+  "model_input_shapes": {
+    "node_features": [
+      1368,
+      13
+    ],
+    "edge_index": [
+      2,
+      3418
+    ],
+    "edge_static": [
+      3418,
+      19
+    ],
+    "temporal_edge_features": [
+      [
+        3418,
+        5
+      ]
+    ],
+    "destination_features": [
+      3418,
+      2
+    ]
+  },
+  "candidate_status": "review_required_not_training_ready",
+  "training_allowed": false
+}

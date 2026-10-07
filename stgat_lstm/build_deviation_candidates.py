@@ -288,9 +288,17 @@ def build_candidates(data_dir: Path, graphml_path: Path) -> dict:
 
     candidate_riders = {candidate["rider_group"] for candidate in candidates}
     candidate_rides = {candidate["ride_group"] for candidate in candidates}
+    manifest_path = data_dir / "manifest.json"
+    synthetic = False
+    if manifest_path.exists():
+        synthetic = bool(json.loads(manifest_path.read_text(encoding="utf-8")).get("synthetic"))
     document = {
         "schema_version": 1,
-        "provenance": "Official rider export plus supplied OSM graph",
+        "provenance": (
+            "Controlled synthetic export plus supplied OSM graph"
+            if synthetic else "Official rider export plus supplied OSM graph"
+        ),
+        "synthetic": synthetic,
         "status": "review_required_not_training_ready",
         "graph": {
             "source": str(graphml_path),

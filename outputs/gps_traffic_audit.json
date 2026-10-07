@@ -1,0 +1,59 @@
+{
+  "source": "rider_gps_motorcycle_probe_speeds",
+  "rides": 56,
+  "rides_with_matched_speed": 48,
+  "gps_points": 11435,
+  "speed_records": 6657,
+  "matched_edges": 494,
+  "invalid_or_orphan_points": 0,
+  "median_sampling_interval_s": 2.001,
+  "requested_sampling_interval_s": 2,
+  "skipped_segments": {
+    "gap_too_long": 119,
+    "implausible_speed": 3,
+    "unmatched_segment": 4600
+  },
+  "parameters": {
+    "match_radius_m": 60.0,
+    "max_gap_s": 20.0,
+    "max_speed_mps": 35.0,
+    "stationary_distance_m": 3.0
+  },
+  "records_preview": [
+    {
+      "timestamp_ms": 1784871768154,
+      "edge_id": "677|400|0",
+      "speed_mps": 0.5357867136058839,
+      "rider_group": "4d288d811955bb7d",
+      "ride_group": "7480d23061205c6c"
+    },
+    {
+      "timestamp_ms": 1784871771154,
+      "edge_id": "677|400|0",
+      "speed_mps": 0.0,
+      "rider_group": "4d288d811955bb7d",
+      "ride_group": "7480d23061205c6c"
+    },
+    {
+      "timestamp_ms": 1784871773154,
+      "edge_id": "677|400|0",
+      "speed_mps": 0.0,
+      "rider_group": "4d288d811955bb7d",
+      "ride_group": "7480d23061205c6c"
+    },
+    {
+      "timestamp_ms": 1784871775156,
+      "edge_id": "400|677|0",
+      "speed_mps": 1.9229128859084716,
+      "rider_group": "4d288d811955bb7d",
+      "ride_group": "7480d23061205c6c"
+    },
+    {
+      "timestamp_ms": 1784871777155,
+      "edge_id": "400|677|0",
+      "speed_mps": 2.383277820027009,
+      "rider_group": "4d288d811955bb7d",
+      "ride_group": "7480d23061205c6c"
+    }
+  ]
+}

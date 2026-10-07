@@ -6,6 +6,7 @@ import torch
 
 from graph_test_data import build_test_graph_data
 from stgat_lstm.model import DecisionPreferenceModel, PreferenceModel
+from stgat_lstm.train_model import PreparedDecision, _forward_batch
 
 
 class ModelTests(unittest.TestCase):
@@ -32,6 +33,21 @@ class ModelTests(unittest.TestCase):
         self.assertEqual(logits.shape, (len(self.data.edge_ids),))
         (costs.mean() + logits.mean()).backward()
         self.assertTrue(any(parameter.grad is not None for parameter in model.parameters()))
+
+    def test_disconnected_batch_matches_individual_forward_passes(self) -> None:
+        inputs = self.data.build_model_input("4")
+        examples = [
+            PreparedDecision(str(index), str(index), index % 2, ("2|4|0",),
+                             (("2|4|0", index % 2),), None, None, inputs)
+            for index in range(2)
+        ]
+        model = DecisionPreferenceModel(**self.data.model_configuration())
+        model.eval()
+        individual = [model(example.inputs) for example in examples]
+        batched = _forward_batch(model, examples)
+        for expected, actual in zip(individual, batched):
+            self.assertTrue(torch.allclose(expected[0], actual[0], atol=1e-6))
+            self.assertTrue(torch.allclose(expected[1], actual[1], atol=1e-6))
 
 
 if __name__ == "__main__":

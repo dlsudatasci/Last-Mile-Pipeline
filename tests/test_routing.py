@@ -28,7 +28,7 @@ class RoutingTests(unittest.TestCase):
             for edge_id in self.data.edge_ids
         ])
         model = Mock(return_value=(scores, torch.zeros(len(self.data.edge_ids))))
-        result = route_request(model, self.data, "1", "4")
+        result = route_request(model, self.data, "1", "4", max_detour_ratio=2.0)
         self.assertEqual(result["distance_baseline"]["edge_ids"], ["1|2|0", "2|4|0"])
         self.assertEqual(result["recommended_route"]["edge_ids"], ["1|2|0", "2|3|0", "3|4|0"])
         self.assertGreater(result["recommended_route"]["distance_m"], result["distance_baseline"]["distance_m"])
@@ -42,6 +42,26 @@ class RoutingTests(unittest.TestCase):
             route_request(model, self.data, "1", "1")
         with self.assertRaisesRegex(ValueError, "No routable path"):
             route_request(model, self.data, "4", "1")
+
+    def test_new_route_falls_back_when_learned_path_exceeds_detour_limit(self) -> None:
+        scores = torch.tensor([
+            1.0 if edge_id in ("1|2|0", "2|3|0", "3|4|0") else 100.0
+            for edge_id in self.data.edge_ids
+        ])
+        model = Mock(return_value=(scores, torch.zeros(len(self.data.edge_ids))))
+        result = route_request(model, self.data, "1", "4", max_detour_ratio=1.10)
+        self.assertTrue(result["detour_constraint"]["applied"])
+        self.assertEqual(result["recommended_route"]["edge_ids"], ["1|2|0", "2|4|0"])
+        self.assertEqual(
+            len(result["recommended_route"]["road_deviation_predictions"]),
+            len(result["recommended_route"]["edge_ids"]),
+        )
+        self.assertAlmostEqual(result["detour_constraint"]["max_detour_ratio"], 1.10)
+
+    def test_new_route_rejects_invalid_detour_limit(self) -> None:
+        model = Mock()
+        with self.assertRaisesRegex(ValueError, "detour ratio"):
+            route_request(model, self.data, "1", "4", max_detour_ratio=0.99)
 
     def test_coordinate_snapping_rejects_far_points(self) -> None:
         transform = Transformer.from_crs("EPSG:32651", "EPSG:4326", always_xy=True)

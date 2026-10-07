@@ -9,7 +9,8 @@ from unittest.mock import Mock, patch
 import torch
 
 from stgat_lstm.evaluate_model import (classification_metrics, rider_disjoint_folds,
-    temporal_evidence_report, latest_only_history, evaluate_rider_disjoint)
+    temporal_evidence_report, latest_only_history, evaluate_rider_disjoint,
+    validation_threshold)
 from stgat_lstm.train_model import PreparedDecision
 from stgat_lstm.model import ModelInput
 
@@ -62,6 +63,18 @@ class DecisionEvaluationTests(unittest.TestCase):
                 classification_metrics([{"label": 0, "probability_deviated": value}])
         with self.assertRaisesRegex(ValueError, "labels"):
             classification_metrics([{"label": 2, "probability_deviated": .5}])
+
+    def test_validation_threshold_separates_ordered_probabilities(self):
+        predictions = [
+            {"label": 0, "probability_deviated": 0.55},
+            {"label": 0, "probability_deviated": 0.60},
+            {"label": 1, "probability_deviated": 0.75},
+            {"label": 1, "probability_deviated": 0.80},
+        ]
+        threshold = validation_threshold(predictions)
+        self.assertGreater(threshold, 0.60)
+        self.assertLess(threshold, 0.75)
+        self.assertEqual(classification_metrics(predictions, threshold)["balanced_accuracy"], 1.0)
 
     def test_history_diagnostics_ignore_age_and_missingness_only_changes(self):
         examples = self.history_examples()

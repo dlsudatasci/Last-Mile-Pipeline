@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "source": "mapbox_directions_driving_traffic",
+  "requested_at": "2026-09-21T17:43:36.499406Z",
+  "route": {
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          120.982208,
+          14.556105
+        ],
+        [
+          120.982136,
+          14.556238
+        ],
+        [
+          120.982048,
+          14.556402
+        ],
+        [
+          120.982025,
+          14.556445
+        ],
+        [
+          120.981929,
+          14.556625
+        ],
+        [
+          120.981894,
+          14.556685
+        ],
+        [
+          120.981878,
+          14.556729
+        ],
+        [
+          120.982714,
+          14.557215
+        ],
+        [
+          120.982843,
+          14.557078
+        ],
+        [
+          120.982913,
+          14.556954
+        ]
+      ]
+    },
+    "distance": 219.479,
+    "duration": 43.704,
+    "weight": 725.331,
+    "weight_name": "auto",
+    "duration_typical": 40.011,
+    "weight_typical": 725.331,
+    "legs": [
+      {
+        "steps": [],
+        "summary": "Eduardo Makabenta Street, Pedro Bukaneg Street",
+        "distance": 219.479,
+        "duration": 43.704,
+        "weight": 725.331,
+        "duration_typical": 40.011,
+        "weight_typical": 725.331,
+        "admins": [
+          {
+            "iso_3166_1": "PH",
+            "iso_3166_1_alpha3": "PHL"
+          }
+        ],
+        "annotation": {
+          "duration": [
+            2.595,
+            3.22,
+            0.844,
+            3.53,
+            1.201,
+            0.813,
+            16.445,
+            5.714,
+            9.342
+          ],
+          "speed": [
+            6.4,
+            6.4,
+            6.4,
+            6.4,
+            6.4,
+            6.4,
+            6.4,
+            3.6,
+            1.7
+          ],
+          "congestion": [
+            "unknown",
+            "unknown",
+            "unknown",
+            "unknown",
+            "unknown",
+            "unknown",
+            "unknown",
+            "unknown",
+            "unknown"
+          ],
+          "congestion_numeric": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        "via_waypoints": []
+      }
+    ]
+  }
+}

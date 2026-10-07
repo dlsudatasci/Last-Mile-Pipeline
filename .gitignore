@@ -23,13 +23,6 @@ dist/
 Thumbs.db
 
 # Private rider data, generated reports, and model weights
-data/raw/
-data/private/
-data/real/
-outputs/
-*.pt
-*.pth
-*.ckpt
 
 # Temporary files
 *.log
@@ -39,7 +32,3 @@ outputs/
 
 # Local research notes and cloned reference repositories
 .review-references/
-*.md
-!/README.md
-!/docs/
-!/docs/*.md

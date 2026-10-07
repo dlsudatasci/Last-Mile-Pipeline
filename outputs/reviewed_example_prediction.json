@@ -1,0 +1,178 @@
+{
+  "example_key": "9d8b7bf677b875c5",
+  "suggested_route_deviation_probability": 0.9085473768460717,
+  "suggested_road_deviation_predictions": [
+    {
+      "position": 0,
+      "edge_id": "401|400|0",
+      "road_name": "Taft Avenue",
+      "from_node": "401",
+      "to_node": "400",
+      "is_decision_point": true,
+      "deviation_probability": 0.002577670617029071
+    },
+    {
+      "position": 1,
+      "edge_id": "400|678|0",
+      "road_name": "Taft Avenue",
+      "from_node": "400",
+      "to_node": "678",
+      "is_decision_point": true,
+      "deviation_probability": 0.002127304207533598
+    },
+    {
+      "position": 2,
+      "edge_id": "678|12971|0",
+      "road_name": "Taft Avenue",
+      "from_node": "678",
+      "to_node": "12971",
+      "is_decision_point": true,
+      "deviation_probability": 0.0012045192997902632
+    },
+    {
+      "position": 3,
+      "edge_id": "12971|12968|0",
+      "road_name": "Menlo Street",
+      "from_node": "12971",
+      "to_node": "12968",
+      "is_decision_point": true,
+      "deviation_probability": 0.6958101391792297
+    },
+    {
+      "position": 4,
+      "edge_id": "12968|12967|0",
+      "road_name": "Menlo Street",
+      "from_node": "12968",
+      "to_node": "12967",
+      "is_decision_point": true,
+      "deviation_probability": 0.6975729465484619
+    }
+  ],
+  "reviewed_decision_road": {
+    "position": 0,
+    "edge_id": "401|400|0",
+    "road_name": "Taft Avenue",
+    "from_node": "401",
+    "to_node": "400",
+    "is_decision_point": true,
+    "deviation_probability": 0.002577670617029071
+  },
+  "predicted_label": "followed",
+  "approved_label": "followed",
+  "suggested_path_preference_cost": 6.35816764831543,
+  "observed_path_preference_cost": 6.35816764831543,
+  "recommended_route": {
+    "edge_ids": [
+      "401|400|0",
+      "400|677|0",
+      "677|32304|0",
+      "32304|709|0",
+      "709|936|0",
+      "936|30534|0",
+      "30534|12967|0"
+    ],
+    "road_names": [
+      "Taft Avenue",
+      "Pablo Ocampo Street",
+      "Leveriza Street"
+    ],
+    "total_learned_preference_cost": 1.1937757581472397,
+    "road_deviation_predictions": [
+      {
+        "position": 0,
+        "edge_id": "401|400|0",
+        "road_name": "Taft Avenue",
+        "from_node": "401",
+        "to_node": "400",
+        "is_decision_point": true,
+        "deviation_probability": 0.002577670617029071
+      },
+      {
+        "position": 1,
+        "edge_id": "400|677|0",
+        "road_name": "Pablo Ocampo Street",
+        "from_node": "400",
+        "to_node": "677",
+        "is_decision_point": true,
+        "deviation_probability": 0.045972827821969986
+      },
+      {
+        "position": 2,
+        "edge_id": "677|32304|0",
+        "road_name": "Pablo Ocampo Street",
+        "from_node": "677",
+        "to_node": "32304",
+        "is_decision_point": true,
+        "deviation_probability": 0.000880909210536629
+      },
+      {
+        "position": 3,
+        "edge_id": "32304|709|0",
+        "road_name": "Pablo Ocampo Street",
+        "from_node": "32304",
+        "to_node": "709",
+        "is_decision_point": true,
+        "deviation_probability": 0.000883019354660064
+      },
+      {
+        "position": 4,
+        "edge_id": "709|936|0",
+        "road_name": "Pablo Ocampo Street",
+        "from_node": "709",
+        "to_node": "936",
+        "is_decision_point": true,
+        "deviation_probability": 0.0009453159291297197
+      },
+      {
+        "position": 5,
+        "edge_id": "936|30534|0",
+        "road_name": "Leveriza Street",
+        "from_node": "936",
+        "to_node": "30534",
+        "is_decision_point": true,
+        "deviation_probability": 0.0008596873958595097
+      },
+      {
+        "position": 6,
+        "edge_id": "30534|12967|0",
+        "road_name": "Leveriza Street",
+        "from_node": "30534",
+        "to_node": "12967",
+        "is_decision_point": true,
+        "deviation_probability": 0.0008082973654381931
+      }
+    ],
+    "route_deviation_probability": 0.05258994506723913
+  },
+  "traffic": "historical rider-GPS speed profile; target rider and ride excluded",
+  "traffic_history": {
+    "source": "historical_rider_gps_speed_profile",
+    "cutoff_ms": 1784946867266,
+    "steps": 6,
+    "interval_seconds": 300,
+    "profile_bin_seconds": 300,
+    "observed_edges_per_step": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "speed_records_per_step": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "source_rides": 0,
+    "source_riders": 0,
+    "excluded_riders": 1,
+    "excluded_rides": 1,
+    "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic",
+    "status": "historical_rider_gps"
+  },
+  "interpretation": "in-sample checkpoint reload demonstration, not held-out accuracy"
+}

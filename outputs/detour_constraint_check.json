@@ -1,0 +1,933 @@
+{
+  "origin_node_id": "400",
+  "destination_node_id": "6",
+  "recommended_route": {
+    "edge_ids": [
+      "400|677|0",
+      "677|32304|0",
+      "32304|709|0",
+      "709|936|0",
+      "936|30534|0",
+      "30534|12967|0",
+      "12967|12969|0",
+      "12969|12970|0",
+      "12970|12954|0",
+      "12954|5303|0",
+      "5303|12955|0",
+      "12955|28637|0",
+      "28637|35637|0",
+      "35637|35634|0",
+      "35634|6|0"
+    ],
+    "distance_m": 1320.5267498655376,
+    "road_names": [
+      "Pablo Ocampo Street",
+      "Leveriza Street",
+      "Gotamco Street",
+      "E. Rodriguez Street"
+    ],
+    "geometry": {
+      "type": "MultiLineString",
+      "coordinates": [
+        [
+          [
+            120.9952378906122,
+            14.562595410371378
+          ],
+          [
+            120.9950958,
+            14.5626023
+          ],
+          [
+            120.99501990000002,
+            14.562569999999997
+          ],
+          [
+            120.9948096,
+            14.562454
+          ],
+          [
+            120.99435360000001,
+            14.561757600000005
+          ]
+        ],
+        [
+          [
+            120.99435360000001,
+            14.561757600000005
+          ],
+          [
+            120.99410229999998,
+            14.561528800000001
+          ],
+          [
+            120.9941596000134,
+            14.561476450008872
+          ]
+        ],
+        [
+          [
+            120.9941596000134,
+            14.561476450008872
+          ],
+          [
+            120.99410229999998,
+            14.561528800000001
+          ],
+          [
+            120.9940337,
+            14.561467800000003
+          ],
+          [
+            120.9939538,
+            14.561401200000002
+          ],
+          [
+            120.9938419,
+            14.561325800000004
+          ],
+          [
+            120.9937307,
+            14.561270399999998
+          ],
+          [
+            120.99381133713109,
+            14.561230570051167
+          ]
+        ],
+        [
+          [
+            120.99381133713109,
+            14.561230570051167
+          ],
+          [
+            120.9937307,
+            14.561270399999998
+          ],
+          [
+            120.993475,
+            14.5612274
+          ],
+          [
+            120.9932503,
+            14.561182500000001
+          ],
+          [
+            120.9928588,
+            14.561092899999998
+          ],
+          [
+            120.99258791067642,
+            14.560978420064938
+          ]
+        ],
+        [
+          [
+            120.99258791067642,
+            14.560978420064938
+          ],
+          [
+            120.99264199999999,
+            14.560947099999996
+          ],
+          [
+            120.9926521,
+            14.560910799999997
+          ],
+          [
+            120.99277840000002,
+            14.560441399999997
+          ],
+          [
+            120.99278570000001,
+            14.5604143
+          ],
+          [
+            120.9928441,
+            14.560197100000002
+          ],
+          [
+            120.9928546,
+            14.560158200000004
+          ],
+          [
+            120.99287459999998,
+            14.560080699999997
+          ]
+        ],
+        [
+          [
+            120.99287459999998,
+            14.560080699999997
+          ],
+          [
+            120.9929656,
+            14.559729599999997
+          ]
+        ],
+        [
+          [
+            120.9929656,
+            14.559729599999997
+          ],
+          [
+            120.99302710000002,
+            14.559562400000003
+          ],
+          [
+            120.9931263,
+            14.5592673
+          ],
+          [
+            120.993189,
+            14.5590552
+          ],
+          [
+            120.99328619999999,
+            14.5587027
+          ]
+        ],
+        [
+          [
+            120.99328619999999,
+            14.5587027
+          ],
+          [
+            120.99332300000002,
+            14.558535399999998
+          ],
+          [
+            120.9933859,
+            14.558247899999996
+          ],
+          [
+            120.99343830000001,
+            14.558011500000001
+          ]
+        ],
+        [
+          [
+            120.99343830000001,
+            14.558011500000001
+          ],
+          [
+            120.9933154,
+            14.5579732
+          ],
+          [
+            120.9931612,
+            14.557925199999998
+          ],
+          [
+            120.99281980000002,
+            14.557822599999998
+          ],
+          [
+            120.99198049999998,
+            14.557566199999997
+          ]
+        ],
+        [
+          [
+            120.99198049999998,
+            14.557566199999997
+          ],
+          [
+            120.9906872,
+            14.557171099999998
+          ],
+          [
+            120.99070145000307,
+            14.557130300000846
+          ]
+        ],
+        [
+          [
+            120.99070145000307,
+            14.557130300000846
+          ],
+          [
+            120.9907157,
+            14.557089500000004
+          ],
+          [
+            120.9901243,
+            14.5568832
+          ]
+        ],
+        [
+          [
+            120.9901243,
+            14.5568832
+          ],
+          [
+            120.98979020000002,
+            14.5567664
+          ],
+          [
+            120.9897559,
+            14.5567544
+          ]
+        ],
+        [
+          [
+            120.9897559,
+            14.5567544
+          ],
+          [
+            120.98943710000002,
+            14.5566431
+          ]
+        ],
+        [
+          [
+            120.98943710000002,
+            14.5566431
+          ],
+          [
+            120.98913230000001,
+            14.556531699999997
+          ]
+        ],
+        [
+          [
+            120.98913230000001,
+            14.556531699999997
+          ],
+          [
+            120.9885085,
+            14.556318900000003
+          ],
+          [
+            120.98841164998287,
+            14.556285100018215
+          ]
+        ]
+      ]
+    },
+    "total_learned_preference_cost": 13.26997956354171,
+    "road_deviation_predictions": [
+      {
+        "position": 0,
+        "edge_id": "400|677|0",
+        "road_name": "Pablo Ocampo Street",
+        "from_node": "400",
+        "to_node": "677",
+        "is_decision_point": true,
+        "deviation_probability": 0.6016907095909119
+      },
+      {
+        "position": 1,
+        "edge_id": "677|32304|0",
+        "road_name": "Pablo Ocampo Street",
+        "from_node": "677",
+        "to_node": "32304",
+        "is_decision_point": true,
+        "deviation_probability": 0.0009231801959685981
+      },
+      {
+        "position": 2,
+        "edge_id": "32304|709|0",
+        "road_name": "Pablo Ocampo Street",
+        "from_node": "32304",
+        "to_node": "709",
+        "is_decision_point": true,
+        "deviation_probability": 0.0009257768979296088
+      },
+      {
+        "position": 3,
+        "edge_id": "709|936|0",
+        "road_name": "Pablo Ocampo Street",
+        "from_node": "709",
+        "to_node": "936",
+        "is_decision_point": true,
+        "deviation_probability": 0.0010154697811231017
+      },
+      {
+        "position": 4,
+        "edge_id": "936|30534|0",
+        "road_name": "Leveriza Street",
+        "from_node": "936",
+        "to_node": "30534",
+        "is_decision_point": true,
+        "deviation_probability": 0.0008892060141079128
+      },
+      {
+        "position": 5,
+        "edge_id": "30534|12967|0",
+        "road_name": "Leveriza Street",
+        "from_node": "30534",
+        "to_node": "12967",
+        "is_decision_point": true,
+        "deviation_probability": 0.0008273775456473231
+      },
+      {
+        "position": 6,
+        "edge_id": "12967|12969|0",
+        "road_name": "Leveriza Street",
+        "from_node": "12967",
+        "to_node": "12969",
+        "is_decision_point": true,
+        "deviation_probability": 0.0008617205894552171
+      },
+      {
+        "position": 7,
+        "edge_id": "12969|12970|0",
+        "road_name": "Leveriza Street",
+        "from_node": "12969",
+        "to_node": "12970",
+        "is_decision_point": true,
+        "deviation_probability": 0.0008309776894748211
+      },
+      {
+        "position": 8,
+        "edge_id": "12970|12954|0",
+        "road_name": "Gotamco Street",
+        "from_node": "12970",
+        "to_node": "12954",
+        "is_decision_point": true,
+        "deviation_probability": 0.6971259117126465
+      },
+      {
+        "position": 9,
+        "edge_id": "12954|5303|0",
+        "road_name": "Gotamco Street",
+        "from_node": "12954",
+        "to_node": "5303",
+        "is_decision_point": true,
+        "deviation_probability": 0.6968045234680176
+      },
+      {
+        "position": 10,
+        "edge_id": "5303|12955|0",
+        "road_name": "E. Rodriguez Street",
+        "from_node": "5303",
+        "to_node": "12955",
+        "is_decision_point": true,
+        "deviation_probability": 0.7004944682121277
+      },
+      {
+        "position": 11,
+        "edge_id": "12955|28637|0",
+        "road_name": "E. Rodriguez Street",
+        "from_node": "12955",
+        "to_node": "28637",
+        "is_decision_point": true,
+        "deviation_probability": 0.7015697360038757
+      },
+      {
+        "position": 12,
+        "edge_id": "28637|35637|0",
+        "road_name": "E. Rodriguez Street",
+        "from_node": "28637",
+        "to_node": "35637",
+        "is_decision_point": true,
+        "deviation_probability": 0.7026042342185974
+      },
+      {
+        "position": 13,
+        "edge_id": "35637|35634|0",
+        "road_name": "E. Rodriguez Street",
+        "from_node": "35637",
+        "to_node": "35634",
+        "is_decision_point": true,
+        "deviation_probability": 0.6994357109069824
+      },
+      {
+        "position": 14,
+        "edge_id": "35634|6|0",
+        "road_name": "E. Rodriguez Street",
+        "from_node": "35634",
+        "to_node": "6",
+        "is_decision_point": true,
+        "deviation_probability": 0.6953767538070679
+      }
+    ],
+    "route_deviation_probability": 0.9999115368656658
+  },
+  "distance_baseline": {
+    "edge_ids": [
+      "400|677|0",
+      "677|32304|0",
+      "32304|709|0",
+      "709|936|0",
+      "936|30534|0",
+      "30534|12967|0",
+      "12967|12969|0",
+      "12969|12970|0",
+      "12970|12954|0",
+      "12954|5303|0",
+      "5303|12955|0",
+      "12955|28637|0",
+      "28637|35637|0",
+      "35637|35634|0",
+      "35634|6|0"
+    ],
+    "distance_m": 1320.5267498655376,
+    "road_names": [
+      "Pablo Ocampo Street",
+      "Leveriza Street",
+      "Gotamco Street",
+      "E. Rodriguez Street"
+    ],
+    "geometry": {
+      "type": "MultiLineString",
+      "coordinates": [
+        [
+          [
+            120.9952378906122,
+            14.562595410371378
+          ],
+          [
+            120.9950958,
+            14.5626023
+          ],
+          [
+            120.99501990000002,
+            14.562569999999997
+          ],
+          [
+            120.9948096,
+            14.562454
+          ],
+          [
+            120.99435360000001,
+            14.561757600000005
+          ]
+        ],
+        [
+          [
+            120.99435360000001,
+            14.561757600000005
+          ],
+          [
+            120.99410229999998,
+            14.561528800000001
+          ],
+          [
+            120.9941596000134,
+            14.561476450008872
+          ]
+        ],
+        [
+          [
+            120.9941596000134,
+            14.561476450008872
+          ],
+          [
+            120.99410229999998,
+            14.561528800000001
+          ],
+          [
+            120.9940337,
+            14.561467800000003
+          ],
+          [
+            120.9939538,
+            14.561401200000002
+          ],
+          [
+            120.9938419,
+            14.561325800000004
+          ],
+          [
+            120.9937307,
+            14.561270399999998
+          ],
+          [
+            120.99381133713109,
+            14.561230570051167
+          ]
+        ],
+        [
+          [
+            120.99381133713109,
+            14.561230570051167
+          ],
+          [
+            120.9937307,
+            14.561270399999998
+          ],
+          [
+            120.993475,
+            14.5612274
+          ],
+          [
+            120.9932503,
+            14.561182500000001
+          ],
+          [
+            120.9928588,
+            14.561092899999998
+          ],
+          [
+            120.99258791067642,
+            14.560978420064938
+          ]
+        ],
+        [
+          [
+            120.99258791067642,
+            14.560978420064938
+          ],
+          [
+            120.99264199999999,
+            14.560947099999996
+          ],
+          [
+            120.9926521,
+            14.560910799999997
+          ],
+          [
+            120.99277840000002,
+            14.560441399999997
+          ],
+          [
+            120.99278570000001,
+            14.5604143
+          ],
+          [
+            120.9928441,
+            14.560197100000002
+          ],
+          [
+            120.9928546,
+            14.560158200000004
+          ],
+          [
+            120.99287459999998,
+            14.560080699999997
+          ]
+        ],
+        [
+          [
+            120.99287459999998,
+            14.560080699999997
+          ],
+          [
+            120.9929656,
+            14.559729599999997
+          ]
+        ],
+        [
+          [
+            120.9929656,
+            14.559729599999997
+          ],
+          [
+            120.99302710000002,
+            14.559562400000003
+          ],
+          [
+            120.9931263,
+            14.5592673
+          ],
+          [
+            120.993189,
+            14.5590552
+          ],
+          [
+            120.99328619999999,
+            14.5587027
+          ]
+        ],
+        [
+          [
+            120.99328619999999,
+            14.5587027
+          ],
+          [
+            120.99332300000002,
+            14.558535399999998
+          ],
+          [
+            120.9933859,
+            14.558247899999996
+          ],
+          [
+            120.99343830000001,
+            14.558011500000001
+          ]
+        ],
+        [
+          [
+            120.99343830000001,
+            14.558011500000001
+          ],
+          [
+            120.9933154,
+            14.5579732
+          ],
+          [
+            120.9931612,
+            14.557925199999998
+          ],
+          [
+            120.99281980000002,
+            14.557822599999998
+          ],
+          [
+            120.99198049999998,
+            14.557566199999997
+          ]
+        ],
+        [
+          [
+            120.99198049999998,
+            14.557566199999997
+          ],
+          [
+            120.9906872,
+            14.557171099999998
+          ],
+          [
+            120.99070145000307,
+            14.557130300000846
+          ]
+        ],
+        [
+          [
+            120.99070145000307,
+            14.557130300000846
+          ],
+          [
+            120.9907157,
+            14.557089500000004
+          ],
+          [
+            120.9901243,
+            14.5568832
+          ]
+        ],
+        [
+          [
+            120.9901243,
+            14.5568832
+          ],
+          [
+            120.98979020000002,
+            14.5567664
+          ],
+          [
+            120.9897559,
+            14.5567544
+          ]
+        ],
+        [
+          [
+            120.9897559,
+            14.5567544
+          ],
+          [
+            120.98943710000002,
+            14.5566431
+          ]
+        ],
+        [
+          [
+            120.98943710000002,
+            14.5566431
+          ],
+          [
+            120.98913230000001,
+            14.556531699999997
+          ]
+        ],
+        [
+          [
+            120.98913230000001,
+            14.556531699999997
+          ],
+          [
+            120.9885085,
+            14.556318900000003
+          ],
+          [
+            120.98841164998287,
+            14.556285100018215
+          ]
+        ]
+      ]
+    },
+    "road_deviation_predictions": [
+      {
+        "position": 0,
+        "edge_id": "400|677|0",
+        "road_name": "Pablo Ocampo Street",
+        "from_node": "400",
+        "to_node": "677",
+        "is_decision_point": true,
+        "deviation_probability": 0.6016907095909119
+      },
+      {
+        "position": 1,
+        "edge_id": "677|32304|0",
+        "road_name": "Pablo Ocampo Street",
+        "from_node": "677",
+        "to_node": "32304",
+        "is_decision_point": true,
+        "deviation_probability": 0.0009231801959685981
+      },
+      {
+        "position": 2,
+        "edge_id": "32304|709|0",
+        "road_name": "Pablo Ocampo Street",
+        "from_node": "32304",
+        "to_node": "709",
+        "is_decision_point": true,
+        "deviation_probability": 0.0009257768979296088
+      },
+      {
+        "position": 3,
+        "edge_id": "709|936|0",
+        "road_name": "Pablo Ocampo Street",
+        "from_node": "709",
+        "to_node": "936",
+        "is_decision_point": true,
+        "deviation_probability": 0.0010154697811231017
+      },
+      {
+        "position": 4,
+        "edge_id": "936|30534|0",
+        "road_name": "Leveriza Street",
+        "from_node": "936",
+        "to_node": "30534",
+        "is_decision_point": true,
+        "deviation_probability": 0.0008892060141079128
+      },
+      {
+        "position": 5,
+        "edge_id": "30534|12967|0",
+        "road_name": "Leveriza Street",
+        "from_node": "30534",
+        "to_node": "12967",
+        "is_decision_point": true,
+        "deviation_probability": 0.0008273775456473231
+      },
+      {
+        "position": 6,
+        "edge_id": "12967|12969|0",
+        "road_name": "Leveriza Street",
+        "from_node": "12967",
+        "to_node": "12969",
+        "is_decision_point": true,
+        "deviation_probability": 0.0008617205894552171
+      },
+      {
+        "position": 7,
+        "edge_id": "12969|12970|0",
+        "road_name": "Leveriza Street",
+        "from_node": "12969",
+        "to_node": "12970",
+        "is_decision_point": true,
+        "deviation_probability": 0.0008309776894748211
+      },
+      {
+        "position": 8,
+        "edge_id": "12970|12954|0",
+        "road_name": "Gotamco Street",
+        "from_node": "12970",
+        "to_node": "12954",
+        "is_decision_point": true,
+        "deviation_probability": 0.6971259117126465
+      },
+      {
+        "position": 9,
+        "edge_id": "12954|5303|0",
+        "road_name": "Gotamco Street",
+        "from_node": "12954",
+        "to_node": "5303",
+        "is_decision_point": true,
+        "deviation_probability": 0.6968045234680176
+      },
+      {
+        "position": 10,
+        "edge_id": "5303|12955|0",
+        "road_name": "E. Rodriguez Street",
+        "from_node": "5303",
+        "to_node": "12955",
+        "is_decision_point": true,
+        "deviation_probability": 0.7004944682121277
+      },
+      {
+        "position": 11,
+        "edge_id": "12955|28637|0",
+        "road_name": "E. Rodriguez Street",
+        "from_node": "12955",
+        "to_node": "28637",
+        "is_decision_point": true,
+        "deviation_probability": 0.7015697360038757
+      },
+      {
+        "position": 12,
+        "edge_id": "28637|35637|0",
+        "road_name": "E. Rodriguez Street",
+        "from_node": "28637",
+        "to_node": "35637",
+        "is_decision_point": true,
+        "deviation_probability": 0.7026042342185974
+      },
+      {
+        "position": 13,
+        "edge_id": "35637|35634|0",
+        "road_name": "E. Rodriguez Street",
+        "from_node": "35637",
+        "to_node": "35634",
+        "is_decision_point": true,
+        "deviation_probability": 0.6994357109069824
+      },
+      {
+        "position": 14,
+        "edge_id": "35634|6|0",
+        "road_name": "E. Rodriguez Street",
+        "from_node": "35634",
+        "to_node": "6",
+        "is_decision_point": true,
+        "deviation_probability": 0.6953767538070679
+      }
+    ],
+    "route_deviation_probability": 0.9999115368656658
+  },
+  "detour_constraint": {
+    "max_detour_ratio": 1.3,
+    "maximum_distance_m": 1716.684774825199,
+    "unconstrained_learned_distance_m": 4061.183895078829,
+    "applied": true,
+    "action": "distance_baseline_fallback"
+  },
+  "elapsed_seconds": 0.11155660008080304,
+  "interpretation": "Prototype preference route. Each probability refers to rejecting that suggested road when its source is reached; non-branching roads are marked not applicable. Probabilities are uncalibrated until adequate held-out rider data are collected.",
+  "traffic": {
+    "source": "historical_rider_gps_speed_profile",
+    "cutoff_ms": 1791281120947,
+    "steps": 6,
+    "interval_seconds": 300,
+    "profile_bin_seconds": 300,
+    "observed_edges_per_step": [
+      0,
+      0,
+      0,
+      0,
+      1,
+      22
+    ],
+    "speed_records_per_step": [
+      0,
+      0,
+      0,
+      0,
+      1,
+      121
+    ],
+    "source_rides": 1,
+    "source_riders": 1,
+    "excluded_riders": 0,
+    "excluded_rides": 0,
+    "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic",
+    "status": "historical_rider_gps"
+  },
+  "snap_distance_m": {
+    "origin": 0.0,
+    "destination": 0.0
+  }
+}

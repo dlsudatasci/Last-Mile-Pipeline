@@ -1,0 +1,83 @@
+{
+  "provenance": "Aggregate read-only audit of the official exported rider data",
+  "counts": {
+    "rides": 56,
+    "riders_in_rides": 12,
+    "generated_routes": 170,
+    "reported_deviations": 34,
+    "deviation_responses": 34,
+    "gps_points": 11435,
+    "post_trip_questionnaires": 44
+  },
+  "route_references": {
+    "refer_to_route_generated_after_event": 34,
+    "refer_to_route_available_at_event": 0,
+    "missing_or_other_ride": 0,
+    "single_latest_prior_route_by_timestamp": 34,
+    "ambiguous_latest_prior_route_timestamps": 0
+  },
+  "quality": {
+    "gps_intervals_over_60_seconds": 39,
+    "deviations_without_response": 0,
+    "deviations_with_multiple_responses": 0,
+    "orphan_route_ride_ids": 0,
+    "orphan_point_ride_ids": 0,
+    "orphan_questionnaire_ride_ids": 0,
+    "rides_missing_post_trip_questionnaire": 12,
+    "missing_gps_accuracy_column": true
+  },
+  "label_yield": {
+    "rides_with_reported_deviation": 20,
+    "rides_without_reported_deviation": 36,
+    "deviation_primary_reason_counts": {
+      "Avoid Intersection": 6,
+      "Other": 1,
+      "Personal Stop (Meal, Restroom, Break, Refueling, etc.)": 1,
+      "Road Blockage/Hazard (Flood, Accident, Poor road condition)": 1,
+      "Shortcut/Faster Route/Personal Preference/Familiar Road": 16,
+      "Traffic Congestion": 9
+    },
+    "rides_with_post_trip_questionnaire": 44,
+    "post_trip_questionnaire_completion_percent": 78.6,
+    "arrival_counts": {
+      "Early": 17,
+      "Late": 2,
+      "On time": 25
+    },
+    "eta_rating_counts": {
+      "1": 1,
+      "2": 2,
+      "3": 5,
+      "4": 22,
+      "5": 14
+    },
+    "stress_rating_counts": {
+      "1": 35,
+      "2": 2,
+      "3": 4,
+      "4": 1,
+      "5": 2
+    }
+  },
+  "geometry_screen": {
+    "route_polylines_parseable": 170,
+    "route_polyline_parse_errors": 0,
+    "invalid_gps_points": 0,
+    "deviations_with_parseable_event_location": 34,
+    "deviations_with_parseable_prior_route": 34,
+    "deviations_with_parseable_referenced_route": 34,
+    "deviations_with_gps_within_60s_before_and_after": 34,
+    "prior_and_referenced_routes_end_within_100m": 34,
+    "median_event_distance_to_prior_route_m": 113.4,
+    "median_event_distance_to_referenced_route_m": 3.3,
+    "median_prior_to_referenced_destination_distance_m": 0.0,
+    "excluded_reason_counts": {
+      "Other": 1,
+      "Personal Stop (Meal, Restroom, Break, Refueling, etc.)": 1
+    },
+    "pre_map_match_candidates": 32,
+    "candidate_definition": "Unique prior and referenced polylines; endpoints within 100 m; GPS within 60 s before and after; survey reason is neither missing, Other, nor Personal Stop. These remain candidates, not labels."
+  },
+  "routing_preference_examples_ready": 0,
+  "next_data_step": "Validate prior-route geometry against GPS, then map-match GPS and suggestions to the same directed graph before labeling rider choices."
+}

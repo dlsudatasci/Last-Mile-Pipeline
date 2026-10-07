@@ -1,0 +1,29 @@
+{
+  "provenance": "Aggregate HMM sequence screen of real exports; candidates are not training labels",
+  "parameters": {
+    "taft_corridor_m": 500,
+    "post_event_window_s": 120,
+    "candidate_search_radius_m": 80.0,
+    "max_candidates_per_observation": 4,
+    "gps_sigma_m": 15.0,
+    "transition_beta_m": 50.0,
+    "max_speed_mps": 45.0,
+    "saved_route_sample_limit": 20
+  },
+  "screen": {
+    "eligible_intentional_events_in_taft_corridor": 17,
+    "successful_gps_prior_new_match_triplets": 11,
+    "distinct_prior_and_new_route_pairs": 11,
+    "new_route_overlap_better_than_prior": 8,
+    "sequence_review_candidates": 8,
+    "median_gps_observation_distance_m": 4.31,
+    "median_prior_new_edge_jaccard": 0.4,
+    "median_gps_edge_overlap_with_prior": 0.167,
+    "median_gps_edge_overlap_with_new": 1.0,
+    "failure_counts": {
+      "no_feasible_directed_transition": 6
+    }
+  },
+  "routing_preference_examples_ready": 0,
+  "review_requirement": "Inspect each candidate's divergence/rejoin edges, confirm a common origin-destination subpath, and exclude later reroutes or implausible matches before creating rider-choice pairs."
+}

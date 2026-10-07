@@ -13,9 +13,9 @@ Open http://127.0.0.1:8765. Choose two road points and generate a route. Explain
 
 Show `predict_route.py:route_request` for the model-to-search connection and `dashboard.py:DashboardApplication.route` for the interactive request. New endpoints do not require rider labels. The shared model has no rider-specific profile embedding. Turn restrictions are not represented, so this is a research routing prototype.
 
-To explain traffic, show `mapbox_traffic.py:TrafficArchive.sequence` and `train_model.py:prepare_real`: saved, timestamped API responses are converted into directed-edge features for six past slots. Request and receipt times both precede each slot. Null congestion and uncovered edges remain explicitly unknown. The collector runs independently of the app; training reads saved files rather than querying current traffic for historical rides. See RUNBOOK sections 12–13 for full commands.
+To explain traffic, show `gps_traffic.py:GPSTrafficArchive.profile_sequence` and `train_model.py:attach_gps_traffic`: consecutive app GPS fixes are direction-matched to OSM edges and converted into motorcycle speed observations for six historical slots. Only observations before the decision are allowed, and the target ride or held-out riders are excluded. Uncovered roads remain explicitly unknown. Mapbox code remains optional compatibility code and is not the main thesis traffic source.
 
-The current training report is `outputs\training_report.json`: 100 epochs on 28 road-choice labels reconstructed from eight approved real examples, loss 1.996 to 0.129, 27/28 training road labels and 3/3 training preference rankings. Historical traffic is marked unknown because later Mapbox captures cannot describe earlier rides. This tests software connectivity and fit to the small training set; it is not evidence that LSTM improves accuracy. The separate held-out-rider report remains the relevant generalization evidence.
+The current training report is `outputs\training_report.json`: 100 epochs on 28 road-choice labels reconstructed from eight approved real examples, loss 1.998 to 0.728, 19/28 training road labels at threshold 0.5, and 3/3 training preference rankings. Six historical GPS-derived frames are now supplied per decision, but coverage is sparse and uneven. This tests software connectivity and fit to the small training set; it is not evidence that LSTM improves accuracy. The separate held-out-rider report remains the relevant generalization evidence.
 
 The official export snapshot contains 56 rides from 12 riders, 170 generated-route records, 34 deviations with 34 deviation responses, 11,435 GPS points, and 44 post-trip questionnaires. Only 17 rides remain fully inside the provisional Taft corridor, and strict reconstruction yields five followed examples plus three deviation examples. The supplied OSM graph contains 36,375 nodes and 104,019 directed edges; all graph nodes have a matching feature row and all three deviation paths are covered by the extracted model graph.
 
@@ -23,11 +23,11 @@ The official export snapshot contains 56 rides from 12 riders, 170 generated-rou
 
 Current evaluation explanation: "We hold out one entire rider at a time, train on the other riders, and pool the unseen-rider predictions. Balanced accuracy is our proposed primary metric because it weights followed and deviated classes equally. We also report class-specific precision, recall and F1, macro-F1, average precision, ROC-AUC, Brier score, log loss, and the confusion counts. Preference-ranking accuracy checks whether the model gives the observed deviation path a lower cost than the rejected suggestion. These are different from training accuracy."
 
-For the LSTM question: "We compare spatial GATv2, full-history GATv2-LSTM, and a control with the same LSTM architecture and sequence length but only its latest snapshot repeated. The control helps separate historical information from model capacity. Our current real examples lack observed temporal traffic variation, so they cannot prove LSTM adds value. We will run the controlled experiment with contemporaneous archives and report the outcome even if history does not help." Run `python -m stgat_lstm evaluate` with `--temporal-ablation`; full commands and limitations are in RUNBOOK section 8.
+For the LSTM question: "We compare spatial GATv2, full-history GATv2-LSTM, and a control with the same LSTM architecture and sequence length but only its latest snapshot repeated. The control helps separate historical information from model capacity. Only one current real example has changing observed history, and none has changing observations on its suggested path, so the real evaluation cannot prove that history adds value. In the controlled hotspot test, full history also does not beat latest-only because the injected target is a spatial road preference rather than a traffic-dependent choice." Run the real evaluation with `--temporal-ablation`; the synthetic fixed-split command is in RUNBOOK section 10.
 
 Turn restrictions are outside the agreed study scope. Describe the routes as demonstrations of learned preference costs over the directed OSM graph, not a complete navigation service.
 
-The updated forty-epoch pilot evaluation (28 road decisions from eight examples, six held-out-rider folds, seed 17) reports GATv2 balanced accuracy 0.300, deviation F1 0.000, ROC-AUC 0.000; GATv2-LSTM balanced accuracy 0.307, deviation F1 0.091, ROC-AUC 0.093. Both rank two of three held-out preference pairs correctly. These results do not demonstrate superiority or reliable generalization. No decision has observed historical traffic variation, so a temporal LSTM benefit cannot be established. The report is `outputs\rider_holdout_evaluation.json`. Do not replace these held-out results with the much higher in-sample training scores.
+The updated forty-epoch pilot evaluation (28 road decisions from eight examples, six held-out-rider folds, seed 17) reports GATv2 balanced accuracy 0.300, deviation F1 0.000, and ROC-AUC 0.000. Full-history ST-GAT-LSTM reaches 0.387 balanced accuracy, 0.111 deviation F1, and 0.293 ROC-AUC; its matched latest-only LSTM reaches 0.553, 0.211, and 0.293. Both LSTM variants rank all three held-out preference pairs correctly. Historical variation is present, but the full history does not outperform latest-only, so these results do not establish an LSTM benefit, superiority, or reliable generalization. The report is `outputs\rider_holdout_evaluation.json`. Do not replace held-out results with in-sample training scores.
 
 The presentation should demonstrate one complete path through the project:
 
@@ -163,6 +163,7 @@ Run these before presenting when you want to show that the input data and graph 
 python -m stgat_lstm audit-data "data\real\rider_exports"
 python -m stgat_lstm audit-network "data\real\rider_exports" "data\real\osm\metro_manila_processed.graphml" --node-features "data\real\osm\road_node_features.csv"
 python -m stgat_lstm audit-matching "data\real\rider_exports" "data\real\osm\metro_manila_processed.graphml"
+python -m stgat_lstm gps-traffic "data\real\rider_exports" "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" --output outputs\gps_traffic_audit.json
 ```
 
 These commands audit and summarize the inputs. They do not train the model.
@@ -278,15 +279,14 @@ edge_deviation_logits = self.edge_deviation_head(
 
 **Be precise about the current LSTM status:**
 
-> The LSTM is implemented and its weights are present in the trained checkpoint. The historical rider cases have no matching archived traffic sequence, so each currently uses one unknown traffic snapshot. We have completed the temporal architecture and interface, but have not yet demonstrated meaningful temporal traffic learning on real sequences.
+> The LSTM is implemented and its weights are present in the trained checkpoint. Consecutive rider GPS fixes are converted into direction-matched motorcycle speed records, then aggregated into six pre-decision time-of-day graph frames. Target rides, future records, and held-out riders are excluded. The current coverage is too sparse to claim that temporal history improves prediction.
 
-**Optional Mapbox command for this section:**
+**GPS traffic command for this section:**
 
-Use this only to demonstrate the traffic-input interface. It collects a current observation; it does not create historical traffic for old rider decisions.
+This derives the LSTM input source from the same rider export:
 
 ```bat
-set MAPBOX_ACCESS_TOKEN=YOUR_TOKEN_HERE
-python -m stgat_lstm traffic "120.9790,14.5800;120.9980,14.5400" --output outputs\traffic\current_traffic.json
+python -m stgat_lstm gps-traffic "data\real\rider_exports" "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" --output outputs\gps_traffic_audit.json
 ```
 
 ---
@@ -296,7 +296,7 @@ python -m stgat_lstm traffic "120.9790,14.5800;120.9980,14.5400" --output output
 The command is:
 
 ```bat
-python -m stgat_lstm train real "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --epochs 100 --output outputs\gatv2_lstm_checkpoint.pt
+python -m stgat_lstm train real "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --gps-traffic-data "data\real\rider_exports" --history-steps 6 --history-interval-seconds 300 --gps-profile-bin-seconds 300 --epochs 100 --batch-size 8 --output outputs\gatv2_lstm_checkpoint.pt
 ```
 
 What it does:
@@ -310,13 +310,22 @@ What it does:
 Show this short loss block from `stgat_lstm/train_model.py`:
 
 ```python
-classification = F.binary_cross_entropy_with_logits(
+classification_loss = F.binary_cross_entropy_with_logits(
     torch.cat(classification_logits),
     torch.cat(classification_labels),
     pos_weight=positive_weight,
 )
-loss = classification + preference_weight * ranking_loss
+loss = classification_loss
+if ranking_losses:
+    loss += preference_weight * torch.stack(ranking_losses).mean()
+loss.backward()
+torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=5.0)
+optimizer.step()
 ```
+
+The examples are shuffled each epoch, and every mini-batch performs one Adam
+update. Graphs in a batch remain disconnected, so riders cannot exchange graph
+messages.
 
 The path-ranking loss asks for:
 
@@ -341,14 +350,14 @@ Current development-training result:
 | Approved decisions | 8 |
 | Riders | 6 |
 | Epochs | 100 |
-| Initial loss | 1.1521 |
-| Final loss | 0.5998 |
-| Training road labels fit | 27/28 |
+| Initial loss | 1.9979 |
+| Final loss | 0.7283 |
+| Training road labels fit | 19/28 at threshold 0.5 |
 | Preference pairs correctly ranked | 3/3 |
 
 **Say:**
 
-> The falling loss and successful checkpoint reload show that the implementation trains end to end. Seven of eight is training-set fit, not 87.5 percent test accuracy. A generalization claim requires a rider-disjoint held-out evaluation.
+> The falling loss, 19 of 28 training road labels, all three training route rankings, and successful checkpoint reload show that the implementation trains end to end. These are training-set checks, not test accuracy. Generalization must be judged from the rider-disjoint evaluation.
 
 ---
 
@@ -357,7 +366,7 @@ Current development-training result:
 This is the main live inference demo:
 
 ```bat
-python -m stgat_lstm predict outputs\gatv2_lstm_checkpoint.pt "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --example-key 9d8b7bf677b875c5
+python -m stgat_lstm predict outputs\gatv2_lstm_checkpoint.pt "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --example-key 9d8b7bf677b875c5 --output outputs\reviewed_example_prediction.json
 ```
 
 `predict_route.py` does not train or change the checkpoint. It:
@@ -479,19 +488,20 @@ Completed at this checkpoint:
 - classification and path-ranking training
 - checkpoint save and reload
 - learned-cost Dijkstra routing
-- Mapbox traffic collection and OSM-edge alignment interface
+- GPS-derived historical motorcycle speed profiles on directed OSM roads
+- controlled, separated synthetic Taft hotspot capacity experiment
 
 Still required for research validation:
 
 - substantially more Taft decisions and riders
-- timestamped traffic sequences aligned before decision time
+- denser GPS-speed coverage around more rider decisions
 - rider-disjoint train/validation/test splits
 - GCN, GAT, GATv2 without LSTM, and STGAT-LSTM comparisons
 - held-out classification, ranking, calibration, and route-quality metrics
 
 **Closing statement:**
 
-> The engineering milestone is complete: reviewed rider decisions can train a GATv2-LSTM checkpoint and that checkpoint can drive prediction and routing. The next milestone is data collection and controlled evaluation, especially temporal traffic sequences and unseen riders.
+> The engineering milestone is complete: reviewed rider decisions and GPS-derived histories can train a GATv2-LSTM checkpoint, and that checkpoint can drive prediction and routing. The remaining research milestone is more independent rider choices, denser historical coverage, and unseen-rider evaluation.
 
 **Command for this section:**
 
@@ -515,7 +525,7 @@ Use this answer when the panel wants implementation detail:
 
 If asked why 16, explain that it is a tunable hidden width. The learned node projection uses a `[16, 13]` weight matrix, so it converts each 13-feature row into 16 learned values. Fifteen, 17, or 18 would also run; 16 is a compact baseline with 7,458 total parameters and must eventually be compared on rider-disjoint validation data.
 >
-> We then combine the source-node embedding, destination-node embedding, static edge features, dynamic edge features, and destination features to create one embedding per directed road edge. For a sequence of traffic snapshots, an LSTM processes the embedding of each edge over time and keeps the final state. The current historical examples use one explicitly unknown snapshot because matching historical Mapbox traffic was not archived.
+> We then combine the source-node embedding, destination-node embedding, static edge features, dynamic edge features, and destination features to create one embedding per directed road edge. For six historical GPS-speed snapshots, an LSTM processes each edge over time and keeps the final state. Missing road-time observations remain explicitly unknown through masks.
 >
 > The shared edge embeddings feed two heads. The road-deviation head produces one logit per edge, and the cost head produces one positive preference cost per edge with `softplus`. During training, binary cross-entropy selects reviewed branching roads and teaches whether each was followed or rejected. For an intentional deviation, a ranking loss also teaches the observed path to have lower total learned cost than the rejected suggested path.
 >
@@ -631,7 +641,7 @@ main
 
 | Function | Role |
 |---|---|
-| `main` | Parses the checkpoint and graph paths, rebuilds the graph input, selects an approved example, optionally loads Mapbox snapshots, reloads the saved weights, computes probability and path costs, runs learned-cost routing, saves the JSON result, and prints a short summary. |
+| `main` | Parses the checkpoint and graph paths, rebuilds the graph input, selects an approved example or new endpoints, optionally builds GPS history, reloads the saved weights, computes probability and path costs, runs learned-cost routing, saves the JSON result, and prints a short summary. |
 
 The prediction call chain is:
 
@@ -678,7 +688,7 @@ python -m stgat_lstm build-deviations "data\real\rider_exports" "data\real\osm\m
 python -m stgat_lstm build-decisions "data\real\rider_exports" "data\real\osm\metro_manila_processed.graphml" --deviation-candidates outputs\deviation_candidates.json --output outputs\decision_candidates.json --geojson-output outputs\decision_candidates.geojson
 python -m stgat_lstm review-map outputs\decision_candidates.geojson --output outputs\candidate_review_map.html
 python -m stgat_lstm review auto outputs\decision_candidates.json --output outputs\approved_training_examples.json
-python -m stgat_lstm train real "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --epochs 100 --output outputs\gatv2_lstm_checkpoint.pt
+python -m stgat_lstm train real "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --gps-traffic-data "data\real\rider_exports" --epochs 100 --batch-size 8 --output outputs\gatv2_lstm_checkpoint.pt
 ```
 
 No decision JSON needs to be edited. Do not train until the validated artifact reports `status: "approved_for_training"`. The optional review map can still be opened for explanation or quality-control sampling.
@@ -691,12 +701,14 @@ No decision JSON needs to be edited. Do not train until the validated artifact r
 | `python -m stgat_lstm audit-data` | Checks that exported CSVs can be joined and summarizes missing, invalid, future, or ambiguous records | `rides_clean.csv`, `generated_routes_clean.csv`, `deviations_clean.csv`, `deviationResponses_clean.csv`, `map_points_clean.csv` | `rider_data_audit.json` plus a terminal summary |
 | `python -m stgat_lstm audit-network` | Checks graph coverage, edge distances, node-feature joins, and Taft corridor coverage | Clean export directory, OSM `.graphml`, POI/node feature CSV | `road_network_audit.json` plus a terminal summary |
 | `python -m stgat_lstm audit-matching` | Tests whether rider GPS sequences can be matched to connected directed graph edges | Clean export directory and OSM `.graphml` | `map_matching_audit.json` plus a terminal summary |
+| `python -m stgat_lstm gps-traffic` | Converts consecutive GPS fixes into direction-matched historical motorcycle speed records | Clean export directory, OSM `.graphml`, node feature CSV | `gps_traffic_audit.json` plus a terminal summary |
 | `python -m stgat_lstm build-deviations` | Finds strict deviation/rejoin route pairs for validation | Clean rider CSVs and OSM `.graphml` | `deviation_candidates.json` and optional GeoJSON |
 | `python -m stgat_lstm build-decisions` | Adds verified follow cases and imports strict deviation candidates into one decision artifact | Clean rider CSVs, OSM `.graphml`, and `deviation_candidates.json` | `decision_candidates.json` and `decision_candidates.geojson` |
 | `python -m stgat_lstm review-map` | Turns candidate GeoJSON into a browser map | Candidate GeoJSON | `candidate_review_map.html` |
 | `python -m stgat_lstm review auto` | Applies versioned survey, GPS and path rules and records approval/rejection reasons | Candidate JSON | `approved_training_examples.json` |
 | `python -m stgat_lstm train real` | Trains classification and path-preference heads | OSM `.graphml`, node feature CSV, approved decision JSON | `gatv2_lstm_checkpoint.pt` and `training_report.json` |
-| `python -m stgat_lstm predict` | Reloads the checkpoint, scores one decision, and routes with learned edge costs | Checkpoint, OSM `.graphml`, node feature CSV, approved decision JSON, optional Mapbox JSON | `route_prediction.json` plus a terminal summary |
+| `python -m stgat_lstm predict` | Reloads the checkpoint, scores one decision, and routes with learned edge costs | Checkpoint, OSM `.graphml`, node feature CSV, optional approved decision JSON and GPS history directory | `route_prediction.json` plus a terminal summary |
+| `python -m stgat_lstm synthetic-hotspot` | Builds a separated controlled capacity experiment | OSM graph, node features, approved real path templates | Six app-shaped CSVs, manifest, and synthetic approved artifact |
 
 The audit commands do not create labels. Candidate generation also does not directly train the model. The sequence is deliberately:
 
@@ -720,16 +732,15 @@ The current real-data outputs are internally consistent:
 
 | Artifact | Current status | Interpretation |
 |---|---|---|
-| `decision_candidates.json` | `review_required_not_training_ready` | Expected before manual approval; this file must not be trained directly |
-| `candidate_review_decisions.json` | Edited review decisions | Human approval choices corresponding to the candidate file |
+| `decision_candidates.json` | `review_required_not_training_ready` | Expected before automatic validation; this file must not be trained directly |
 | `approved_training_examples.json` | `approved_for_training`; 8 approved | Correct training input: 5 followed, 3 deviated, 6 riders |
 | `gatv2_lstm_checkpoint.pt` | Present; `stgat_lstm` configuration | Trained checkpoint containing GATv2, LSTM, road-deviation head, and cost head weights |
-| `training_report.json` | Present; 100 epochs | Training report: loss fell from 1.9962 to 0.1294; 27/28 in-sample road classifications and 3/3 preference rankings |
+| `training_report.json` | Present; 100 epochs | GPS-history training report: loss fell from 1.9979 to 0.7283; 19/28 in-sample road classifications and 3/3 preference rankings |
 | `candidate_review_map.html` | Present | Browser evidence used to inspect candidate paths before approval |
 
 The current inference demonstration lists a deviation probability for each branching road, derives an optional route summary, compares it with the approved example, and returns the learned route. This is an in-sample checkpoint-reload demonstration, not held-out accuracy.
 
-The traffic experiment files are also usable for interface testing. `outputs/traffic/experiments/taft_test_02.json` has speed observations but no numeric congestion observations; `outputs/traffic/experiments/taft_test_03.json` has speed on 110 segments and numeric congestion on 12 segments. Missing congestion is represented with an availability mask. The real historical checkpoint still reports traffic as unknown because current Mapbox observations were not attached retrospectively to old rides.
+`outputs/gps_traffic_audit.json` records 6,657 usable speed segments on 494 directed roads from 48 rides, with a median interval of 2.001 seconds. Raw GPS coordinates are not written to this audit. Missing road-time coverage is represented by availability masks rather than interpreted as free flow.
 
 ### Before presenting
 
@@ -758,18 +769,31 @@ type outputs\training_report.json
 Run checkpoint inference and routing:
 
 ```bat
-python -m stgat_lstm predict outputs\gatv2_lstm_checkpoint.pt "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --example-key 9d8b7bf677b875c5
+python -m stgat_lstm predict outputs\gatv2_lstm_checkpoint.pt "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --example-key 9d8b7bf677b875c5 --gps-traffic-data "data\real\rider_exports" --output outputs\reviewed_example_prediction.json
 ```
 
-### Optional current-traffic interface demonstration
+### Controlled hotspot demonstration
 
-Only use this to show that the program can accept a current Mapbox observation:
+Use the synthetic experiment only to show that a known repeated road pattern is learnable:
 
 ```bat
-python -m stgat_lstm predict outputs\gatv2_lstm_checkpoint.pt "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --example-key 9d8b7bf677b875c5 --traffic-observation outputs\traffic\current_traffic.json
+python -m stgat_lstm synthetic-hotspot "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --output-dir outputs\synthetic_hotspot
 ```
 
-State that current traffic is an interface demonstration and is not the historical traffic for that old rider decision.
+State that its labels are injected ground truth and are not evidence about real riders.
+
+The current controlled result uses 48 training, 24 validation, and 24 test
+examples with rider-disjoint splits. The 96 labeled decisions cover two approved
+in-corridor deviation patterns and five approved follow-route structures; all
+survive reconstruction and automatic validation. Separate probe rides provide
+slow and free-flow GPS histories without becoming decision labels. Thresholds
+are selected only from validation riders. On unseen synthetic riders, GATv2 and
+full-history ST-GAT-LSTM reach 1.000 deviation F1, AP, ROC-AUC, balanced
+accuracy, and preference-ranking accuracy. The latest-only control reaches
+0.923 F1 and 0.983 balanced accuracy, so the constructed full history adds a
+small measurable benefit. Explain that this proves implementation and temporal
+capacity under injected conditions; the official rider evaluation remains the
+only evidence about real behavior.
 
 ---
 
@@ -785,7 +809,7 @@ Open only these tabs before presenting:
 | `stgat_lstm/predict_route.py` | learned-cost Dijkstra |
 | `outputs/training_report.json` | readable checkpoint result |
 
-Keep `map_matching.py`, `graph_data.py`, and `mapbox_traffic.py` available as backup files if the panel asks about label construction, graph features, or traffic.
+Keep `map_matching.py`, `graph_data.py`, `gps_traffic.py`, and `synthetic_hotspot.py` available as backup files if the panel asks about label construction, graph features, traffic, or the capacity check.
 
 ---
 
@@ -869,7 +893,7 @@ References:
 | Input | Long historical sensor sequences over many locations | Directed OSM graph, road/POI features, suggested path, and traffic available at the decision time |
 | Output | Future speed, flow, occupancy, or congestion | Per-road deviation probabilities and learned edge-preference costs |
 | Spatial modeling | Often adaptive, long-range, or delay-aware dependencies | Two local GATv2 layers over the directed OSM topology |
-| Temporal modeling | Usually many historical time steps and multi-step forecasting | LSTM interface for graph snapshots; current historical cases have one unknown snapshot |
+| Temporal modeling | Usually many historical time steps and multi-step forecasting | Per-edge LSTM over six historical rider-GPS speed-profile snapshots |
 | Decision layer | Usually stops at forecasting | Uses positive learned costs with Dijkstra to produce a connected route |
 | Data scale | Large sensor benchmarks with held-out time periods | 28 road labels from eight examples and six riders; held-out results are preliminary |
 
@@ -899,7 +923,7 @@ References:
 
 ### Is the LSTM implemented or pending?
 
-> It is implemented, trained as part of the checkpoint, and can accept a sequence of graph snapshots. Meaningful real temporal learning is pending because the old decisions do not have aligned historical traffic sequences.
+> It is implemented and trained as part of the checkpoint. It processes six historical graph snapshots derived from direction-matched rider GPS speeds. Current coverage is sparse, so the temporal ablation and more rider choices are still needed before claiming that the LSTM improves prediction.
 
 ### Does the model optimize travel time?
 
@@ -919,7 +943,7 @@ References:
 
 ### How is data leakage prevented?
 
-> The later observed path and survey response construct the target label but are excluded from inference features. Only information available by the decision timestamp may enter the model. Current traffic is not attached to an old ride and presented as historical traffic.
+> The later observed path and survey response construct the target label but are excluded from inference features. GPS speed profiles use only records before the decision and exclude the target ride. Held-out evaluation also excludes all records from the test rider.
 
 ### Why use Dijkstra after the neural network?
 

@@ -1,0 +1,1107 @@
+{
+  "schema_version": 1,
+  "provenance": "Official rider export plus supplied OSM graph",
+  "status": "approved_for_training",
+  "prediction_target": "probability that the rider rejects each suggested outgoing road at an eligible local branch",
+  "decision_point": "before traversing a suggested road from a node with multiple accessible successors",
+  "graph": {
+    "source": "data\\real\\osm\\metro_manila_processed.graphml",
+    "sha256": "b3e3b09db14dd6f0d75eba6e08faba6400cb870149f3994327089d278b35260b",
+    "crs": "EPSG:32651"
+  },
+  "source_sha256": {
+    "rides_clean.csv": "33d2880d1208617e6da5afc3957a94b89ddcc985cc67ff9a98394b5777d22ae6",
+    "generated_routes_clean.csv": "2716152a887c7f0c81a4eb87305e7e5d8547993f09d40a308484517f20b6b50e",
+    "deviations_clean.csv": "2cdd7fb0d8d21fb63d576cc57009e56dcbf3d41946e582b1ae4e4b62df39aa85",
+    "deviationResponses_clean.csv": "13294637de04a856a3daa86d08dbb377975a37da723846aff1ad37fb2117db1d",
+    "map_points_clean.csv": "6a5b11f00eb58ea21113dfc0923c1a51b6098cdae0c928ff32e0e0fdfe4febd6"
+  },
+  "deviation_candidates_sha256": "43679d08491dafd6cc30f36f06d86b860cc58ba77d35e52ca598e4c1a1572c28",
+  "rules": {
+    "taft_corridor_m": 500,
+    "minimum_taft_gps_fraction": 0.9,
+    "minimum_follow_observed_agreement": 0.8,
+    "minimum_follow_edge_jaccard": 0.7,
+    "excluded_deviation_reasons": [
+      "Other",
+      "Personal Stop (Meal, Restroom, Break, Refueling, etc.)"
+    ],
+    "observed_gps_and_surveys_are_label_evidence_only": true
+  },
+  "summary": {
+    "source_rides": 56,
+    "candidate_examples": 8,
+    "candidate_riders": 6,
+    "label_counts": {
+      "deviated": 3,
+      "followed": 5
+    },
+    "failure_counts": {
+      "map_match_failure": 1,
+      "no_feasible_directed_transition": 4,
+      "outside_taft_study_corridor": 38,
+      "unreported_route_disagreement": 8
+    }
+  },
+  "examples": [
+    {
+      "status": "approved",
+      "example_key": "9d8b7bf677b875c5",
+      "ride_group": "8c039daec7d685fe",
+      "rider_group": "5c2fb47efe64dea3",
+      "decision_timestamp_ms": 1784946867266,
+      "target": {
+        "label": "followed",
+        "value": 0,
+        "basis": "no logged deviation and GPS follows the suggestion through a branching node"
+      },
+      "common_od": {
+        "origin_node_id": "401",
+        "destination_node_id": "12967"
+      },
+      "suggested_path": {
+        "edges": [
+          {
+            "u": "401",
+            "v": "400",
+            "key": "0"
+          },
+          {
+            "u": "400",
+            "v": "678",
+            "key": "0"
+          },
+          {
+            "u": "678",
+            "v": "12971",
+            "key": "0"
+          },
+          {
+            "u": "12971",
+            "v": "12968",
+            "key": "0"
+          },
+          {
+            "u": "12968",
+            "v": "12967",
+            "key": "0"
+          }
+        ],
+        "length_m": 844.5,
+        "road_names": [
+          "Taft Avenue",
+          "Menlo Street"
+        ]
+      },
+      "observed_path_label_evidence": {
+        "edges": [
+          {
+            "u": "401",
+            "v": "400",
+            "key": "0"
+          },
+          {
+            "u": "400",
+            "v": "678",
+            "key": "0"
+          },
+          {
+            "u": "678",
+            "v": "12971",
+            "key": "0"
+          },
+          {
+            "u": "12971",
+            "v": "12968",
+            "key": "0"
+          },
+          {
+            "u": "12968",
+            "v": "12967",
+            "key": "0"
+          }
+        ],
+        "length_m": 844.5,
+        "road_names": [
+          "Taft Avenue",
+          "Menlo Street"
+        ]
+      },
+      "survey_evidence": {
+        "reported_deviation_count": 0,
+        "intentional_deviation_count": 0,
+        "missing_response_count": 0,
+        "primary_reasons": []
+      },
+      "quality": {
+        "observed_edge_agreement": 1.0,
+        "suggested_edge_coverage": 0.786,
+        "edge_jaccard": 0.786,
+        "gps_mean_match_distance_m": 6.25,
+        "gps_max_match_distance_m": 15.7,
+        "taft_gps_fraction": 1.0,
+        "sampled_gps_points": 60
+      },
+      "feature_boundary": {
+        "allowed_at_inference": [
+          "suggested_path",
+          "decision_timestamp_ms",
+          "rider_group_or_generalized_rider_history",
+          "static_osm_features",
+          "traffic_available_by_decision_timestamp"
+        ],
+        "label_only_never_input": [
+          "observed_path_label_evidence",
+          "survey_evidence"
+        ]
+      },
+      "review_note": "automatic: no deviation report and GPS follows the suggested branch"
+    },
+    {
+      "status": "approved",
+      "example_key": "fe40c13cde670e01",
+      "ride_group": "ec15db2f81d71a0c",
+      "rider_group": "5c2fb47efe64dea3",
+      "decision_timestamp_ms": 1784956537871,
+      "target": {
+        "label": "followed",
+        "value": 0,
+        "basis": "no logged deviation and GPS follows the suggestion through a branching node"
+      },
+      "common_od": {
+        "origin_node_id": "17075",
+        "destination_node_id": "150"
+      },
+      "suggested_path": {
+        "edges": [
+          {
+            "u": "17075",
+            "v": "4102",
+            "key": "0"
+          },
+          {
+            "u": "4102",
+            "v": "4101",
+            "key": "0"
+          },
+          {
+            "u": "4101",
+            "v": "4099",
+            "key": "0"
+          },
+          {
+            "u": "4099",
+            "v": "149",
+            "key": "0"
+          },
+          {
+            "u": "149",
+            "v": "150",
+            "key": "0"
+          }
+        ],
+        "length_m": 336.0,
+        "road_names": [
+          "San Andres Street",
+          "Leon Guinto Street",
+          "Quirino Avenue",
+          "Taft Avenue"
+        ]
+      },
+      "observed_path_label_evidence": {
+        "edges": [
+          {
+            "u": "17075",
+            "v": "4102",
+            "key": "0"
+          },
+          {
+            "u": "4102",
+            "v": "4101",
+            "key": "0"
+          },
+          {
+            "u": "4101",
+            "v": "4099",
+            "key": "0"
+          },
+          {
+            "u": "4099",
+            "v": "149",
+            "key": "0"
+          },
+          {
+            "u": "149",
+            "v": "150",
+            "key": "0"
+          }
+        ],
+        "length_m": 336.0,
+        "road_names": [
+          "San Andres Street",
+          "Leon Guinto Street",
+          "Quirino Avenue",
+          "Taft Avenue"
+        ]
+      },
+      "survey_evidence": {
+        "reported_deviation_count": 0,
+        "intentional_deviation_count": 0,
+        "missing_response_count": 0,
+        "primary_reasons": []
+      },
+      "quality": {
+        "observed_edge_agreement": 1.0,
+        "suggested_edge_coverage": 1.0,
+        "edge_jaccard": 1.0,
+        "gps_mean_match_distance_m": 10.68,
+        "gps_max_match_distance_m": 37.57,
+        "taft_gps_fraction": 1.0,
+        "sampled_gps_points": 60
+      },
+      "feature_boundary": {
+        "allowed_at_inference": [
+          "suggested_path",
+          "decision_timestamp_ms",
+          "rider_group_or_generalized_rider_history",
+          "static_osm_features",
+          "traffic_available_by_decision_timestamp"
+        ],
+        "label_only_never_input": [
+          "observed_path_label_evidence",
+          "survey_evidence"
+        ]
+      },
+      "review_note": "automatic: no deviation report and GPS follows the suggested branch"
+    },
+    {
+      "status": "approved",
+      "example_key": "f26b013dda58e426",
+      "ride_group": "0398386e2fc60b2a",
+      "rider_group": "0895da366a666181",
+      "decision_timestamp_ms": 1785070262334,
+      "target": {
+        "label": "followed",
+        "value": 0,
+        "basis": "no logged deviation and GPS follows the suggestion through a branching node"
+      },
+      "common_od": {
+        "origin_node_id": "401",
+        "destination_node_id": "31470"
+      },
+      "suggested_path": {
+        "edges": [
+          {
+            "u": "401",
+            "v": "12255",
+            "key": "0"
+          },
+          {
+            "u": "12255",
+            "v": "13183",
+            "key": "0"
+          },
+          {
+            "u": "13183",
+            "v": "13184",
+            "key": "0"
+          },
+          {
+            "u": "13184",
+            "v": "31469",
+            "key": "0"
+          },
+          {
+            "u": "31469",
+            "v": "31470",
+            "key": "0"
+          }
+        ],
+        "length_m": 483.7,
+        "road_names": [
+          "Taft Avenue",
+          "Dagonoy Street",
+          "Leon Guinto Street"
+        ]
+      },
+      "observed_path_label_evidence": {
+        "edges": [
+          {
+            "u": "401",
+            "v": "12255",
+            "key": "0"
+          },
+          {
+            "u": "12255",
+            "v": "13183",
+            "key": "0"
+          },
+          {
+            "u": "13183",
+            "v": "13184",
+            "key": "0"
+          },
+          {
+            "u": "13184",
+            "v": "31469",
+            "key": "0"
+          },
+          {
+            "u": "31469",
+            "v": "31470",
+            "key": "0"
+          }
+        ],
+        "length_m": 483.7,
+        "road_names": [
+          "Taft Avenue",
+          "Dagonoy Street",
+          "Leon Guinto Street"
+        ]
+      },
+      "survey_evidence": {
+        "reported_deviation_count": 0,
+        "intentional_deviation_count": 0,
+        "missing_response_count": 0,
+        "primary_reasons": []
+      },
+      "quality": {
+        "observed_edge_agreement": 0.938,
+        "suggested_edge_coverage": 1.0,
+        "edge_jaccard": 0.938,
+        "gps_mean_match_distance_m": 3.27,
+        "gps_max_match_distance_m": 17.83,
+        "taft_gps_fraction": 1.0,
+        "sampled_gps_points": 60
+      },
+      "feature_boundary": {
+        "allowed_at_inference": [
+          "suggested_path",
+          "decision_timestamp_ms",
+          "rider_group_or_generalized_rider_history",
+          "static_osm_features",
+          "traffic_available_by_decision_timestamp"
+        ],
+        "label_only_never_input": [
+          "observed_path_label_evidence",
+          "survey_evidence"
+        ]
+      },
+      "review_note": "automatic: no deviation report and GPS follows the suggested branch"
+    },
+    {
+      "status": "approved",
+      "example_key": "cf736fccb501412b",
+      "ride_group": "f26ebcb3bd43b94f",
+      "rider_group": "4d288d811955bb7d",
+      "decision_timestamp_ms": 1784872275275,
+      "target": {
+        "label": "followed",
+        "value": 0,
+        "basis": "no logged deviation and GPS follows the suggestion through a branching node"
+      },
+      "common_od": {
+        "origin_node_id": "12972",
+        "destination_node_id": "709"
+      },
+      "suggested_path": {
+        "edges": [
+          {
+            "u": "12972",
+            "v": "12971",
+            "key": "0"
+          },
+          {
+            "u": "12971",
+            "v": "12968",
+            "key": "0"
+          },
+          {
+            "u": "12968",
+            "v": "709",
+            "key": "0"
+          },
+          {
+            "u": "709",
+            "v": "32304",
+            "key": "0"
+          },
+          {
+            "u": "32304",
+            "v": "709",
+            "key": "0"
+          }
+        ],
+        "length_m": 593.8,
+        "road_names": [
+          "Taft Avenue",
+          "Menlo Street",
+          "Donada Street",
+          "Pablo Ocampo Street"
+        ]
+      },
+      "observed_path_label_evidence": {
+        "edges": [
+          {
+            "u": "12972",
+            "v": "12971",
+            "key": "0"
+          },
+          {
+            "u": "12971",
+            "v": "12968",
+            "key": "0"
+          },
+          {
+            "u": "12968",
+            "v": "709",
+            "key": "0"
+          },
+          {
+            "u": "709",
+            "v": "32304",
+            "key": "0"
+          },
+          {
+            "u": "32304",
+            "v": "709",
+            "key": "0"
+          }
+        ],
+        "length_m": 593.8,
+        "road_names": [
+          "Taft Avenue",
+          "Menlo Street",
+          "Donada Street",
+          "Pablo Ocampo Street"
+        ]
+      },
+      "survey_evidence": {
+        "reported_deviation_count": 0,
+        "intentional_deviation_count": 0,
+        "missing_response_count": 0,
+        "primary_reasons": []
+      },
+      "quality": {
+        "observed_edge_agreement": 1.0,
+        "suggested_edge_coverage": 0.889,
+        "edge_jaccard": 0.889,
+        "gps_mean_match_distance_m": 3.46,
+        "gps_max_match_distance_m": 11.61,
+        "taft_gps_fraction": 1.0,
+        "sampled_gps_points": 60
+      },
+      "feature_boundary": {
+        "allowed_at_inference": [
+          "suggested_path",
+          "decision_timestamp_ms",
+          "rider_group_or_generalized_rider_history",
+          "static_osm_features",
+          "traffic_available_by_decision_timestamp"
+        ],
+        "label_only_never_input": [
+          "observed_path_label_evidence",
+          "survey_evidence"
+        ]
+      },
+      "review_note": "automatic: no deviation report and GPS follows the suggested branch"
+    },
+    {
+      "status": "approved",
+      "example_key": "1dbf260f252a39b0",
+      "ride_group": "7b641046110b8a47",
+      "rider_group": "5c2fb47efe64dea3",
+      "decision_timestamp_ms": 1784950234241,
+      "target": {
+        "label": "followed",
+        "value": 0,
+        "basis": "no logged deviation and GPS follows the suggestion through a branching node"
+      },
+      "common_od": {
+        "origin_node_id": "12981",
+        "destination_node_id": "12974"
+      },
+      "suggested_path": {
+        "edges": [
+          {
+            "u": "12981",
+            "v": "12980",
+            "key": "0"
+          },
+          {
+            "u": "12980",
+            "v": "12979",
+            "key": "0"
+          },
+          {
+            "u": "12979",
+            "v": "12978",
+            "key": "0"
+          },
+          {
+            "u": "12978",
+            "v": "12976",
+            "key": "0"
+          },
+          {
+            "u": "12976",
+            "v": "12974",
+            "key": "0"
+          }
+        ],
+        "length_m": 590.1,
+        "road_names": [
+          "Dominga Street"
+        ]
+      },
+      "observed_path_label_evidence": {
+        "edges": [
+          {
+            "u": "12981",
+            "v": "12980",
+            "key": "0"
+          },
+          {
+            "u": "12980",
+            "v": "12979",
+            "key": "0"
+          },
+          {
+            "u": "12979",
+            "v": "12978",
+            "key": "0"
+          },
+          {
+            "u": "12978",
+            "v": "12976",
+            "key": "0"
+          },
+          {
+            "u": "12976",
+            "v": "12974",
+            "key": "0"
+          }
+        ],
+        "length_m": 590.1,
+        "road_names": [
+          "Dominga Street"
+        ]
+      },
+      "survey_evidence": {
+        "reported_deviation_count": 0,
+        "intentional_deviation_count": 0,
+        "missing_response_count": 0,
+        "primary_reasons": []
+      },
+      "quality": {
+        "observed_edge_agreement": 1.0,
+        "suggested_edge_coverage": 1.0,
+        "edge_jaccard": 1.0,
+        "gps_mean_match_distance_m": 3.78,
+        "gps_max_match_distance_m": 10.02,
+        "taft_gps_fraction": 1.0,
+        "sampled_gps_points": 60
+      },
+      "feature_boundary": {
+        "allowed_at_inference": [
+          "suggested_path",
+          "decision_timestamp_ms",
+          "rider_group_or_generalized_rider_history",
+          "static_osm_features",
+          "traffic_available_by_decision_timestamp"
+        ],
+        "label_only_never_input": [
+          "observed_path_label_evidence",
+          "survey_evidence"
+        ]
+      },
+      "review_note": "automatic: no deviation report and GPS follows the suggested branch"
+    },
+    {
+      "status": "approved",
+      "example_key": "11930c364eaa39de",
+      "ride_group": "34bb3505367170c8",
+      "rider_group": "65e4a975a046cab1",
+      "decision_timestamp_ms": 1785152472973,
+      "target": {
+        "label": "deviated",
+        "value": 1,
+        "basis": "intentional surveyed deviation with a GPS-supported divergence and rejoin"
+      },
+      "common_od": {
+        "origin_node_id": "400",
+        "destination_node_id": "6"
+      },
+      "suggested_path": {
+        "edges": [
+          {
+            "u": "400",
+            "v": "401",
+            "key": "0"
+          },
+          {
+            "u": "401",
+            "v": "12255",
+            "key": "0"
+          },
+          {
+            "u": "12255",
+            "v": "401",
+            "key": "0"
+          },
+          {
+            "u": "401",
+            "v": "400",
+            "key": "0"
+          },
+          {
+            "u": "400",
+            "v": "677",
+            "key": "0"
+          },
+          {
+            "u": "677",
+            "v": "32304",
+            "key": "0"
+          },
+          {
+            "u": "32304",
+            "v": "709",
+            "key": "0"
+          },
+          {
+            "u": "709",
+            "v": "936",
+            "key": "0"
+          },
+          {
+            "u": "936",
+            "v": "619",
+            "key": "0"
+          },
+          {
+            "u": "619",
+            "v": "618",
+            "key": "0"
+          },
+          {
+            "u": "618",
+            "v": "8",
+            "key": "0"
+          },
+          {
+            "u": "8",
+            "v": "13195",
+            "key": "0"
+          },
+          {
+            "u": "13195",
+            "v": "7",
+            "key": "0"
+          },
+          {
+            "u": "7",
+            "v": "4007",
+            "key": "0"
+          },
+          {
+            "u": "4007",
+            "v": "6",
+            "key": "0"
+          }
+        ],
+        "length_m": 2220.3,
+        "road_names": [
+          "Taft Avenue",
+          "Pablo Ocampo Street",
+          "Roxas Boulevard Service Road"
+        ]
+      },
+      "observed_path_label_evidence": {
+        "edges": [
+          {
+            "u": "400",
+            "v": "678",
+            "key": "0"
+          },
+          {
+            "u": "678",
+            "v": "12971",
+            "key": "0"
+          },
+          {
+            "u": "12971",
+            "v": "12968",
+            "key": "0"
+          },
+          {
+            "u": "12968",
+            "v": "12967",
+            "key": "0"
+          },
+          {
+            "u": "12967",
+            "v": "12969",
+            "key": "0"
+          },
+          {
+            "u": "12969",
+            "v": "12970",
+            "key": "0"
+          },
+          {
+            "u": "12970",
+            "v": "12954",
+            "key": "0"
+          },
+          {
+            "u": "12954",
+            "v": "5303",
+            "key": "0"
+          },
+          {
+            "u": "5303",
+            "v": "12955",
+            "key": "0"
+          },
+          {
+            "u": "12955",
+            "v": "28637",
+            "key": "0"
+          },
+          {
+            "u": "28637",
+            "v": "35637",
+            "key": "0"
+          },
+          {
+            "u": "35637",
+            "v": "35634",
+            "key": "0"
+          },
+          {
+            "u": "35634",
+            "v": "6",
+            "key": "0"
+          }
+        ],
+        "length_m": 1391.7,
+        "road_names": [
+          "Taft Avenue",
+          "Menlo Street",
+          "Leveriza Street",
+          "Gotamco Street",
+          "E. Rodriguez Street"
+        ]
+      },
+      "survey_evidence": {
+        "primary_reason": "Shortcut/Faster Route/Personal Preference/Familiar Road",
+        "traffic_severity": null,
+        "deviate_again": "Often"
+      },
+      "quality": {
+        "gps_edge_overlap_with_prior": 0.133,
+        "gps_edge_overlap_with_regenerated": 0.733,
+        "mean_gps_to_matched_edge_m": 4.85
+      },
+      "feature_boundary": {
+        "allowed_at_inference": [
+          "suggested_path",
+          "decision_timestamp_ms",
+          "rider_group_or_generalized_rider_history",
+          "static_osm_features",
+          "traffic_available_by_decision_timestamp"
+        ],
+        "label_only_never_input": [
+          "observed_path_label_evidence",
+          "survey_evidence"
+        ]
+      },
+      "review_note": "automatic: intentional shortcut/faster route/personal preference/familiar road with GPS-supported divergence and rejoin"
+    },
+    {
+      "status": "approved",
+      "example_key": "33fc9d0edd61ebaa",
+      "ride_group": "499920bd8a3ee26c",
+      "rider_group": "d6e652b7ac86909a",
+      "decision_timestamp_ms": 1784907881417,
+      "target": {
+        "label": "deviated",
+        "value": 1,
+        "basis": "intentional surveyed deviation with a GPS-supported divergence and rejoin"
+      },
+      "common_od": {
+        "origin_node_id": "644",
+        "destination_node_id": "8883"
+      },
+      "suggested_path": {
+        "edges": [
+          {
+            "u": "644",
+            "v": "10951",
+            "key": "0"
+          },
+          {
+            "u": "10951",
+            "v": "10952",
+            "key": "0"
+          },
+          {
+            "u": "10952",
+            "v": "12721",
+            "key": "0"
+          },
+          {
+            "u": "12721",
+            "v": "5251",
+            "key": "0"
+          },
+          {
+            "u": "5251",
+            "v": "5254",
+            "key": "0"
+          },
+          {
+            "u": "5254",
+            "v": "8886",
+            "key": "0"
+          },
+          {
+            "u": "8886",
+            "v": "3952",
+            "key": "0"
+          },
+          {
+            "u": "3952",
+            "v": "8883",
+            "key": "0"
+          }
+        ],
+        "length_m": 324.2,
+        "road_names": [
+          "A. Roxas Street",
+          "Dian Street"
+        ]
+      },
+      "observed_path_label_evidence": {
+        "edges": [
+          {
+            "u": "644",
+            "v": "1792",
+            "key": "0"
+          },
+          {
+            "u": "1792",
+            "v": "1795",
+            "key": "0"
+          },
+          {
+            "u": "1795",
+            "v": "8879",
+            "key": "0"
+          },
+          {
+            "u": "8879",
+            "v": "8882",
+            "key": "0"
+          },
+          {
+            "u": "8882",
+            "v": "12709",
+            "key": "0"
+          },
+          {
+            "u": "12709",
+            "v": "12708",
+            "key": "0"
+          },
+          {
+            "u": "12708",
+            "v": "8887",
+            "key": "0"
+          },
+          {
+            "u": "8887",
+            "v": "8883",
+            "key": "0"
+          }
+        ],
+        "length_m": 444.9,
+        "road_names": [
+          "Arellano Avenue",
+          "Zobel Roxas Street"
+        ]
+      },
+      "survey_evidence": {
+        "primary_reason": "Road Blockage/Hazard (Flood, Accident, Poor road condition)",
+        "traffic_severity": null,
+        "deviate_again": "Always"
+      },
+      "quality": {
+        "gps_edge_overlap_with_prior": 0.333,
+        "gps_edge_overlap_with_regenerated": 0.75,
+        "mean_gps_to_matched_edge_m": 4.65
+      },
+      "feature_boundary": {
+        "allowed_at_inference": [
+          "suggested_path",
+          "decision_timestamp_ms",
+          "rider_group_or_generalized_rider_history",
+          "static_osm_features",
+          "traffic_available_by_decision_timestamp"
+        ],
+        "label_only_never_input": [
+          "observed_path_label_evidence",
+          "survey_evidence"
+        ]
+      },
+      "review_note": "automatic: intentional road blockage/hazard (flood, accident, poor road condition) with GPS-supported divergence and rejoin"
+    },
+    {
+      "status": "approved",
+      "example_key": "2222bc21d470f3b9",
+      "ride_group": "c88053a8bf97841d",
+      "rider_group": "3fe3e2506088e487",
+      "decision_timestamp_ms": 1785487223415,
+      "target": {
+        "label": "deviated",
+        "value": 1,
+        "basis": "intentional surveyed deviation with a GPS-supported divergence and rejoin"
+      },
+      "common_od": {
+        "origin_node_id": "5252",
+        "destination_node_id": "658"
+      },
+      "suggested_path": {
+        "edges": [
+          {
+            "u": "5252",
+            "v": "5253",
+            "key": "0"
+          },
+          {
+            "u": "5253",
+            "v": "3947",
+            "key": "0"
+          },
+          {
+            "u": "3947",
+            "v": "5256",
+            "key": "0"
+          },
+          {
+            "u": "5256",
+            "v": "3968",
+            "key": "0"
+          },
+          {
+            "u": "3968",
+            "v": "5244",
+            "key": "0"
+          },
+          {
+            "u": "5244",
+            "v": "660",
+            "key": "0"
+          },
+          {
+            "u": "660",
+            "v": "658",
+            "key": "0"
+          }
+        ],
+        "length_m": 315.6,
+        "road_names": [
+          "Conchu Street",
+          "A. Estrada Street"
+        ]
+      },
+      "observed_path_label_evidence": {
+        "edges": [
+          {
+            "u": "5252",
+            "v": "5250",
+            "key": "0"
+          },
+          {
+            "u": "5250",
+            "v": "690",
+            "key": "0"
+          },
+          {
+            "u": "690",
+            "v": "692",
+            "key": "0"
+          },
+          {
+            "u": "692",
+            "v": "642",
+            "key": "0"
+          },
+          {
+            "u": "642",
+            "v": "643",
+            "key": "0"
+          },
+          {
+            "u": "643",
+            "v": "13189",
+            "key": "0"
+          },
+          {
+            "u": "13189",
+            "v": "704",
+            "key": "0"
+          },
+          {
+            "u": "704",
+            "v": "658",
+            "key": "0"
+          }
+        ],
+        "length_m": 386.9,
+        "road_names": [
+          "Pablo Ocampo Street",
+          "Arellano Avenue"
+        ]
+      },
+      "survey_evidence": {
+        "primary_reason": "Avoid Intersection",
+        "traffic_severity": "4 = Heavy",
+        "deviate_again": "Sometimes"
+      },
+      "quality": {
+        "gps_edge_overlap_with_prior": 0.286,
+        "gps_edge_overlap_with_regenerated": 0.571,
+        "mean_gps_to_matched_edge_m": 4.28
+      },
+      "feature_boundary": {
+        "allowed_at_inference": [
+          "suggested_path",
+          "decision_timestamp_ms",
+          "rider_group_or_generalized_rider_history",
+          "static_osm_features",
+          "traffic_available_by_decision_timestamp"
+        ],
+        "label_only_never_input": [
+          "observed_path_label_evidence",
+          "survey_evidence"
+        ]
+      },
+      "review_note": "automatic: intentional avoid intersection with GPS-supported divergence and rejoin"
+    }
+  ],
+  "review": {
+    "candidate_artifact_sha256": "09e64db9b88cc64c72ab53659066598a95cad0dff98f570f56b80279f479a9d8",
+    "approved": 8,
+    "rejected": 0,
+    "method": "automatic survey, GPS, directed-path and common-endpoint validation",
+    "rules_version": 1,
+    "decision_counts": {
+      "automatic: no deviation report and GPS follows the suggested branch": 5,
+      "automatic: intentional shortcut/faster route/personal preference/familiar road with GPS-supported divergence and rejoin": 1,
+      "automatic: intentional road blockage/hazard (flood, accident, poor road condition) with GPS-supported divergence and rejoin": 1,
+      "automatic: intentional avoid intersection with GPS-supported divergence and rejoin": 1
+    }
+  }
+}

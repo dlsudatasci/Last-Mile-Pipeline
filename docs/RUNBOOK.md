@@ -1,45 +1,20 @@
-# STGAT-LSTM command runbook (Windows cmd)
+# STGAT-LSTM runbook for Windows cmd
 
-> The commands below use the current unified interface. Run `python -m stgat_lstm --help` to list every command.
+This is the start-to-finish procedure for a new project run. Run every command
+from the repository root. The saved JSON files are the detailed records; the
+terminal prints a shorter summary.
 
-## Start the local routing prototype
-
-If your environment and `outputs\gatv2_lstm_checkpoint.pt` already exist, run from this project folder:
-
-```bat
-call .venv\Scripts\activate.bat
-python -m stgat_lstm dashboard
-```
-
-Open **http://127.0.0.1:8765**. Click a start and destination on the supplied OSM road network, then **Generate route**. Green uses learned edge costs; blue shows the shortest-distance comparison. Scroll to zoom and drag to pan. Stop the server with Ctrl+C. No Mapbox token or internet tiles are needed for this view.
-
-To request current Mapbox traffic whenever **Generate route** is pressed, set the token and start the dashboard with live traffic:
-
-```bat
-set MAPBOX_ACCESS_TOKEN=pk.your_new_token_here
-python -m stgat_lstm dashboard --live-traffic --traffic-archive outputs\traffic_archive
-```
-
-The token stays in the terminal environment and is not written to an output file. Each request is saved in the archive, so later requests can use recent observations as an LSTM history.
-
-The default checkpoint is trained only from the approved official rider-export dataset.
-
-Run commands from:
+## 1. Create and activate the environment
 
 ```bat
 cd /d C:\Users\Vince\Downloads\THESIS_APP\T3-NEW-MODEL\STGAT-LSTM
-```
-
-## 1. One-time environment setup
-
-```bat
 py -3.12 -m venv .venv
 call .venv\Scripts\activate.bat
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-In every new `cmd` window:
+In a later cmd window, only repeat:
 
 ```bat
 cd /d C:\Users\Vince\Downloads\THESIS_APP\T3-NEW-MODEL\STGAT-LSTM
@@ -52,182 +27,177 @@ call .venv\Scripts\activate.bat
 python -m unittest discover -s tests -v
 ```
 
-## 3. Audit the app export and OSM graph
+These tests use small in-memory graphs. They verify the model, data boundaries,
+map matching, traffic history, evaluation, routing, dashboard, and synthetic
+experiment without changing the official dataset.
+
+## 3. Audit the official rider and OSM data
 
 ```bat
 python -m stgat_lstm audit-data "data\real\rider_exports"
 python -m stgat_lstm audit-network "data\real\rider_exports" "data\real\osm\metro_manila_processed.graphml" --node-features "data\real\osm\road_node_features.csv"
 python -m stgat_lstm audit-matching "data\real\rider_exports" "data\real\osm\metro_manila_processed.graphml"
+python -m stgat_lstm gps-traffic "data\real\rider_exports" "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" --output outputs\gps_traffic_audit.json
 ```
 
-These commands diagnose data quality. They do not train a model.
+The first command checks CSV relationships, timing, surveys, and GPS coverage.
+The second checks the projected directed OSM graph and node-feature join. The
+third diagnoses sequence map matching. The fourth converts consecutive GPS
+fixes into motorcycle probe-speed observations on directed OSM roads.
 
-They save `outputs\rider_data_audit.json`, `outputs\road_network_audit.json`, and `outputs\map_matching_audit.json`. The terminal prints the main counts and the saved file location. Use `--output` to choose a different JSON path.
+Default audit reports are saved as:
 
-## 4. Reconstruct strict deviation pairs
+- `outputs\rider_data_audit.json`
+- `outputs\road_network_audit.json`
+- `outputs\map_matching_audit.json`
+- `outputs\gps_traffic_audit.json`
+
+The current GPS audit finds 6,657 usable speed segments on 494 directed roads
+from 48 rides. Median sampling is 2.001 seconds. These speeds are historical
+motorcycle observations; they are a limited traffic proxy, not network-wide
+ground truth.
+
+## 4. Rebuild training examples when rider exports change
 
 ```bat
 python -m stgat_lstm build-deviations "data\real\rider_exports" "data\real\osm\metro_manila_processed.graphml" --output outputs\deviation_candidates.json --geojson-output outputs\deviation_candidates.geojson
-```
-
-## 5. Build the unified local decision dataset
-
-```bat
 python -m stgat_lstm build-decisions "data\real\rider_exports" "data\real\osm\metro_manila_processed.graphml" --deviation-candidates outputs\deviation_candidates.json --output outputs\decision_candidates.json --geojson-output outputs\decision_candidates.geojson
 python -m stgat_lstm review-map outputs\decision_candidates.geojson --output outputs\candidate_review_map.html
 python -m stgat_lstm review auto outputs\decision_candidates.json --output outputs\approved_training_examples.json
 ```
 
-Open the review map:
+`build-deviations` keeps intentional events with a GPS-supported divergence and
+rejoin. Wrong turns, GPS errors, and personal stops are not positive tacit-
+knowledge labels. `build-decisions` adds conservative followed choices. `review
+auto` applies the documented survey and geometry rules. Manual approval is no
+longer required for normal data; the map remains available for auditing.
+
+The model accepts only `approved_training_examples.json`. GPS after the choice
+and the survey answer establish the label; they are not inference inputs.
+
+If the source export changes, repeat Sections 3 and 4. The candidate count may
+change. Do not edit the approved artifact to force a desired class balance.
+
+## 5. Train the official ST-GAT-LSTM
 
 ```bat
-start "" "outputs\candidate_review_map.html"
+python -m stgat_lstm train real "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --gps-traffic-data "data\real\rider_exports" --history-steps 6 --history-interval-seconds 300 --gps-profile-bin-seconds 300 --epochs 100 --batch-size 8 --output outputs\gatv2_lstm_checkpoint.pt --report-output outputs\training_report.json
 ```
 
-The `review auto` command is the required validation gate. It approves followed examples only when there is no conflicting deviation report and GPS follows the suggested branch. It approves deviations only for supported intentional reasons—traffic, blockage/hazard, intersection avoidance, or shortcut/familiar-road preference—with connected common-endpoint paths and GPS support. A traffic deviation must include severity. Personal stops, unsupported/unknown reasons, disconnected paths, weak GPS agreement, and likely GPS errors are rejected. Rejected rows remain in the JSON audit trail but are excluded by the training loader.
+Training loads the OSM graph and approved choices, derives only historical GPS
+speed profiles that predate each decision, excludes the target ride, performs
+GATv2 followed by LSTM, and optimizes two objectives:
 
-The HTML map is optional quality control. It is useful when explaining examples but is no longer a manual approval requirement.
+1. weighted binary cross-entropy for each eligible suggested road; and
+2. pairwise loss that lowers the observed intentional route cost relative to
+   its rejected suggestion.
 
-The approved artifact records the exact candidate SHA-256, automatic-rule version, per-example reason, and approval/rejection counts. Rebuilding from changed data therefore produces a new traceable artifact.
+The checkpoint stores learned parameters, architecture settings, training
+counts, hashes, traffic policy, and provenance. `training_report.json` stores
+the same readable report plus epoch losses. Training uses shuffled mini-batches,
+and every batch performs an optimizer update. Graphs inside a batch are joined
+as disconnected components and cannot exchange messages.
 
-### Updating the dataset later
-
-After rebuilding candidates from newer exports, rerun `review auto`. The same versioned rules are applied to every candidate, so no decision file needs to be edited by hand. Preserve dated copies of final artifacts if you need to compare collection rounds.
-
-### What changes when final rider data arrives
-
-If the CSV names and columns remain the same, no Python code or model architecture needs to change. Preserve the old exports and outputs as a dated snapshot, place the updated cleaned CSVs in the input folder, then rerun sections 3 through 8. The candidate count, rider count, labels, checkpoint, and evaluation report will update from the new data.
-
-Also supply `--traffic-archive` during training and evaluation when timestamp-aligned observations exist. Current traffic cannot be attached to older rides. If the app export schema changes, update and test the corresponding loader before rebuilding. If the OSM graph or node-feature file changes, rebuild all candidates and retrain because node/edge identities and checkpoint provenance may change.
-
-Freeze the final metric protocol, threshold, model settings, and rider split before inspecting final test results. Development data may be used for tuning; final held-out riders should be evaluated once.
-
-## 6. Train the approved real-data model
+## 6. Evaluate held-out riders
 
 ```bat
-python -m stgat_lstm train real "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --epochs 100 --output outputs\gatv2_lstm_checkpoint.pt
+python -m stgat_lstm evaluate "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --gps-traffic-data "data\real\rider_exports" --history-steps 6 --history-interval-seconds 300 --gps-profile-bin-seconds 300 --epochs 40 --temporal-ablation --output outputs\rider_holdout_evaluation.json
 ```
 
-Outputs:
+Each fold trains without one rider and tests on that rider. The report compares
+prevalence, GCN, GAT, spatial-only GATv2, and ST-GAT-LSTM. When observed history
+actually varies, `--temporal-ablation` also runs an LSTM with only the latest
+frame repeated. GPS histories are rebuilt in each fold and exclude the held-out
+rider, target ride, and future records.
 
-- `outputs\gatv2_lstm_checkpoint.pt`: model weights, configuration, provenance, and training summary
-- `outputs\training_report.json`: readable report
+Read balanced accuracy, deviation F1, average precision, ROC-AUC, Brier score,
+log loss, confusion counts, and held-out route-ranking accuracy. With only eight
+approved real examples and three positive road rejections, current metrics are
+pilot evidence and cannot establish generalization or superiority.
 
-New training reports include `epoch_losses` (one training loss per epoch), final loss, in-sample classification/ranking, training settings, and input-file hashes. Epoch losses are measured during optimization; `final_loss` is measured after the last update. Training accuracy must not be presented as held-out accuracy.
-
-The terminal prints the input counts, loss change, in-sample checks, and both output paths. The JSON report contains the complete epoch history and provenance.
-
-## 7. Run the preliminary rider-disjoint comparison
+## 7. Predict a reviewed example
 
 ```bat
-python -m stgat_lstm evaluate "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --epochs 40 --output outputs\rider_holdout_evaluation.json
+python -m stgat_lstm predict outputs\gatv2_lstm_checkpoint.pt "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --gps-traffic-data "data\real\rider_exports" --output outputs\reviewed_example_prediction.json
 ```
 
-This performs six leave-one-rider-out folds for GCN, original GAT, spatial-only GATv2, and GATv2-LSTM, plus a training-prevalence baseline. With only eight examples, treat the report as a pipeline diagnostic and not a final performance estimate.
+This replays an approved decision, reports per-road deviation probabilities,
+compares observed and suggested learned costs, and recommends a connected route.
+For replay, historical GPS profiles exclude the example's rider and ride.
 
-The terminal now shows a compact comparison table. The JSON saves full predictions and metrics. Proposed primary metric: **balanced accuracy**, the average of follow recall and deviation recall. Secondary measures: deviation F1, macro-F1, average precision (AP), ROC-AUC, Brier score, and log loss. AP summarizes the precision/recall ranking; it is not trapezoidal PR-AUC. Brier/log loss evaluate probability quality; lower is better. Threshold is fixed at 0.5, and class support/confusion counts are retained. Undefined precision/F1 uses zero; two-class metrics are null when a class is absent. Results pool held-out decisions, so riders with more decisions contribute more. These choices are documented in `metric_protocol`.
-
-Held-out preference-ranking accuracy is the fraction of reviewed deviation pairs where the observed path receives a lower learned cost than the rejected suggestion. This is a routing-related proxy, not evidence that a new route will be followed or improve travel time.
-
-### Test whether traffic history helps the LSTM
-
-With the current pilot:
+## 8. Generate a new route
 
 ```bat
-python -m stgat_lstm evaluate "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --epochs 40 --temporal-ablation --output outputs\rider_holdout_evaluation.json
+python -m stgat_lstm predict outputs\gatv2_lstm_checkpoint.pt "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" --origin-node 400 --destination-node 6 --gps-traffic-data "data\real\rider_exports" --max-detour-ratio 1.30 --output outputs\new_route_prediction.json
 ```
 
-With future timestamp-aligned traffic, add `--traffic-archive outputs\traffic_archive` to that command. It compares:
+The origin and destination are OSM node IDs. At a new request time, the code
+builds a historical time-of-day GPS speed profile, scores every accessible
+directed road, and runs Dijkstra on the positive learned costs. It also reports
+the shortest-distance baseline. A hard guard accepts the learned route only when
+its distance is at most 1.30 times the shortest-distance route; otherwise it
+returns the distance baseline and records the fallback in JSON. The route uses
+historical rider-derived traffic context; it does not call Mapbox.
 
-1. Spatial GATv2 using the latest snapshot.
-2. GATv2-LSTM using the available history.
-3. The same GATv2-LSTM receiving its latest snapshot repeated to the same history length. This control keeps its parameter count, folds, sequence length, training settings, and initialization seed matched to the full-history model, while removing past information.
-
-The third model is skipped when no same-edge traffic field has two observed, different values across the history. Age changes and transitions from unknown to observed do not count as evidence of a traffic trend. Inspect `lstm_comparison.temporal_evidence` for counts and suggested-path coverage. If the control runs, `full_minus_control` records paired metric differences: positive accuracy/F1/AP/AUC differences favor history; negative Brier/log-loss differences favor history. One positive pilot difference does not establish superiority.
-
-For the final experiment, lock hyperparameters and the threshold using separate training/validation riders, then evaluate held-out riders. Repeat with prespecified seeds (for example 17, 29, 43, 61, 89), using `--seed` and separate output filenames. Report variation across seeds and uncertainty across independent riders; multiple seeds do not create additional rider observations. The current command provides one seeded run and does not automatically compute confidence intervals or tune hyperparameters. If real history does not improve results, report that outcome rather than assuming LSTM must help.
-
-## 8. Reload the checkpoint, predict, and route
+## 9. Open the routing dashboard
 
 ```bat
-python -m stgat_lstm predict outputs\gatv2_lstm_checkpoint.pt "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json
+python -m stgat_lstm dashboard --gps-traffic-data "data\real\rider_exports" --max-detour-ratio 1.30
 ```
 
-Select a specific approved example:
+Open **http://127.0.0.1:8765**, click a start and destination, and select
+**Generate route**. Green is the learned route and blue is the distance
+baseline. The view uses embedded local OSM geometry and does not need public map
+tiles. Stop it with Ctrl+C.
+
+## 10. Controlled synthetic hotspot experiment
+
+This experiment asks a narrow question: can the implemented model learn a
+repeated road preference when a known pattern is injected? It never replaces
+the real evaluation.
 
 ```bat
-python -m stgat_lstm predict outputs\gatv2_lstm_checkpoint.pt "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --example-key 11930c364eaa39de
+python -m stgat_lstm synthetic-hotspot "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --output-dir outputs\synthetic_hotspot
+python -m stgat_lstm build-deviations outputs\synthetic_hotspot "data\real\osm\metro_manila_processed.graphml" --output outputs\synthetic_hotspot\reconstructed_deviation_candidates.json --geojson-output outputs\synthetic_hotspot\reconstructed_deviation_candidates.geojson
+python -m stgat_lstm build-decisions outputs\synthetic_hotspot "data\real\osm\metro_manila_processed.graphml" --deviation-candidates outputs\synthetic_hotspot\reconstructed_deviation_candidates.json --output outputs\synthetic_hotspot\reconstructed_decision_candidates.json --geojson-output outputs\synthetic_hotspot\reconstructed_decision_candidates.geojson
+python -m stgat_lstm review auto outputs\synthetic_hotspot\reconstructed_decision_candidates.json --output outputs\synthetic_hotspot\reconstructed_approved_training_examples.json
+python -m stgat_lstm gps-traffic outputs\synthetic_hotspot "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" --output outputs\synthetic_hotspot\gps_traffic_audit.json
+python -m stgat_lstm train real "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\synthetic_hotspot\reconstructed_approved_training_examples.json --gps-traffic-data outputs\synthetic_hotspot --history-steps 6 --history-interval-seconds 300 --gps-profile-bin-seconds 300 --epochs 20 --batch-size 8 --output outputs\synthetic_hotspot\checkpoint.pt --report-output outputs\synthetic_hotspot\training_report.json
+python -m stgat_lstm evaluate "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\synthetic_hotspot\reconstructed_approved_training_examples.json --gps-traffic-data outputs\synthetic_hotspot --history-steps 6 --history-interval-seconds 300 --gps-profile-bin-seconds 300 --epochs 20 --batch-size 16 --synthetic-fixed-split --output outputs\synthetic_hotspot\rider_holdout_evaluation.json
 ```
 
-## 9. Collect a current Mapbox observation
+The generator writes the same six CSV schemas as the app export, a manifest,
+and a trainable ground-truth artifact. It creates 96 labeled choices from eight
+synthetic riders: 48 intentional deviations across two approved in-corridor
+Taft choice patterns and 48 follows across five approved follow-route
+structures. Forty-two separate traffic-only motorcycle probe rides create slow
+morning history on deviation roads and free-flow late-morning history on follow
+roads. The probes intentionally have no initial navigation route, so they feed
+GPS traffic without becoming decision labels.
 
-Set the token in the current terminal session:
+All 96 decision rides survive the production map-matching, candidate, and
+automatic-approval pipeline, with no rejected decisions. The fixed
+rider-disjoint split contains 48 training, 24 validation, and 24 test examples.
+Thresholds are selected only from validation balanced accuracy and frozen before
+testing. On unseen synthetic test riders, GATv2 and full-history ST-GAT-LSTM
+reach 1.000 balanced accuracy, deviation F1, AP, ROC-AUC, and route-ranking
+accuracy. The latest-only LSTM reaches 0.983 balanced accuracy, 0.923 F1, 0.929
+AP, 0.983 ROC-AUC, and 1.000 ranking accuracy. Full-history ST-GAT-LSTM has a
+0.424 positive/negative probability gap, compared with 0.002 in the earlier
+one-hotspot experiment. Report this as controlled implementation and temporal
+capacity evidence, never as real-rider evidence.
 
-```bat
-set MAPBOX_ACCESS_TOKEN=pk.your_new_token_here
-```
+## Optional Mapbox compatibility
 
-Collect traffic using longitude,latitude order:
+`mapbox_traffic.py`, `--traffic-archive`, and `--live-traffic` remain available
+for prior experiments. They are no longer the main thesis traffic design. Do
+not combine Mapbox and GPS traffic flags in one command, and do not attach a
+current Mapbox observation to a past rider decision.
 
-```bat
-python -m stgat_lstm traffic "120.9790,14.5800;120.9980,14.5400" --output outputs\traffic\current_traffic.json
-```
+## What changes when new official data arrive
 
-For a current inference demonstration, supply the traffic observation:
-
-```bat
-python -m stgat_lstm predict outputs\gatv2_lstm_checkpoint.pt "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --traffic-observation outputs\traffic\current_traffic.json
-```
-
-For a new route, fetch current traffic automatically before model inference:
-
-```bat
-python -m stgat_lstm predict outputs\gatv2_lstm_checkpoint.pt "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" --origin-node 400 --destination-node 6 --live-traffic --traffic-archive outputs\traffic_archive
-```
-
-This calls Mapbox for the requested endpoints, saves the token-free observation, combines it with recent archived observations, and feeds the resulting traffic sequence to the model. With an empty archive, only the latest slot contains observed traffic; repeated route requests or scheduled collection are still needed to demonstrate an LSTM temporal benefit.
-
-Do not attach current traffic to an old decision and describe it as historical evidence. The option above demonstrates the online feature interface only.
-
-## 10. Presentation-safe quick run
-
-The interactive dashboard command at the top also works with your existing checkpoint. The commands below replay an approved example instead of selecting new endpoints.
-
-```bat
-call .venv\Scripts\activate.bat
-python -m unittest discover -s tests -v
-type outputs\training_report.json
-python -m stgat_lstm predict outputs\gatv2_lstm_checkpoint.pt "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json
-start "" "outputs\candidate_review_map.html"
-```
-
-## 11. Collect traffic histories for future decisions
-
-The collector runs on your computer, independently of the collection app. After setting `MAPBOX_ACCESS_TOKEN` as above:
-
-```bat
-python -m stgat_lstm traffic "120.9790,14.5800;120.9980,14.5400" --archive-dir outputs\traffic_archive --samples 12 --interval-seconds 300
-```
-
-This saves twelve separate request/receipt-timestamped observations, roughly five minutes apart, making twelve API requests. You choose when to run it alongside future data collection. Each request covers the returned route, not every road in the study area. Additional probe routes are needed for additional coverage. Provider driving-traffic estimates are road context, not motorcycle-specific measurements.
-
-Use the archive during training and evaluation:
-
-```bat
-python -m stgat_lstm train real "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --traffic-archive outputs\traffic_archive --epochs 100 --output outputs\gatv2_lstm_checkpoint.pt
-python -m stgat_lstm evaluate "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --traffic-archive outputs\traffic_archive --epochs 40 --output outputs\rider_holdout_evaluation.json
-```
-
-Default history: six slots spaced five minutes apart, ending at each decision time. An observation must have been received before its slot and be no more than fifteen minutes old. There is no future interpolation. Uncovered roads and null congestion retain missingness masks. Direction-aware matching avoids applying opposing-direction traffic to an edge. Inspect `provenance.traffic_history.*.observed_edges_per_step` to verify actual coverage; six unknown slots do not constitute temporal evidence. Old files lacking receipt timestamps use their request times explicitly, recorded as `legacy_request_only_timestamps`.
-
-For current routing without a new API request, run `python -m stgat_lstm dashboard --traffic-archive outputs\traffic_archive`. To call Mapbox for every route request, add `--live-traffic`. Both modes reload the archive for each request and apply the checkpoint's saved history policy, or defaults for older checkpoints. Use a model trained with meaningful historical traffic before claiming useful live traffic adaptation.
-
-## 12. Route new endpoints without a reviewed example
-
-```bat
-python -m stgat_lstm predict outputs\gatv2_lstm_checkpoint.pt "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" --origin-node 400 --destination-node 6
-```
-
-The complete result is saved by default to `outputs\route_prediction.json`; the terminal prints the route length, roads, comparison distance, and deviation estimate. Add `--output another\path.json` to keep multiple runs.
-
-Alternatively use `--origin "longitude,latitude" --destination "longitude,latitude"`. Coordinates snap to a graph node within 150 metres. Directed edges and encoded access restrictions are enforced; turn restrictions are not represented. The output reports an uncalibrated deviation probability at each branching road on the baseline and recommended routes. Learned costs are preference scores, not travel times.
+Replace the CSV files under `data\real\rider_exports` with the new consistent
+export, retaining the same filenames and columns. Then repeat Sections 3 through
+6. No model source code or dimensions need to change if the export schema and
+OSM graph stay the same. New labels, GPS histories, checkpoints, and evaluation
+reports are regenerated from the new inputs.

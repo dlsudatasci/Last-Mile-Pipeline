@@ -9,6 +9,10 @@ Research basis:
   (maintained library implementation used below)
 - Kipf and Welling, Semi-Supervised Classification with Graph Convolutional
   Networks, https://arxiv.org/abs/1609.02907 (GCN baseline)
+- Hochreiter and Schmidhuber, Long Short-Term Memory,
+  https://doi.org/10.1162/neco.1997.9.8.1735 (standard LSTM component)
+- Zhang, Yu, and Liu, Spatial-Temporal Graph Attention Networks,
+  https://doi.org/10.1109/ACCESS.2019.2953888 (spatial-then-temporal precedent)
 
 This is a task-specific composition of spatial attention, edge context and
 PyTorch LSTM. It uses the library GATv2 operator rather than copying the

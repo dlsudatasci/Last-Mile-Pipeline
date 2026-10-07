@@ -1,0 +1,5013 @@
+{
+  "schema_version": 1,
+  "evaluation": "controlled_synthetic_fixed_rider_split",
+  "split": {
+    "training_riders": [
+      "0a8c4c73fdcc7bda",
+      "1b2e37fa9110850d",
+      "343eb62a2773c0d2",
+      "4605793f897a312c"
+    ],
+    "validation_riders": [
+      "48003f0abe2e0d99",
+      "4bce711a05243a5a"
+    ],
+    "test_riders": [
+      "a0db20db5cf8da67",
+      "ad4fc63d0f4bc320"
+    ],
+    "training_examples": 48,
+    "validation_examples": 24,
+    "test_examples": 24
+  },
+  "training": {
+    "epochs": 20,
+    "learning_rate": 0.005,
+    "preference_weight": 1.0,
+    "seed": 17,
+    "batch_size": 16
+  },
+  "models": {
+    "prevalence": {
+      "validation": {
+        "classification": {
+          "examples": 72,
+          "threshold": 0.5,
+          "class_support": {
+            "followed": 60,
+            "deviated": 12
+          },
+          "class_prevalence_deviated": 0.16666666666666666,
+          "accuracy": 0.8333333333333334,
+          "balanced_accuracy": 0.5,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "macro_f1": 0.45454545454545453,
+          "roc_auc": 0.5,
+          "average_precision": 0.16666666666666666,
+          "brier_score": 0.13888888888888892,
+          "log_loss": 0.45056120886630463,
+          "confusion": {
+            "true_positive": 0,
+            "true_negative": 60,
+            "false_positive": 0,
+            "false_negative": 12
+          },
+          "per_class": {
+            "deviated": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 12
+            },
+            "followed": {
+              "precision": 0.8333333333333334,
+              "recall": 1.0,
+              "f1": 0.9090909090909091,
+              "support": 60
+            }
+          }
+        }
+      },
+      "test": {
+        "classification": {
+          "examples": 72,
+          "threshold": 0.5,
+          "class_support": {
+            "followed": 60,
+            "deviated": 12
+          },
+          "class_prevalence_deviated": 0.16666666666666666,
+          "accuracy": 0.8333333333333334,
+          "balanced_accuracy": 0.5,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "macro_f1": 0.45454545454545453,
+          "roc_auc": 0.5,
+          "average_precision": 0.16666666666666666,
+          "brier_score": 0.13888888888888892,
+          "log_loss": 0.45056120886630463,
+          "confusion": {
+            "true_positive": 0,
+            "true_negative": 60,
+            "false_positive": 0,
+            "false_negative": 12
+          },
+          "per_class": {
+            "deviated": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 12
+            },
+            "followed": {
+              "precision": 0.8333333333333334,
+              "recall": 1.0,
+              "f1": 0.9090909090909091,
+              "support": 60
+            }
+          }
+        }
+      }
+    },
+    "gatv2": {
+      "threshold_selection": {
+        "source": "validation balanced accuracy",
+        "threshold": 0.5973488092422485,
+        "test_labels_used": false
+      },
+      "validation": {
+        "classification": {
+          "examples": 72,
+          "threshold": 0.5973488092422485,
+          "class_support": {
+            "followed": 60,
+            "deviated": 12
+          },
+          "class_prevalence_deviated": 0.16666666666666666,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "macro_f1": 1.0,
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "brier_score": 0.0010737461310409147,
+          "log_loss": 0.010640675739422973,
+          "confusion": {
+            "true_positive": 12,
+            "true_negative": 60,
+            "false_positive": 0,
+            "false_negative": 0
+          },
+          "per_class": {
+            "deviated": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "support": 12
+            },
+            "followed": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "support": 60
+            }
+          }
+        },
+        "preference_ranking": {
+          "pairs": 12,
+          "correct": 12,
+          "accuracy": 1.0
+        }
+      },
+      "test": {
+        "classification": {
+          "examples": 72,
+          "threshold": 0.5973488092422485,
+          "class_support": {
+            "followed": 60,
+            "deviated": 12
+          },
+          "class_prevalence_deviated": 0.16666666666666666,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "macro_f1": 1.0,
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "brier_score": 0.00038811947312218095,
+          "log_loss": 0.008663356479234594,
+          "confusion": {
+            "true_positive": 12,
+            "true_negative": 60,
+            "false_positive": 0,
+            "false_negative": 0
+          },
+          "per_class": {
+            "deviated": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "support": 12
+            },
+            "followed": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "support": 60
+            }
+          }
+        },
+        "preference_ranking": {
+          "pairs": 12,
+          "correct": 12,
+          "accuracy": 1.0
+        },
+        "predictions": [
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "7dc5794119b8ffe1",
+            "edge_id": "401|400|0",
+            "label": 0,
+            "probability_deviated": 0.07228724658489227
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "7dc5794119b8ffe1",
+            "edge_id": "400|678|0",
+            "label": 0,
+            "probability_deviated": 0.011596071533858776
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "7dc5794119b8ffe1",
+            "edge_id": "678|12971|0",
+            "label": 0,
+            "probability_deviated": 0.001109596574679017
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "7dc5794119b8ffe1",
+            "edge_id": "12971|12968|0",
+            "label": 0,
+            "probability_deviated": 0.023234590888023376
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "7dc5794119b8ffe1",
+            "edge_id": "12968|12967|0",
+            "label": 0,
+            "probability_deviated": 0.05669507756829262
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "c1b6c409d6b00d45",
+            "edge_id": "17075|4102|0",
+            "label": 0,
+            "probability_deviated": 0.0005371847073547542
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "c1b6c409d6b00d45",
+            "edge_id": "4102|4101|0",
+            "label": 0,
+            "probability_deviated": 0.0008241298492066562
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "c1b6c409d6b00d45",
+            "edge_id": "4101|4099|0",
+            "label": 0,
+            "probability_deviated": 0.0013232624623924494
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "c1b6c409d6b00d45",
+            "edge_id": "4099|149|0",
+            "label": 0,
+            "probability_deviated": 0.000406956416554749
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "c1b6c409d6b00d45",
+            "edge_id": "149|150|0",
+            "label": 0,
+            "probability_deviated": 0.0014495404902845621
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "cfe67a9fac44cd36",
+            "edge_id": "401|12255|0",
+            "label": 0,
+            "probability_deviated": 0.0033561938907951117
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "cfe67a9fac44cd36",
+            "edge_id": "12255|13183|0",
+            "label": 0,
+            "probability_deviated": 0.0010306519689038396
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "cfe67a9fac44cd36",
+            "edge_id": "13183|13184|0",
+            "label": 0,
+            "probability_deviated": 0.0013217654777690768
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "cfe67a9fac44cd36",
+            "edge_id": "13184|31469|0",
+            "label": 0,
+            "probability_deviated": 0.0001337640715064481
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "cfe67a9fac44cd36",
+            "edge_id": "31469|31470|0",
+            "label": 0,
+            "probability_deviated": 0.002450290834531188
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "8d50e75fee93f4f0",
+            "edge_id": "12972|12971|0",
+            "label": 0,
+            "probability_deviated": 0.0001938159839482978
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "8d50e75fee93f4f0",
+            "edge_id": "12971|12968|0",
+            "label": 0,
+            "probability_deviated": 0.0008391147712245584
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "8d50e75fee93f4f0",
+            "edge_id": "12968|709|0",
+            "label": 0,
+            "probability_deviated": 0.000212342623854056
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "8d50e75fee93f4f0",
+            "edge_id": "709|32304|0",
+            "label": 0,
+            "probability_deviated": 0.00033340969821438193
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "8d50e75fee93f4f0",
+            "edge_id": "32304|709|0",
+            "label": 0,
+            "probability_deviated": 9.086120553547516e-05
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "a4d649b458528e71",
+            "edge_id": "12980|12981|0",
+            "label": 0,
+            "probability_deviated": 0.013046503998339176
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "a4d649b458528e71",
+            "edge_id": "12981|12980|0",
+            "label": 0,
+            "probability_deviated": 0.0014101745327934623
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "a4d649b458528e71",
+            "edge_id": "12980|12979|0",
+            "label": 0,
+            "probability_deviated": 0.00035350379766896367
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "a4d649b458528e71",
+            "edge_id": "12979|12978|0",
+            "label": 0,
+            "probability_deviated": 0.0006305837887339294
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "a4d649b458528e71",
+            "edge_id": "12978|12976|0",
+            "label": 0,
+            "probability_deviated": 0.0009481572778895497
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "1e70c58b16f9488b",
+            "edge_id": "401|400|0",
+            "label": 0,
+            "probability_deviated": 0.0030097682029008865
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "1e70c58b16f9488b",
+            "edge_id": "400|678|0",
+            "label": 0,
+            "probability_deviated": 4.792165054823272e-05
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "1e70c58b16f9488b",
+            "edge_id": "678|12971|0",
+            "label": 0,
+            "probability_deviated": 0.00019512321159709245
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "1e70c58b16f9488b",
+            "edge_id": "12971|12968|0",
+            "label": 0,
+            "probability_deviated": 0.0008625740301795304
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "1e70c58b16f9488b",
+            "edge_id": "12968|12967|0",
+            "label": 0,
+            "probability_deviated": 0.0007573918555863202
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "3cf097872db30814",
+            "edge_id": "401|400|0",
+            "label": 0,
+            "probability_deviated": 0.09126414358615875
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "3cf097872db30814",
+            "edge_id": "400|678|0",
+            "label": 0,
+            "probability_deviated": 0.011607489548623562
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "3cf097872db30814",
+            "edge_id": "678|12971|0",
+            "label": 0,
+            "probability_deviated": 0.0009400849812664092
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "3cf097872db30814",
+            "edge_id": "12971|12968|0",
+            "label": 0,
+            "probability_deviated": 0.026804013177752495
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "3cf097872db30814",
+            "edge_id": "12968|12967|0",
+            "label": 0,
+            "probability_deviated": 0.05686497315764427
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "137f5d75e9732d29",
+            "edge_id": "17075|4102|0",
+            "label": 0,
+            "probability_deviated": 0.000537186220753938
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "137f5d75e9732d29",
+            "edge_id": "4102|4101|0",
+            "label": 0,
+            "probability_deviated": 0.0008241317700594664
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "137f5d75e9732d29",
+            "edge_id": "4101|4099|0",
+            "label": 0,
+            "probability_deviated": 0.0013232631608843803
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "137f5d75e9732d29",
+            "edge_id": "4099|149|0",
+            "label": 0,
+            "probability_deviated": 0.0004069575807079673
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "137f5d75e9732d29",
+            "edge_id": "149|150|0",
+            "label": 0,
+            "probability_deviated": 0.0014495447976514697
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "d069dfe3ba791f31",
+            "edge_id": "401|12255|0",
+            "label": 0,
+            "probability_deviated": 0.0033620221074670553
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "d069dfe3ba791f31",
+            "edge_id": "12255|13183|0",
+            "label": 0,
+            "probability_deviated": 0.0010306519689038396
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "d069dfe3ba791f31",
+            "edge_id": "13183|13184|0",
+            "label": 0,
+            "probability_deviated": 0.0013217704836279154
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "d069dfe3ba791f31",
+            "edge_id": "13184|31469|0",
+            "label": 0,
+            "probability_deviated": 0.0001337645953753963
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "d069dfe3ba791f31",
+            "edge_id": "31469|31470|0",
+            "label": 0,
+            "probability_deviated": 0.00245029223151505
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "cc2252134ac19184",
+            "edge_id": "12972|12971|0",
+            "label": 0,
+            "probability_deviated": 0.0001938163477461785
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "cc2252134ac19184",
+            "edge_id": "12971|12968|0",
+            "label": 0,
+            "probability_deviated": 0.0008391159935854375
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "cc2252134ac19184",
+            "edge_id": "12968|709|0",
+            "label": 0,
+            "probability_deviated": 0.00021234304585959762
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "cc2252134ac19184",
+            "edge_id": "709|32304|0",
+            "label": 0,
+            "probability_deviated": 0.00033341001835651696
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "cc2252134ac19184",
+            "edge_id": "32304|709|0",
+            "label": 0,
+            "probability_deviated": 9.08613801584579e-05
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "e5437c047c703fa4",
+            "edge_id": "12980|12981|0",
+            "label": 0,
+            "probability_deviated": 0.013046510517597198
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "e5437c047c703fa4",
+            "edge_id": "12981|12980|0",
+            "label": 0,
+            "probability_deviated": 0.0014101758133620024
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "e5437c047c703fa4",
+            "edge_id": "12980|12979|0",
+            "label": 0,
+            "probability_deviated": 0.0003535041178110987
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "e5437c047c703fa4",
+            "edge_id": "12979|12978|0",
+            "label": 0,
+            "probability_deviated": 0.000630584720056504
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "e5437c047c703fa4",
+            "edge_id": "12978|12976|0",
+            "label": 0,
+            "probability_deviated": 0.0009481586748734117
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "5ffd1de65a00fc7f",
+            "edge_id": "401|400|0",
+            "label": 0,
+            "probability_deviated": 0.003009847132489085
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "5ffd1de65a00fc7f",
+            "edge_id": "400|678|0",
+            "label": 0,
+            "probability_deviated": 4.7921745135681704e-05
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "5ffd1de65a00fc7f",
+            "edge_id": "678|12971|0",
+            "label": 0,
+            "probability_deviated": 0.00019628799054771662
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "5ffd1de65a00fc7f",
+            "edge_id": "12971|12968|0",
+            "label": 0,
+            "probability_deviated": 0.0008542482974007726
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "5ffd1de65a00fc7f",
+            "edge_id": "12968|12967|0",
+            "label": 0,
+            "probability_deviated": 0.0007574012270197272
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "e4869c1b8c98fe60",
+            "edge_id": "400|401|0",
+            "label": 1,
+            "probability_deviated": 0.9310188293457031
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "0f29dad8ecfeadc9",
+            "edge_id": "644|10951|0",
+            "label": 1,
+            "probability_deviated": 0.9887474775314331
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "7a7aa43d1f21ee8a",
+            "edge_id": "400|401|0",
+            "label": 1,
+            "probability_deviated": 0.9902415871620178
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "0c2fa93cfadd17a6",
+            "edge_id": "644|10951|0",
+            "label": 1,
+            "probability_deviated": 0.9887474775314331
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "69274ff7d3fd39d4",
+            "edge_id": "400|401|0",
+            "label": 1,
+            "probability_deviated": 0.9902414679527283
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "279a6d505d353e1f",
+            "edge_id": "644|10951|0",
+            "label": 1,
+            "probability_deviated": 0.9887474775314331
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "45111d1c7c7d0a70",
+            "edge_id": "644|10951|0",
+            "label": 1,
+            "probability_deviated": 0.9887474775314331
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "b41f9bd4a724a569",
+            "edge_id": "400|401|0",
+            "label": 1,
+            "probability_deviated": 0.9902737736701965
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "4eed1ab297ea8989",
+            "edge_id": "644|10951|0",
+            "label": 1,
+            "probability_deviated": 0.9887474775314331
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "7cb1bf16fffc5659",
+            "edge_id": "400|401|0",
+            "label": 1,
+            "probability_deviated": 0.9902741312980652
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "7e1f2365e5cd808d",
+            "edge_id": "644|10951|0",
+            "label": 1,
+            "probability_deviated": 0.9887474775314331
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "03555ca1d4511ede",
+            "edge_id": "400|401|0",
+            "label": 1,
+            "probability_deviated": 0.9902740120887756
+          }
+        ]
+      }
+    },
+    "stgat_lstm": {
+      "threshold_selection": {
+        "source": "validation balanced accuracy",
+        "threshold": 0.9614412188529968,
+        "test_labels_used": false
+      },
+      "validation": {
+        "classification": {
+          "examples": 72,
+          "threshold": 0.9614412188529968,
+          "class_support": {
+            "followed": 60,
+            "deviated": 12
+          },
+          "class_prevalence_deviated": 0.16666666666666666,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "macro_f1": 1.0,
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "brier_score": 0.012873987061585577,
+          "log_loss": 0.053444798969647794,
+          "confusion": {
+            "true_positive": 12,
+            "true_negative": 60,
+            "false_positive": 0,
+            "false_negative": 0
+          },
+          "per_class": {
+            "deviated": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "support": 12
+            },
+            "followed": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "support": 60
+            }
+          }
+        },
+        "preference_ranking": {
+          "pairs": 12,
+          "correct": 12,
+          "accuracy": 1.0
+        }
+      },
+      "test": {
+        "classification": {
+          "examples": 72,
+          "threshold": 0.9614412188529968,
+          "class_support": {
+            "followed": 60,
+            "deviated": 12
+          },
+          "class_prevalence_deviated": 0.16666666666666666,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "macro_f1": 1.0,
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "brier_score": 0.008812261704263582,
+          "log_loss": 0.03474773175785498,
+          "confusion": {
+            "true_positive": 12,
+            "true_negative": 60,
+            "false_positive": 0,
+            "false_negative": 0
+          },
+          "per_class": {
+            "deviated": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "support": 12
+            },
+            "followed": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "support": 60
+            }
+          }
+        },
+        "preference_ranking": {
+          "pairs": 12,
+          "correct": 12,
+          "accuracy": 1.0
+        },
+        "predictions": [
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "7dc5794119b8ffe1",
+            "edge_id": "401|400|0",
+            "label": 0,
+            "probability_deviated": 0.5528573989868164
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "7dc5794119b8ffe1",
+            "edge_id": "400|678|0",
+            "label": 0,
+            "probability_deviated": 0.02959519438445568
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "7dc5794119b8ffe1",
+            "edge_id": "678|12971|0",
+            "label": 0,
+            "probability_deviated": 0.005989964120090008
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "7dc5794119b8ffe1",
+            "edge_id": "12971|12968|0",
+            "label": 0,
+            "probability_deviated": 0.011587866581976414
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "7dc5794119b8ffe1",
+            "edge_id": "12968|12967|0",
+            "label": 0,
+            "probability_deviated": 0.010096698999404907
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "c1b6c409d6b00d45",
+            "edge_id": "17075|4102|0",
+            "label": 0,
+            "probability_deviated": 0.004554182756692171
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "c1b6c409d6b00d45",
+            "edge_id": "4102|4101|0",
+            "label": 0,
+            "probability_deviated": 0.0050301700830459595
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "c1b6c409d6b00d45",
+            "edge_id": "4101|4099|0",
+            "label": 0,
+            "probability_deviated": 0.005035556852817535
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "c1b6c409d6b00d45",
+            "edge_id": "4099|149|0",
+            "label": 0,
+            "probability_deviated": 0.004380044527351856
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "c1b6c409d6b00d45",
+            "edge_id": "149|150|0",
+            "label": 0,
+            "probability_deviated": 0.006578113418072462
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "cfe67a9fac44cd36",
+            "edge_id": "401|12255|0",
+            "label": 0,
+            "probability_deviated": 0.007325146812945604
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "cfe67a9fac44cd36",
+            "edge_id": "12255|13183|0",
+            "label": 0,
+            "probability_deviated": 0.004351912997663021
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "cfe67a9fac44cd36",
+            "edge_id": "13183|13184|0",
+            "label": 0,
+            "probability_deviated": 0.08548961579799652
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "cfe67a9fac44cd36",
+            "edge_id": "13184|31469|0",
+            "label": 0,
+            "probability_deviated": 0.004291377495974302
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "cfe67a9fac44cd36",
+            "edge_id": "31469|31470|0",
+            "label": 0,
+            "probability_deviated": 0.004621445666998625
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "8d50e75fee93f4f0",
+            "edge_id": "12972|12971|0",
+            "label": 0,
+            "probability_deviated": 0.006326655391603708
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "8d50e75fee93f4f0",
+            "edge_id": "12971|12968|0",
+            "label": 0,
+            "probability_deviated": 0.0046331319026649
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "8d50e75fee93f4f0",
+            "edge_id": "12968|709|0",
+            "label": 0,
+            "probability_deviated": 0.0055780839174985886
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "8d50e75fee93f4f0",
+            "edge_id": "709|32304|0",
+            "label": 0,
+            "probability_deviated": 0.0052855187095701694
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "8d50e75fee93f4f0",
+            "edge_id": "32304|709|0",
+            "label": 0,
+            "probability_deviated": 0.005763874389231205
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "a4d649b458528e71",
+            "edge_id": "12980|12981|0",
+            "label": 0,
+            "probability_deviated": 0.044171564280986786
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "a4d649b458528e71",
+            "edge_id": "12981|12980|0",
+            "label": 0,
+            "probability_deviated": 0.004392864182591438
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "a4d649b458528e71",
+            "edge_id": "12980|12979|0",
+            "label": 0,
+            "probability_deviated": 0.004521927796304226
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "a4d649b458528e71",
+            "edge_id": "12979|12978|0",
+            "label": 0,
+            "probability_deviated": 0.004428451415151358
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "a4d649b458528e71",
+            "edge_id": "12978|12976|0",
+            "label": 0,
+            "probability_deviated": 0.006422723643481731
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "1e70c58b16f9488b",
+            "edge_id": "401|400|0",
+            "label": 0,
+            "probability_deviated": 0.01099621132016182
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "1e70c58b16f9488b",
+            "edge_id": "400|678|0",
+            "label": 0,
+            "probability_deviated": 0.004747799132019281
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "1e70c58b16f9488b",
+            "edge_id": "678|12971|0",
+            "label": 0,
+            "probability_deviated": 0.005798905156552792
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "1e70c58b16f9488b",
+            "edge_id": "12971|12968|0",
+            "label": 0,
+            "probability_deviated": 0.004666395951062441
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "1e70c58b16f9488b",
+            "edge_id": "12968|12967|0",
+            "label": 0,
+            "probability_deviated": 0.0044807931408286095
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "3cf097872db30814",
+            "edge_id": "401|400|0",
+            "label": 0,
+            "probability_deviated": 0.5483571887016296
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "3cf097872db30814",
+            "edge_id": "400|678|0",
+            "label": 0,
+            "probability_deviated": 0.0301315076649189
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "3cf097872db30814",
+            "edge_id": "678|12971|0",
+            "label": 0,
+            "probability_deviated": 0.005992749705910683
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "3cf097872db30814",
+            "edge_id": "12971|12968|0",
+            "label": 0,
+            "probability_deviated": 0.01177824754267931
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "3cf097872db30814",
+            "edge_id": "12968|12967|0",
+            "label": 0,
+            "probability_deviated": 0.010150197893381119
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "137f5d75e9732d29",
+            "edge_id": "17075|4102|0",
+            "label": 0,
+            "probability_deviated": 0.004554182756692171
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "137f5d75e9732d29",
+            "edge_id": "4102|4101|0",
+            "label": 0,
+            "probability_deviated": 0.0050301700830459595
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "137f5d75e9732d29",
+            "edge_id": "4101|4099|0",
+            "label": 0,
+            "probability_deviated": 0.005035559181123972
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "137f5d75e9732d29",
+            "edge_id": "4099|149|0",
+            "label": 0,
+            "probability_deviated": 0.004380044527351856
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "137f5d75e9732d29",
+            "edge_id": "149|150|0",
+            "label": 0,
+            "probability_deviated": 0.0065781231969594955
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "d069dfe3ba791f31",
+            "edge_id": "401|12255|0",
+            "label": 0,
+            "probability_deviated": 0.007322636432945728
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "d069dfe3ba791f31",
+            "edge_id": "12255|13183|0",
+            "label": 0,
+            "probability_deviated": 0.00435191486030817
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "d069dfe3ba791f31",
+            "edge_id": "13183|13184|0",
+            "label": 0,
+            "probability_deviated": 0.08548998832702637
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "d069dfe3ba791f31",
+            "edge_id": "13184|31469|0",
+            "label": 0,
+            "probability_deviated": 0.004291377495974302
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "d069dfe3ba791f31",
+            "edge_id": "31469|31470|0",
+            "label": 0,
+            "probability_deviated": 0.004621445666998625
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "cc2252134ac19184",
+            "edge_id": "12972|12971|0",
+            "label": 0,
+            "probability_deviated": 0.006326655391603708
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "cc2252134ac19184",
+            "edge_id": "12971|12968|0",
+            "label": 0,
+            "probability_deviated": 0.004633134230971336
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "cc2252134ac19184",
+            "edge_id": "12968|709|0",
+            "label": 0,
+            "probability_deviated": 0.005578086711466312
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "cc2252134ac19184",
+            "edge_id": "709|32304|0",
+            "label": 0,
+            "probability_deviated": 0.0052855187095701694
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "cc2252134ac19184",
+            "edge_id": "32304|709|0",
+            "label": 0,
+            "probability_deviated": 0.005763874389231205
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "e5437c047c703fa4",
+            "edge_id": "12980|12981|0",
+            "label": 0,
+            "probability_deviated": 0.044171594083309174
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "e5437c047c703fa4",
+            "edge_id": "12981|12980|0",
+            "label": 0,
+            "probability_deviated": 0.004392864182591438
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "e5437c047c703fa4",
+            "edge_id": "12980|12979|0",
+            "label": 0,
+            "probability_deviated": 0.004521925467997789
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "e5437c047c703fa4",
+            "edge_id": "12979|12978|0",
+            "label": 0,
+            "probability_deviated": 0.004428449552506208
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "e5437c047c703fa4",
+            "edge_id": "12978|12976|0",
+            "label": 0,
+            "probability_deviated": 0.006422729697078466
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "5ffd1de65a00fc7f",
+            "edge_id": "401|400|0",
+            "label": 0,
+            "probability_deviated": 0.010995464399456978
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "5ffd1de65a00fc7f",
+            "edge_id": "400|678|0",
+            "label": 0,
+            "probability_deviated": 0.004748164210468531
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "5ffd1de65a00fc7f",
+            "edge_id": "678|12971|0",
+            "label": 0,
+            "probability_deviated": 0.005798893515020609
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "5ffd1de65a00fc7f",
+            "edge_id": "12971|12968|0",
+            "label": 0,
+            "probability_deviated": 0.0046663121320307255
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "5ffd1de65a00fc7f",
+            "edge_id": "12968|12967|0",
+            "label": 0,
+            "probability_deviated": 0.004480795469135046
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "e4869c1b8c98fe60",
+            "edge_id": "400|401|0",
+            "label": 1,
+            "probability_deviated": 0.9791558384895325
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "0f29dad8ecfeadc9",
+            "edge_id": "644|10951|0",
+            "label": 1,
+            "probability_deviated": 0.9767143726348877
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "7a7aa43d1f21ee8a",
+            "edge_id": "400|401|0",
+            "label": 1,
+            "probability_deviated": 0.9791429042816162
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "0c2fa93cfadd17a6",
+            "edge_id": "644|10951|0",
+            "label": 1,
+            "probability_deviated": 0.9767143726348877
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "69274ff7d3fd39d4",
+            "edge_id": "400|401|0",
+            "label": 1,
+            "probability_deviated": 0.9791429042816162
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "279a6d505d353e1f",
+            "edge_id": "644|10951|0",
+            "label": 1,
+            "probability_deviated": 0.9767143726348877
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "45111d1c7c7d0a70",
+            "edge_id": "644|10951|0",
+            "label": 1,
+            "probability_deviated": 0.9767143726348877
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "b41f9bd4a724a569",
+            "edge_id": "400|401|0",
+            "label": 1,
+            "probability_deviated": 0.9792937636375427
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "4eed1ab297ea8989",
+            "edge_id": "644|10951|0",
+            "label": 1,
+            "probability_deviated": 0.9767143726348877
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "7cb1bf16fffc5659",
+            "edge_id": "400|401|0",
+            "label": 1,
+            "probability_deviated": 0.9792937636375427
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "7e1f2365e5cd808d",
+            "edge_id": "644|10951|0",
+            "label": 1,
+            "probability_deviated": 0.9767143726348877
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "03555ca1d4511ede",
+            "edge_id": "400|401|0",
+            "label": 1,
+            "probability_deviated": 0.9792937636375427
+          }
+        ]
+      }
+    },
+    "stgat_lstm_latest_only": {
+      "threshold_selection": {
+        "source": "validation balanced accuracy",
+        "threshold": 0.9627185463905334,
+        "test_labels_used": false
+      },
+      "validation": {
+        "classification": {
+          "examples": 72,
+          "threshold": 0.9627185463905334,
+          "class_support": {
+            "followed": 60,
+            "deviated": 12
+          },
+          "class_prevalence_deviated": 0.16666666666666666,
+          "accuracy": 0.9861111111111112,
+          "balanced_accuracy": 0.9916666666666667,
+          "precision": 0.9230769230769231,
+          "recall": 1.0,
+          "f1": 0.9600000000000001,
+          "macro_f1": 0.9757983193277311,
+          "roc_auc": 0.9916666666666667,
+          "average_precision": 0.9615384615384616,
+          "brier_score": 0.037612826281309374,
+          "log_loss": 0.14291843443944174,
+          "confusion": {
+            "true_positive": 12,
+            "true_negative": 59,
+            "false_positive": 1,
+            "false_negative": 0
+          },
+          "per_class": {
+            "deviated": {
+              "precision": 0.9230769230769231,
+              "recall": 1.0,
+              "f1": 0.9600000000000001,
+              "support": 12
+            },
+            "followed": {
+              "precision": 1.0,
+              "recall": 0.9833333333333333,
+              "f1": 0.9915966386554621,
+              "support": 60
+            }
+          }
+        },
+        "preference_ranking": {
+          "pairs": 12,
+          "correct": 12,
+          "accuracy": 1.0
+        }
+      },
+      "test": {
+        "classification": {
+          "examples": 72,
+          "threshold": 0.9627185463905334,
+          "class_support": {
+            "followed": 60,
+            "deviated": 12
+          },
+          "class_prevalence_deviated": 0.16666666666666666,
+          "accuracy": 0.9722222222222222,
+          "balanced_accuracy": 0.9833333333333334,
+          "precision": 0.8571428571428571,
+          "recall": 1.0,
+          "f1": 0.923076923076923,
+          "macro_f1": 0.953063885267275,
+          "roc_auc": 0.9833333333333333,
+          "average_precision": 0.9285714285714286,
+          "brier_score": 0.07303925045576791,
+          "log_loss": 0.2467116396846644,
+          "confusion": {
+            "true_positive": 12,
+            "true_negative": 58,
+            "false_positive": 2,
+            "false_negative": 0
+          },
+          "per_class": {
+            "deviated": {
+              "precision": 0.8571428571428571,
+              "recall": 1.0,
+              "f1": 0.923076923076923,
+              "support": 12
+            },
+            "followed": {
+              "precision": 1.0,
+              "recall": 0.9666666666666667,
+              "f1": 0.983050847457627,
+              "support": 60
+            }
+          }
+        },
+        "preference_ranking": {
+          "pairs": 12,
+          "correct": 12,
+          "accuracy": 1.0
+        },
+        "predictions": [
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "7dc5794119b8ffe1",
+            "edge_id": "401|400|0",
+            "label": 0,
+            "probability_deviated": 0.971743643283844
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "7dc5794119b8ffe1",
+            "edge_id": "400|678|0",
+            "label": 0,
+            "probability_deviated": 0.35680097341537476
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "7dc5794119b8ffe1",
+            "edge_id": "678|12971|0",
+            "label": 0,
+            "probability_deviated": 0.012925990857183933
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "7dc5794119b8ffe1",
+            "edge_id": "12971|12968|0",
+            "label": 0,
+            "probability_deviated": 0.9131952524185181
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "7dc5794119b8ffe1",
+            "edge_id": "12968|12967|0",
+            "label": 0,
+            "probability_deviated": 0.82789546251297
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "c1b6c409d6b00d45",
+            "edge_id": "17075|4102|0",
+            "label": 0,
+            "probability_deviated": 0.010881979018449783
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "c1b6c409d6b00d45",
+            "edge_id": "4102|4101|0",
+            "label": 0,
+            "probability_deviated": 0.010824109427630901
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "c1b6c409d6b00d45",
+            "edge_id": "4101|4099|0",
+            "label": 0,
+            "probability_deviated": 0.010899227112531662
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "c1b6c409d6b00d45",
+            "edge_id": "4099|149|0",
+            "label": 0,
+            "probability_deviated": 0.010080489329993725
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "c1b6c409d6b00d45",
+            "edge_id": "149|150|0",
+            "label": 0,
+            "probability_deviated": 0.010263345204293728
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "cfe67a9fac44cd36",
+            "edge_id": "401|12255|0",
+            "label": 0,
+            "probability_deviated": 0.010171021334826946
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "cfe67a9fac44cd36",
+            "edge_id": "12255|13183|0",
+            "label": 0,
+            "probability_deviated": 0.01014535129070282
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "cfe67a9fac44cd36",
+            "edge_id": "13183|13184|0",
+            "label": 0,
+            "probability_deviated": 0.01240539364516735
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "cfe67a9fac44cd36",
+            "edge_id": "13184|31469|0",
+            "label": 0,
+            "probability_deviated": 0.010774616152048111
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "cfe67a9fac44cd36",
+            "edge_id": "31469|31470|0",
+            "label": 0,
+            "probability_deviated": 0.010833583772182465
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "8d50e75fee93f4f0",
+            "edge_id": "12972|12971|0",
+            "label": 0,
+            "probability_deviated": 0.01009239163249731
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "8d50e75fee93f4f0",
+            "edge_id": "12971|12968|0",
+            "label": 0,
+            "probability_deviated": 0.011671659536659718
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "8d50e75fee93f4f0",
+            "edge_id": "12968|709|0",
+            "label": 0,
+            "probability_deviated": 0.010169648565351963
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "8d50e75fee93f4f0",
+            "edge_id": "709|32304|0",
+            "label": 0,
+            "probability_deviated": 0.010089581832289696
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "8d50e75fee93f4f0",
+            "edge_id": "32304|709|0",
+            "label": 0,
+            "probability_deviated": 0.010015452280640602
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "a4d649b458528e71",
+            "edge_id": "12980|12981|0",
+            "label": 0,
+            "probability_deviated": 0.04149531573057175
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "a4d649b458528e71",
+            "edge_id": "12981|12980|0",
+            "label": 0,
+            "probability_deviated": 0.011369542218744755
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "a4d649b458528e71",
+            "edge_id": "12980|12979|0",
+            "label": 0,
+            "probability_deviated": 0.011600007303059101
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "a4d649b458528e71",
+            "edge_id": "12979|12978|0",
+            "label": 0,
+            "probability_deviated": 0.011491258628666401
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "a4d649b458528e71",
+            "edge_id": "12978|12976|0",
+            "label": 0,
+            "probability_deviated": 0.011610553599894047
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "1e70c58b16f9488b",
+            "edge_id": "401|400|0",
+            "label": 0,
+            "probability_deviated": 0.009836439043283463
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "1e70c58b16f9488b",
+            "edge_id": "400|678|0",
+            "label": 0,
+            "probability_deviated": 0.01002685260027647
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "1e70c58b16f9488b",
+            "edge_id": "678|12971|0",
+            "label": 0,
+            "probability_deviated": 0.010244762524962425
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "1e70c58b16f9488b",
+            "edge_id": "12971|12968|0",
+            "label": 0,
+            "probability_deviated": 0.011699358932673931
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "1e70c58b16f9488b",
+            "edge_id": "12968|12967|0",
+            "label": 0,
+            "probability_deviated": 0.011423378251492977
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "3cf097872db30814",
+            "edge_id": "401|400|0",
+            "label": 0,
+            "probability_deviated": 0.9716259241104126
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "3cf097872db30814",
+            "edge_id": "400|678|0",
+            "label": 0,
+            "probability_deviated": 0.3743610084056854
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "3cf097872db30814",
+            "edge_id": "678|12971|0",
+            "label": 0,
+            "probability_deviated": 0.013474663719534874
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "3cf097872db30814",
+            "edge_id": "12971|12968|0",
+            "label": 0,
+            "probability_deviated": 0.9345113039016724
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "3cf097872db30814",
+            "edge_id": "12968|12967|0",
+            "label": 0,
+            "probability_deviated": 0.829578161239624
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "137f5d75e9732d29",
+            "edge_id": "17075|4102|0",
+            "label": 0,
+            "probability_deviated": 0.010881979018449783
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "137f5d75e9732d29",
+            "edge_id": "4102|4101|0",
+            "label": 0,
+            "probability_deviated": 0.010824109427630901
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "137f5d75e9732d29",
+            "edge_id": "4101|4099|0",
+            "label": 0,
+            "probability_deviated": 0.01089923270046711
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "137f5d75e9732d29",
+            "edge_id": "4099|149|0",
+            "label": 0,
+            "probability_deviated": 0.010080484673380852
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "137f5d75e9732d29",
+            "edge_id": "149|150|0",
+            "label": 0,
+            "probability_deviated": 0.010263349860906601
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "d069dfe3ba791f31",
+            "edge_id": "401|12255|0",
+            "label": 0,
+            "probability_deviated": 0.01017016638070345
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "d069dfe3ba791f31",
+            "edge_id": "12255|13183|0",
+            "label": 0,
+            "probability_deviated": 0.010145355947315693
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "d069dfe3ba791f31",
+            "edge_id": "13183|13184|0",
+            "label": 0,
+            "probability_deviated": 0.01240539364516735
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "d069dfe3ba791f31",
+            "edge_id": "13184|31469|0",
+            "label": 0,
+            "probability_deviated": 0.010774621739983559
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "d069dfe3ba791f31",
+            "edge_id": "31469|31470|0",
+            "label": 0,
+            "probability_deviated": 0.010833589360117912
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "cc2252134ac19184",
+            "edge_id": "12972|12971|0",
+            "label": 0,
+            "probability_deviated": 0.01009239163249731
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "cc2252134ac19184",
+            "edge_id": "12971|12968|0",
+            "label": 0,
+            "probability_deviated": 0.011671659536659718
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "cc2252134ac19184",
+            "edge_id": "12968|709|0",
+            "label": 0,
+            "probability_deviated": 0.010169653221964836
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "cc2252134ac19184",
+            "edge_id": "709|32304|0",
+            "label": 0,
+            "probability_deviated": 0.010089581832289696
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "cc2252134ac19184",
+            "edge_id": "32304|709|0",
+            "label": 0,
+            "probability_deviated": 0.010015456937253475
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "e5437c047c703fa4",
+            "edge_id": "12980|12981|0",
+            "label": 0,
+            "probability_deviated": 0.04149533435702324
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "e5437c047c703fa4",
+            "edge_id": "12981|12980|0",
+            "label": 0,
+            "probability_deviated": 0.011369542218744755
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "e5437c047c703fa4",
+            "edge_id": "12980|12979|0",
+            "label": 0,
+            "probability_deviated": 0.011600007303059101
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "e5437c047c703fa4",
+            "edge_id": "12979|12978|0",
+            "label": 0,
+            "probability_deviated": 0.011491258628666401
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "e5437c047c703fa4",
+            "edge_id": "12978|12976|0",
+            "label": 0,
+            "probability_deviated": 0.01161055825650692
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "5ffd1de65a00fc7f",
+            "edge_id": "401|400|0",
+            "label": 0,
+            "probability_deviated": 0.009836476296186447
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "5ffd1de65a00fc7f",
+            "edge_id": "400|678|0",
+            "label": 0,
+            "probability_deviated": 0.01002685260027647
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "5ffd1de65a00fc7f",
+            "edge_id": "678|12971|0",
+            "label": 0,
+            "probability_deviated": 0.010244704782962799
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "5ffd1de65a00fc7f",
+            "edge_id": "12971|12968|0",
+            "label": 0,
+            "probability_deviated": 0.01169910654425621
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "5ffd1de65a00fc7f",
+            "edge_id": "12968|12967|0",
+            "label": 0,
+            "probability_deviated": 0.011423378251492977
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "e4869c1b8c98fe60",
+            "edge_id": "400|401|0",
+            "label": 1,
+            "probability_deviated": 0.9727248549461365
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "0f29dad8ecfeadc9",
+            "edge_id": "644|10951|0",
+            "label": 1,
+            "probability_deviated": 0.9627429246902466
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "7a7aa43d1f21ee8a",
+            "edge_id": "400|401|0",
+            "label": 1,
+            "probability_deviated": 0.9727244973182678
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "0c2fa93cfadd17a6",
+            "edge_id": "644|10951|0",
+            "label": 1,
+            "probability_deviated": 0.9627429246902466
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "69274ff7d3fd39d4",
+            "edge_id": "400|401|0",
+            "label": 1,
+            "probability_deviated": 0.9727244973182678
+          },
+          {
+            "rider_group": "a0db20db5cf8da67",
+            "example_key": "279a6d505d353e1f",
+            "edge_id": "644|10951|0",
+            "label": 1,
+            "probability_deviated": 0.9627429246902466
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "45111d1c7c7d0a70",
+            "edge_id": "644|10951|0",
+            "label": 1,
+            "probability_deviated": 0.9627429246902466
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "b41f9bd4a724a569",
+            "edge_id": "400|401|0",
+            "label": 1,
+            "probability_deviated": 0.9727244973182678
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "4eed1ab297ea8989",
+            "edge_id": "644|10951|0",
+            "label": 1,
+            "probability_deviated": 0.9627429246902466
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "7cb1bf16fffc5659",
+            "edge_id": "400|401|0",
+            "label": 1,
+            "probability_deviated": 0.9727244973182678
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "7e1f2365e5cd808d",
+            "edge_id": "644|10951|0",
+            "label": 1,
+            "probability_deviated": 0.9627429246902466
+          },
+          {
+            "rider_group": "ad4fc63d0f4bc320",
+            "example_key": "03555ca1d4511ede",
+            "edge_id": "400|401|0",
+            "label": 1,
+            "probability_deviated": 0.9727244973182678
+          }
+        ]
+      }
+    }
+  },
+  "temporal_evidence": {
+    "examples": 24,
+    "examples_with_multiple_steps": 24,
+    "examples_with_observed_history": 24,
+    "examples_with_observed_value_changes": 21,
+    "suggested_paths_with_observed_value_changes": 8,
+    "per_example": [
+      {
+        "example_key": "7dc5794119b8ffe1",
+        "steps": 6,
+        "observed_edges_per_step": [
+          0,
+          0,
+          0,
+          24,
+          0,
+          0
+        ],
+        "edges_with_observed_value_changes": 0,
+        "suggested_edges_with_observed_value_changes": 0
+      },
+      {
+        "example_key": "c1b6c409d6b00d45",
+        "steps": 6,
+        "observed_edges_per_step": [
+          0,
+          0,
+          0,
+          24,
+          0,
+          20
+        ],
+        "edges_with_observed_value_changes": 1,
+        "suggested_edges_with_observed_value_changes": 0
+      },
+      {
+        "example_key": "cfe67a9fac44cd36",
+        "steps": 6,
+        "observed_edges_per_step": [
+          0,
+          0,
+          0,
+          24,
+          0,
+          24
+        ],
+        "edges_with_observed_value_changes": 1,
+        "suggested_edges_with_observed_value_changes": 0
+      },
+      {
+        "example_key": "8d50e75fee93f4f0",
+        "steps": 6,
+        "observed_edges_per_step": [
+          0,
+          0,
+          0,
+          24,
+          0,
+          24
+        ],
+        "edges_with_observed_value_changes": 1,
+        "suggested_edges_with_observed_value_changes": 1
+      },
+      {
+        "example_key": "a4d649b458528e71",
+        "steps": 6,
+        "observed_edges_per_step": [
+          0,
+          0,
+          0,
+          24,
+          0,
+          24
+        ],
+        "edges_with_observed_value_changes": 0,
+        "suggested_edges_with_observed_value_changes": 0
+      },
+      {
+        "example_key": "1e70c58b16f9488b",
+        "steps": 6,
+        "observed_edges_per_step": [
+          0,
+          0,
+          0,
+          24,
+          0,
+          24
+        ],
+        "edges_with_observed_value_changes": 0,
+        "suggested_edges_with_observed_value_changes": 0
+      },
+      {
+        "example_key": "3cf097872db30814",
+        "steps": 6,
+        "observed_edges_per_step": [
+          0,
+          0,
+          0,
+          24,
+          0,
+          4
+        ],
+        "edges_with_observed_value_changes": 3,
+        "suggested_edges_with_observed_value_changes": 0
+      },
+      {
+        "example_key": "137f5d75e9732d29",
+        "steps": 6,
+        "observed_edges_per_step": [
+          0,
+          0,
+          0,
+          24,
+          0,
+          21
+        ],
+        "edges_with_observed_value_changes": 3,
+        "suggested_edges_with_observed_value_changes": 0
+      },
+      {
+        "example_key": "d069dfe3ba791f31",
+        "steps": 6,
+        "observed_edges_per_step": [
+          0,
+          0,
+          0,
+          24,
+          0,
+          24
+        ],
+        "edges_with_observed_value_changes": 4,
+        "suggested_edges_with_observed_value_changes": 0
+      },
+      {
+        "example_key": "cc2252134ac19184",
+        "steps": 6,
+        "observed_edges_per_step": [
+          0,
+          0,
+          0,
+          24,
+          0,
+          24
+        ],
+        "edges_with_observed_value_changes": 2,
+        "suggested_edges_with_observed_value_changes": 1
+      },
+      {
+        "example_key": "e5437c047c703fa4",
+        "steps": 6,
+        "observed_edges_per_step": [
+          0,
+          0,
+          0,
+          24,
+          0,
+          24
+        ],
+        "edges_with_observed_value_changes": 1,
+        "suggested_edges_with_observed_value_changes": 0
+      },
+      {
+        "example_key": "5ffd1de65a00fc7f",
+        "steps": 6,
+        "observed_edges_per_step": [
+          0,
+          0,
+          0,
+          24,
+          0,
+          24
+        ],
+        "edges_with_observed_value_changes": 2,
+        "suggested_edges_with_observed_value_changes": 0
+      },
+      {
+        "example_key": "e4869c1b8c98fe60",
+        "steps": 6,
+        "observed_edges_per_step": [
+          0,
+          13,
+          8,
+          6,
+          3,
+          3
+        ],
+        "edges_with_observed_value_changes": 3,
+        "suggested_edges_with_observed_value_changes": 1
+      },
+      {
+        "example_key": "0f29dad8ecfeadc9",
+        "steps": 6,
+        "observed_edges_per_step": [
+          0,
+          13,
+          8,
+          6,
+          3,
+          25
+        ],
+        "edges_with_observed_value_changes": 5,
+        "suggested_edges_with_observed_value_changes": 0
+      },
+      {
+        "example_key": "7a7aa43d1f21ee8a",
+        "steps": 6,
+        "observed_edges_per_step": [
+          0,
+          13,
+          8,
+          6,
+          3,
+          25
+        ],
+        "edges_with_observed_value_changes": 5,
+        "suggested_edges_with_observed_value_changes": 1
+      },
+      {
+        "example_key": "0c2fa93cfadd17a6",
+        "steps": 6,
+        "observed_edges_per_step": [
+          0,
+          13,
+          8,
+          6,
+          3,
+          25
+        ],
+        "edges_with_observed_value_changes": 5,
+        "suggested_edges_with_observed_value_changes": 0
+      },
+      {
+        "example_key": "69274ff7d3fd39d4",
+        "steps": 6,
+        "observed_edges_per_step": [
+          0,
+          13,
+          8,
+          6,
+          3,
+          25
+        ],
+        "edges_with_observed_value_changes": 5,
+        "suggested_edges_with_observed_value_changes": 1
+      },
+      {
+        "example_key": "279a6d505d353e1f",
+        "steps": 6,
+        "observed_edges_per_step": [
+          0,
+          13,
+          8,
+          6,
+          3,
+          25
+        ],
+        "edges_with_observed_value_changes": 5,
+        "suggested_edges_with_observed_value_changes": 0
+      },
+      {
+        "example_key": "45111d1c7c7d0a70",
+        "steps": 6,
+        "observed_edges_per_step": [
+          0,
+          13,
+          8,
+          6,
+          3,
+          3
+        ],
+        "edges_with_observed_value_changes": 3,
+        "suggested_edges_with_observed_value_changes": 0
+      },
+      {
+        "example_key": "b41f9bd4a724a569",
+        "steps": 6,
+        "observed_edges_per_step": [
+          0,
+          14,
+          7,
+          7,
+          2,
+          25
+        ],
+        "edges_with_observed_value_changes": 6,
+        "suggested_edges_with_observed_value_changes": 2
+      },
+      {
+        "example_key": "4eed1ab297ea8989",
+        "steps": 6,
+        "observed_edges_per_step": [
+          0,
+          13,
+          8,
+          6,
+          3,
+          25
+        ],
+        "edges_with_observed_value_changes": 5,
+        "suggested_edges_with_observed_value_changes": 0
+      },
+      {
+        "example_key": "7cb1bf16fffc5659",
+        "steps": 6,
+        "observed_edges_per_step": [
+          0,
+          14,
+          7,
+          7,
+          2,
+          25
+        ],
+        "edges_with_observed_value_changes": 6,
+        "suggested_edges_with_observed_value_changes": 2
+      },
+      {
+        "example_key": "7e1f2365e5cd808d",
+        "steps": 6,
+        "observed_edges_per_step": [
+          0,
+          13,
+          8,
+          6,
+          3,
+          25
+        ],
+        "edges_with_observed_value_changes": 5,
+        "suggested_edges_with_observed_value_changes": 0
+      },
+      {
+        "example_key": "03555ca1d4511ede",
+        "steps": 6,
+        "observed_edges_per_step": [
+          0,
+          14,
+          7,
+          7,
+          2,
+          25
+        ],
+        "edges_with_observed_value_changes": 6,
+        "suggested_edges_with_observed_value_changes": 2
+      }
+    ],
+    "status": "observed_history_variation_present",
+    "interpretation": "Coverage is a diagnostic, not proof of temporal benefit. Value changes are counted only when the same edge/field is observed at least twice; age and missingness changes alone do not qualify."
+  },
+  "traffic_reports": {
+    "7dc5794119b8ffe1": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1771210800000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        0
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        215,
+        0,
+        0
+      ],
+      "source_rides": 5,
+      "source_riders": 5,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "c1b6c409d6b00d45": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1771815600000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        20
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        430,
+        0,
+        170
+      ],
+      "source_rides": 14,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "cfe67a9fac44cd36": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1772420400000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        645,
+        0,
+        346
+      ],
+      "source_rides": 23,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "8d50e75fee93f4f0": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1773025200000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        860,
+        0,
+        518
+      ],
+      "source_rides": 32,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "a4d649b458528e71": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1773630000000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        1075,
+        0,
+        689
+      ],
+      "source_rides": 41,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "1e70c58b16f9488b": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1774234800000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        1290,
+        0,
+        860
+      ],
+      "source_rides": 50,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "950dcc95e6c5121f": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1771210803000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        0
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        215,
+        0,
+        0
+      ],
+      "source_rides": 5,
+      "source_riders": 5,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "823bc2a306e6f5e9": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1771815603000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        20
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        430,
+        0,
+        170
+      ],
+      "source_rides": 14,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "d5c896d1039f71be": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1772420403000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        645,
+        0,
+        346
+      ],
+      "source_rides": 23,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "6bd040a2556d0f2c": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1773025203000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        860,
+        0,
+        518
+      ],
+      "source_rides": 32,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "2abc59f12f9e2cd2": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1773630003000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        1075,
+        0,
+        689
+      ],
+      "source_rides": 41,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "0d81fc2b6aadaa04": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1774234803000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        1290,
+        0,
+        860
+      ],
+      "source_rides": 50,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "6d4c649ad8df6763": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1771210806000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        1
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        215,
+        0,
+        1
+      ],
+      "source_rides": 6,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "5510c4de2eaea5b7": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1771815606000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        20
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        430,
+        0,
+        171
+      ],
+      "source_rides": 15,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "76c014e6f12d1512": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1772420406000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        645,
+        0,
+        347
+      ],
+      "source_rides": 24,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "8883ffe8fcee7abc": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1773025206000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        860,
+        0,
+        519
+      ],
+      "source_rides": 33,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "6eec2db8e675a98b": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1773630006000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        1075,
+        0,
+        690
+      ],
+      "source_rides": 42,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "ab43f1a26f4f5828": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1774234806000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        1290,
+        0,
+        861
+      ],
+      "source_rides": 51,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "73163309b4f2a524": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1771210809000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        2
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        215,
+        0,
+        3
+      ],
+      "source_rides": 7,
+      "source_riders": 7,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "b798e44f6d137545": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1771815609000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        20
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        430,
+        0,
+        173
+      ],
+      "source_rides": 16,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "a5cb5cc6d8cdb2b7": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1772420409000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        645,
+        0,
+        349
+      ],
+      "source_rides": 25,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "14e6a25c981cd61f": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1773025209000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        860,
+        0,
+        521
+      ],
+      "source_rides": 34,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "d4396525c37493fa": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1773630009000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        1075,
+        0,
+        692
+      ],
+      "source_rides": 43,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "499f580f832523f1": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1774234809000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        1290,
+        0,
+        863
+      ],
+      "source_rides": 52,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "52c34e5507e6f59b": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1771210812000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        3
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        215,
+        0,
+        7
+      ],
+      "source_rides": 8,
+      "source_riders": 8,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "dcc7df8d4a01d525": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1771815612000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        20
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        430,
+        0,
+        177
+      ],
+      "source_rides": 17,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "a632a01ae541b160": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1772420412000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        645,
+        0,
+        353
+      ],
+      "source_rides": 26,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "ff10ed68493de2e6": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1773025212000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        860,
+        0,
+        525
+      ],
+      "source_rides": 35,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "fdfec75d068a5dce": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1773630012000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        1075,
+        0,
+        696
+      ],
+      "source_rides": 44,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "0cc99a8eb8b21bd6": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1774234812000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        1290,
+        0,
+        867
+      ],
+      "source_rides": 53,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "3cf097872db30814": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1771210815000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        4
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        215,
+        0,
+        12
+      ],
+      "source_rides": 9,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "137f5d75e9732d29": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1771815615000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        21
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        430,
+        0,
+        182
+      ],
+      "source_rides": 18,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "d069dfe3ba791f31": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1772420415000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        645,
+        0,
+        358
+      ],
+      "source_rides": 27,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "cc2252134ac19184": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1773025215000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        860,
+        0,
+        530
+      ],
+      "source_rides": 36,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "e5437c047c703fa4": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1773630015000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        1075,
+        0,
+        701
+      ],
+      "source_rides": 45,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "5ffd1de65a00fc7f": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1774234815000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        1290,
+        0,
+        872
+      ],
+      "source_rides": 54,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "e42470e98650c6fb": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1771210818000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        4
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        215,
+        0,
+        17
+      ],
+      "source_rides": 9,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "72aabaea4de8bd1f": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1771815618000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        21
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        430,
+        0,
+        188
+      ],
+      "source_rides": 18,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "3b064f416fe38773": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1772420418000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        645,
+        0,
+        364
+      ],
+      "source_rides": 27,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "4241ce4d78b252b9": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1773025218000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        860,
+        0,
+        536
+      ],
+      "source_rides": 36,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "efb575c3c1c504e1": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1773630018000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        1075,
+        0,
+        707
+      ],
+      "source_rides": 45,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "84bf6e8d954462aa": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1774234818000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        1290,
+        0,
+        877
+      ],
+      "source_rides": 54,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "1122247492cc83e1": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1771210821000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        4
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        215,
+        0,
+        22
+      ],
+      "source_rides": 9,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "3602628bc1af8e30": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1771815621000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        21
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        430,
+        0,
+        194
+      ],
+      "source_rides": 18,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "0954e22045cbd393": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1772420421000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        645,
+        0,
+        370
+      ],
+      "source_rides": 27,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "16bff584e97329dc": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1773025221000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        860,
+        0,
+        542
+      ],
+      "source_rides": 36,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "06128170d32f0c96": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1773630021000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        1075,
+        0,
+        712
+      ],
+      "source_rides": 45,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "b0d44227057d9a0a": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1774234821000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        0,
+        0,
+        24,
+        0,
+        24
+      ],
+      "speed_records_per_step": [
+        0,
+        0,
+        0,
+        1290,
+        0,
+        882
+      ],
+      "source_rides": 54,
+      "source_riders": 9,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "e4869c1b8c98fe60": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1767571219000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        3,
+        3
+      ],
+      "speed_records_per_step": [
+        0,
+        149,
+        140,
+        132,
+        42,
+        20
+      ],
+      "source_rides": 6,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "0f29dad8ecfeadc9": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1768176009000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        3,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        288,
+        280,
+        264,
+        94,
+        237
+      ],
+      "source_rides": 10,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "7a7aa43d1f21ee8a": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1768780818000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        3,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        447,
+        423,
+        399,
+        129,
+        509
+      ],
+      "source_rides": 18,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "0c2fa93cfadd17a6": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1769385609000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        3,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        576,
+        560,
+        528,
+        188,
+        714
+      ],
+      "source_rides": 22,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "69274ff7d3fd39d4": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1769990419000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        3,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        745,
+        700,
+        660,
+        210,
+        999
+      ],
+      "source_rides": 30,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "279a6d505d353e1f": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1770595209000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        3,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        864,
+        840,
+        792,
+        282,
+        1185
+      ],
+      "source_rides": 34,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "de3aa5890648d2d5": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1767571212000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        3,
+        2
+      ],
+      "speed_records_per_step": [
+        0,
+        146,
+        141,
+        133,
+        46,
+        3
+      ],
+      "source_rides": 4,
+      "source_riders": 4,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "d750a2987c889ab2": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1768176022000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        3,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        302,
+        282,
+        266,
+        82,
+        261
+      ],
+      "source_rides": 11,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "3696237845973cb2": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1768780812000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        3,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        438,
+        423,
+        399,
+        138,
+        484
+      ],
+      "source_rides": 16,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "abb8835abdcf1b27": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1769385622000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        3,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        604,
+        564,
+        532,
+        164,
+        758
+      ],
+      "source_rides": 23,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "be389ca75d86fae8": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1769990412000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        3,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        730,
+        705,
+        665,
+        230,
+        962
+      ],
+      "source_rides": 28,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "712ea04e28340784": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1770595222000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        3,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        906,
+        846,
+        798,
+        246,
+        1247
+      ],
+      "source_rides": 35,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "5bd8c7ca3c1324b2": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1767571225000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        2,
+        3
+      ],
+      "speed_records_per_step": [
+        0,
+        152,
+        140,
+        132,
+        39,
+        23
+      ],
+      "source_rides": 5,
+      "source_riders": 5,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "7780d5950e73e11e": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1768176015000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        3,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        294,
+        280,
+        264,
+        88,
+        247
+      ],
+      "source_rides": 11,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "aeabc7f607d8ae3d": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1768780825000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        2,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        456,
+        420,
+        396,
+        117,
+        522
+      ],
+      "source_rides": 17,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "8ccaafd1c8abec39": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1769385615000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        3,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        588,
+        560,
+        528,
+        176,
+        735
+      ],
+      "source_rides": 23,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "02f0918fd7ca0951": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1769990425000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        2,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        760,
+        700,
+        660,
+        195,
+        1012
+      ],
+      "source_rides": 29,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "166e2c5c4b8a87f7": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1770595215000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        3,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        882,
+        840,
+        792,
+        264,
+        1216
+      ],
+      "source_rides": 35,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "36d4c8b89a06661b": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1767571218000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        3,
+        3
+      ],
+      "speed_records_per_step": [
+        0,
+        149,
+        141,
+        133,
+        43,
+        14
+      ],
+      "source_rides": 5,
+      "source_riders": 5,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "b66b38a1462afccb": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1768176028000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        7,
+        2,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        308,
+        282,
+        264,
+        78,
+        276
+      ],
+      "source_rides": 11,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "047be9613d939b0e": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1768780818000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        3,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        447,
+        423,
+        399,
+        129,
+        505
+      ],
+      "source_rides": 17,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "455fff3fc01fea3a": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1769385628000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        7,
+        2,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        616,
+        564,
+        528,
+        156,
+        777
+      ],
+      "source_rides": 23,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "5a42c7320b00fd45": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1769990418000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        3,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        745,
+        705,
+        665,
+        215,
+        990
+      ],
+      "source_rides": 29,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "f356a129309176fd": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1770595229000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        7,
+        2,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        924,
+        840,
+        786,
+        228,
+        1271
+      ],
+      "source_rides": 35,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "e71b193c172ea867": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1767571232000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        14,
+        7,
+        7,
+        2,
+        4
+      ],
+      "speed_records_per_step": [
+        0,
+        156,
+        141,
+        132,
+        37,
+        36
+      ],
+      "source_rides": 5,
+      "source_riders": 5,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "692e0aa1cb08965b": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1768176021000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        3,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        300,
+        280,
+        264,
+        82,
+        263
+      ],
+      "source_rides": 11,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "76f20feb1ee76f69": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1768780831000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        7,
+        7,
+        2,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        465,
+        420,
+        393,
+        111,
+        536
+      ],
+      "source_rides": 17,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "092b8a745c1f7980": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1769385621000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        3,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        600,
+        560,
+        528,
+        164,
+        759
+      ],
+      "source_rides": 23,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "660e21bce9261456": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1769990432000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        14,
+        7,
+        7,
+        2,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        780,
+        705,
+        660,
+        185,
+        1031
+      ],
+      "source_rides": 29,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "097de443a1fa9c05": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1770595221000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        3,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        900,
+        840,
+        792,
+        246,
+        1247
+      ],
+      "source_rides": 35,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "45111d1c7c7d0a70": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1767571224000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        3,
+        3
+      ],
+      "speed_records_per_step": [
+        0,
+        152,
+        141,
+        133,
+        40,
+        30
+      ],
+      "source_rides": 6,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "b41f9bd4a724a569": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1768176034000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        14,
+        7,
+        7,
+        2,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        314,
+        282,
+        264,
+        72,
+        299
+      ],
+      "source_rides": 12,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "4eed1ab297ea8989": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1768780824000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        3,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        456,
+        423,
+        399,
+        120,
+        528
+      ],
+      "source_rides": 18,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "7cb1bf16fffc5659": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1769385635000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        14,
+        7,
+        7,
+        2,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        628,
+        560,
+        524,
+        140,
+        801
+      ],
+      "source_rides": 24,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "7e1f2365e5cd808d": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1769990424000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        3,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        760,
+        705,
+        665,
+        200,
+        1018
+      ],
+      "source_rides": 30,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "03555ca1d4511ede": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1770595234000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        14,
+        7,
+        7,
+        2,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        942,
+        846,
+        792,
+        216,
+        1294
+      ],
+      "source_rides": 36,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "aa90381cb281886a": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1767571239000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        14,
+        7,
+        7,
+        2,
+        5
+      ],
+      "speed_records_per_step": [
+        0,
+        159,
+        140,
+        131,
+        33,
+        58
+      ],
+      "source_rides": 6,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "498bdcc6ef0bffd7": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1768176027000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        2,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        306,
+        280,
+        262,
+        78,
+        282
+      ],
+      "source_rides": 12,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "189d8964ff3ab015": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1768780837000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        14,
+        7,
+        7,
+        2,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        474,
+        420,
+        393,
+        102,
+        558
+      ],
+      "source_rides": 18,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "3bd056dac1f94096": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1769385627000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        2,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        612,
+        560,
+        524,
+        156,
+        782
+      ],
+      "source_rides": 24,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "bf6f67f2effbb135": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1769990436000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        14,
+        7,
+        7,
+        2,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        790,
+        705,
+        660,
+        175,
+        1047
+      ],
+      "source_rides": 30,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "f3eba6b726ab621b": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1770595227000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        6,
+        2,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        918,
+        840,
+        786,
+        234,
+        1273
+      ],
+      "source_rides": 36,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "78c02a2944ed8bae": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1767571230000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        7,
+        2,
+        4
+      ],
+      "speed_records_per_step": [
+        0,
+        155,
+        141,
+        132,
+        38,
+        41
+      ],
+      "source_rides": 6,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "b35d43cd16d17e26": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1768176039000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        14,
+        7,
+        7,
+        2,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        318,
+        280,
+        262,
+        66,
+        309
+      ],
+      "source_rides": 12,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "69d542fb5a3c76d9": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1768780830000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        7,
+        2,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        465,
+        423,
+        396,
+        114,
+        543
+      ],
+      "source_rides": 18,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "dd2d7bfd30e0324d": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1769385642000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        14,
+        7,
+        7,
+        2,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        644,
+        564,
+        528,
+        128,
+        815
+      ],
+      "source_rides": 24,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "d02f6e318590cef6": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1769990430000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        13,
+        8,
+        7,
+        2,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        775,
+        705,
+        660,
+        190,
+        1035
+      ],
+      "source_rides": 30,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    },
+    "d6edd43aaf4351ff": {
+      "source": "historical_rider_gps_speed_profile",
+      "cutoff_ms": 1770595240000,
+      "steps": 6,
+      "interval_seconds": 300,
+      "profile_bin_seconds": 300,
+      "observed_edges_per_step": [
+        0,
+        14,
+        7,
+        7,
+        2,
+        25
+      ],
+      "speed_records_per_step": [
+        0,
+        960,
+        846,
+        792,
+        198,
+        1306
+      ],
+      "source_rides": 36,
+      "source_riders": 6,
+      "excluded_riders": 4,
+      "excluded_rides": 1,
+      "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+    }
+  },
+  "traffic_input_protocol": "Historical profiles exclude all validation and test riders",
+  "interpretation": "Controlled synthetic capacity check. Test riders are absent from model training and traffic profiles, but repeated artificial patterns are not evidence of real-rider generalization.",
+  "provenance": {
+    "kind": "controlled synthetic capacity training run",
+    "synthetic": true,
+    "approved_artifact_sha256": "fadc26b63ca68dbcfd409de4ef38b061252e3b6a62bed6ea6150e712ee82c9a5",
+    "traffic": "fold-specific historical rider-GPS speed profiles; held-out rider and future records excluded",
+    "evaluation": "fixed rider-disjoint synthetic train/validation/test split",
+    "graphml_sha256": "b3e3b09db14dd6f0d75eba6e08faba6400cb870149f3994327089d278b35260b",
+    "node_features_sha256": "68ede82f8c2a58632360456b7747496fff829565349efa1704beeaae736c508d",
+    "edge_dynamic_schema": [
+      "congestion_normalized",
+      "speed_ratio_to_reference",
+      "congestion_observed",
+      "speed_observed",
+      "traffic_age_scaled"
+    ],
+    "gps_traffic_build": {
+      "source": "rider_gps_motorcycle_probe_speeds",
+      "rides": 138,
+      "rides_with_matched_speed": 138,
+      "gps_points": 9714,
+      "speed_records": 9099,
+      "matched_edges": 65,
+      "invalid_or_orphan_points": 0,
+      "median_sampling_interval_s": 2.0,
+      "requested_sampling_interval_s": 2,
+      "skipped_segments": {
+        "unmatched_segment": 477
+      },
+      "parameters": {
+        "match_radius_m": 60.0,
+        "max_gap_s": 20.0,
+        "max_speed_mps": 35.0,
+        "stationary_distance_m": 3.0
+      }
+    },
+    "traffic_policy": {
+      "steps": 6,
+      "interval_s": 300,
+      "profile_bin_s": 300,
+      "held_out_rider_allowed": false,
+      "future_records_allowed": false
+    }
+  }
+}

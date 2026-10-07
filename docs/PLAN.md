@@ -4,7 +4,7 @@
 - Working study area: Taft Avenue within the City of Manila, provisionally including a 500 m surrounding study corridor and a 1 km buffer for the routing graph. These are assumptions to revisit against collected routes.
 - The mobile app is for collection. Riders currently use an older build; its precise version and whether every rider used the same build still need to be confirmed.
 - Preserve original observations. Mark unknown or inconsistent fields and any reconstructed values; do not present dummy values as real rider evidence.
-- Current stage: the executable STGAT-LSTM, GAT/GCN baselines, learned-cost routing, official real-export audit, route/GPS geometry screening, OSM compatibility/coverage audit, directed HMM/Viterbi map matching, conservative common-OD candidate extraction, automatic survey/GPS candidate validation, the OSM-to-model feature contract, request-time Mapbox traffic ingestion, and the learned-cost routing adapter are implemented.
+- Current stage: the executable STGAT-LSTM, GAT/GCN baselines, learned-cost routing, official real-export audit, route/GPS geometry screening, OSM compatibility/coverage audit, directed HMM/Viterbi map matching, conservative common-OD candidate extraction, automatic survey/GPS candidate validation, the OSM-to-model feature contract, GPS-derived temporal road-speed profiles, a controlled synthetic Taft hotspot experiment, and the learned-cost routing adapter are implemented.
 - See the root `README.md` for the project overview, `RUNBOOK.md` for commands, `MODEL_EXPLANATION.md` for the technical walkthrough, and `PRESENTATION_GUIDE.md` for the defense/demo material.
 - These confirmed points supersede tentative objectives or outputs suggested below.
 
@@ -14,7 +14,8 @@
 - Seventeen intentional deviation events fall inside the provisional Taft corridor. Eleven have complete directed GPS, prior-route, and regenerated-route matches; eight pass the sequence screen; three satisfy the strict divergence-and-rejoin rules.
 - The approved training artifact currently contains eight local route-choice examples from six riders. These yield 28 supervised road decisions: 25 followed roads and three rejected roads.
 - This is enough to demonstrate the complete pipeline and in-sample learning. It is not enough to support a reliable rider-generalization or state-of-the-art performance claim. The rider-disjoint results remain preliminary and weak.
-- Historical traffic is unavailable for these examples, so their traffic snapshots are marked unknown. Current Mapbox traffic must not be attached retrospectively to an earlier ride.
+- The GPS track has a 2.001-second median sampling interval. The current pipeline derives 6,657 usable motorcycle speed segments on 494 directed OSM roads from 48 rides. Pre-decision time-of-day profiles are available for some examples, but coverage is sparse and uneven, so the present data still cannot establish that the LSTM improves held-out prediction.
+- The controlled synthetic experiment contains 96 labeled decisions from eight artificial riders: 48 deviations across two approved in-corridor Taft choice patterns and 48 follows across five approved follow-route structures. Forty-two separate traffic-probe rides create slow and free-flow histories without becoming decision labels. All 96 decision rides pass production reconstruction and automatic validation. A fixed 48/24/24 rider-disjoint train/validation/test split gives full-history ST-GAT-LSTM 1.000 balanced accuracy, deviation F1, AP, ROC-AUC, and route-ranking accuracy; the latest-only control reaches 0.983 balanced accuracy and 0.923 F1. This is an implementation and temporal-capacity check, not rider evidence.
 
 ## Collection priorities and pending decisions
 
@@ -26,7 +27,7 @@
 6. Collect more independent intentional deviations from more riders and conditions. Repeated follow labels from the same riders cannot replace positive deviation choices.
 7. Stop collection based on rider-disjoint learning curves and uncertainty, rather than a universal raw-row target.
 
-Still to clarify before the final experiment freeze: the exact deployed app build; the final corridor boundary and allowed excursions; the target rider/ride count and collection duration; available historical traffic coverage and Mapbox license terms; the final temporal-history definition for the LSTM; acceptable detour bounds; thesis success criteria; participant consent, retention, and sharing rules; and whether the final study requires a live rider trial.
+Still to clarify before the final experiment freeze: the exact deployed app build; the final corridor boundary and allowed excursions; the target rider/ride count and collection duration; the final GPS temporal-history window after coverage analysis; whether the default 1.30 maximum-detour ratio should be changed; thesis success criteria; participant consent, retention, and sharing rules; and whether the final study requires a live rider trial.
 
 If collection ends with only a few independent positive deviations, report STGAT-LSTM as a pipeline proof of concept, disclose the rider-disjoint results, and treat the strongest simpler baseline as the defensible measured model. Class weights, extra epochs, or duplicated records cannot substitute for independent rider decisions.
 
@@ -93,7 +94,7 @@ Phase 6 — Visualization: Web-based visualization with adjustable parameters.
 # Disclaimer
 - Development should be reviewed from the perspective of an experienced machine-learning engineer.
 - Another important reminder: if you need any clarification on anything, please tell me or ask me. Let me know every step of the way. Perhaps you may ask if I have a certain resource already. Ask me, please.
-- What I need is Real-Time traffic data as well. I’m not sure how to include and integrate this, but I do have Mapbox, if ever so help me.
-- The current real decision artifact uses a common local route-choice unit and contains 5 conservative followed candidates plus 3 strict deviated candidates from 6 riders. It remains review-required and too small for meaningful rider-disjoint evaluation.
+- Traffic context is now derived from timestamped rider GPS as historical motorcycle probe speeds. Mapbox remains optional compatibility code rather than the primary thesis design.
+- The current real decision artifact uses a common local route-choice unit and contains 5 conservative followed candidates plus 3 strict deviated candidates from 6 riders. It is automatically validated and approved, but remains too small for meaningful rider-disjoint evaluation.
 - A shared STGAT-LSTM multitask model trains a per-road deviation head together with the learned edge-preference-cost head. Reviewed official route segments are converted into labels at eligible branching roads.
-- The eight reconstructed examples are approved and produce 28 road-choice labels: 25 followed and three rejected. The current real checkpoint reaches 27/28 in-sample road classification and 3/3 in-sample preference ranking; rider-disjoint evaluation and additional collection remain required.
+- The eight reconstructed examples are approved and produce 28 road-choice labels: 25 followed and three rejected. The GPS-history checkpoint reaches 19/28 in-sample road classifications at threshold 0.5 and 3/3 in-sample preference rankings; rider-disjoint evaluation and additional collection remain required.

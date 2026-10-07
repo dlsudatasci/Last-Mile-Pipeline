@@ -1,8 +1,9 @@
 """Build model-ready tensors from the supplied OSM graph and reviewed choices.
 
-Static OSM features are available now. Historical edge traffic is not, so the
-default temporal snapshot explicitly marks traffic as unknown. Review-required
-candidate files are rejected by the training loader.
+Static OSM features are always available. When no historical GPS or archived
+traffic source is supplied, the default temporal snapshot explicitly marks
+traffic as unknown. Review-required candidate files are rejected by the
+training loader.
 """
 
 from __future__ import annotations

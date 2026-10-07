@@ -1,0 +1,35 @@
+responseId,deviationId,rideId,primaryReason,primaryReasonOther,trafficSeverity,rushHourCause,chooseDuringNonRush,blockageReason,blockageReasonOther,personalStopReason,personalStopOther,stopDuration,deviateAgain,avoidRoadFrequency,language,submittedAt,createdAt
+2jr87RpOEAjKO5ldIIhz,dev-EnIyBdLJqSlgyALD2oSX-1,EnIyBdLJqSlgyALD2oSX,Shortcut/Faster Route/Personal Preference/Familiar Road,,,,,,,[],,,Sometimes,Often,en,1784906632137,1784906632137
+4yO244esHvumyRxlQW5O,dev-1WE9P6BngtZWrgbnF34h-1,1WE9P6BngtZWrgbnF34h,Shortcut/Faster Route/Personal Preference/Familiar Road,,,,,,,[],,,Often,Often,tl,1784976150460,1784976150460
+6EdTEiSuSNmp9eKNUADa,dev-b72kbSj4zms7yk6xGF5G-0,b72kbSj4zms7yk6xGF5G,Avoid Intersection,,4 = Heavy,Yes,Yes,,,[],,,Often,Often,tl,1784965702402,1784965702402
+6JylXcodN7CT8hNn1jIX,dev-wbYD9pTHrVY7hWNfTddd-1,wbYD9pTHrVY7hWNfTddd,Traffic Congestion,,3 = Moderate,No,No,,,[],,,Sometimes,Rarely,en,1784907681278,1784907681278
+7U57NGCaPtioroEfqRyw,dev-bSxpMrYtTZbKj06HwuQr-0,bSxpMrYtTZbKj06HwuQr,Traffic Congestion,,5 = Severe,Yes,Yes,,,[],,,Sometimes,Sometimes,en,1785487461234,1785487461234
+9HKbo4mx8SjRQ0JF3mwx,dev-EnIyBdLJqSlgyALD2oSX-5,EnIyBdLJqSlgyALD2oSX,Shortcut/Faster Route/Personal Preference/Familiar Road,,,,,,,[],,,Sometimes,Sometimes,en,1784906632138,1784906632138
+Bgp9zGsVef711hyFqvAg,dev-I3JbnIwepaslgyQrf5pE-2,I3JbnIwepaslgyQrf5pE,Shortcut/Faster Route/Personal Preference/Familiar Road,,,,,,,[],,,Often,Often,tl,1785147276998,1785147276998
+GSOAhUChZnhyL6uoBTif,dev-1WE9P6BngtZWrgbnF34h-0,1WE9P6BngtZWrgbnF34h,Traffic Congestion,,2 = Light,Yes,Yes,,,[],,,Often,Often,tl,1784976150459,1784976150459
+INT5IDRs68XDviWydTxs,dev-jmMRQmtIgBrUHyJYMGlP-1,jmMRQmtIgBrUHyJYMGlP,Traffic Congestion,,2 = Light,Yes,Yes,,,[],,,Often,Often,en,1785081101310,1785081101310
+JC8H2TnBSvSG6inq5Sek,dev-jiQWmvaS14llN37DCUox-0,jiQWmvaS14llN37DCUox,Shortcut/Faster Route/Personal Preference/Familiar Road,,,,,,,[],,,Often,Always,tl,1785150515853,1785150515853
+JtgUWAkyFghsfER4S4li,dev-wbYD9pTHrVY7hWNfTddd-0,wbYD9pTHrVY7hWNfTddd,"Personal Stop (Meal, Restroom, Break, Refueling, etc.)",,,,,,,['Restroom'],,< 5mins,Rarely,Rarely,en,1784907681278,1784907681278
+KNBge3NDFXAsH5Psi1rS,dev-I3JbnIwepaslgyQrf5pE-1,I3JbnIwepaslgyQrf5pE,Avoid Intersection,,3 = Moderate,Yes,Unsure,,,[],,,Often,Sometimes,tl,1785147276997,1785147276997
+N8V46iABUEnluuzhQmAO,dev-HPlut9DmFm7I4qbQr8b2-0,HPlut9DmFm7I4qbQr8b2,"Road Blockage/Hazard (Flood, Accident, Poor road condition)",,,,,Road closure,,[],,,Always,Rarely,en,1784908001301,1784908001301
+R9l1LZbixPPGJemgcO3U,dev-SwCi6aOsakLnw3uuiS1e-0,SwCi6aOsakLnw3uuiS1e,Avoid Intersection,,2 = Light,No,No,,,[],,,Often,Often,tl,1785086487649,1785086487649
+TcmRYO9zWz7BQwB1ufIO,dev-zGasBnkSGcOdCYb8NHaB-0,zGasBnkSGcOdCYb8NHaB,Shortcut/Faster Route/Personal Preference/Familiar Road,,,,,,,[],,,Sometimes,Often,tl,1784963544955,1784963544955
+V5FztyD0BOIK4Z8eyiDi,dev-Q8qOuhio9ifm5Rx1mEqG-0,Q8qOuhio9ifm5Rx1mEqG,Shortcut/Faster Route/Personal Preference/Familiar Road,,,,,,,[],,,Often,Rarely,en,1784908354260,1784908354260
+WwUJEA8rdWpaw7V9bYLU,dev-aOy5nRqwR4sQA5XKsSQj-1,aOy5nRqwR4sQA5XKsSQj,Shortcut/Faster Route/Personal Preference/Familiar Road,,,,,,,[],,,Sometimes,Rarely,en,1785209203176,1785209203176
+XivJfMh9D3EgOcPSwyjE,dev-6wha8XEmrhYk7bMuxxcm-0,6wha8XEmrhYk7bMuxxcm,Avoid Intersection,,1 = Very Light,No,Yes,,,[],,,Sometimes,Sometimes,en,1784905413098,1784905413098
+YAyOLvKLLi9u4odq2hnF,dev-bSxpMrYtTZbKj06HwuQr-1,bSxpMrYtTZbKj06HwuQr,Avoid Intersection,,4 = Heavy,Yes,Yes,,,[],,,Sometimes,Sometimes,en,1785487461234,1785487461234
+cVYGSpq6QrCJ6WvmRPUD,dev-I3JbnIwepaslgyQrf5pE-0,I3JbnIwepaslgyQrf5pE,Traffic Congestion,,3 = Moderate,Yes,Yes,,,[],,,Often,Often,tl,1785147276995,1785147276995
+fZ0xUj3DY1tPMwzXVTfG,dev-4IAl52dAeEI0aHeP6CUs-1,4IAl52dAeEI0aHeP6CUs,Shortcut/Faster Route/Personal Preference/Familiar Road,,,,,,,[],,,Often,Often,tl,1785152848193,1785152848193
+gA6zGrIRtXgh87cIFHTr,dev-4IAl52dAeEI0aHeP6CUs-0,4IAl52dAeEI0aHeP6CUs,Traffic Congestion,,2 = Light,Yes,Yes,,,[],,,Often,Often,tl,1785152848191,1785152848191
+h8Z21EGjZ58KVVbNFR6M,dev-ctuvwPHtY2EPSiJOstwg-0,ctuvwPHtY2EPSiJOstwg,Shortcut/Faster Route/Personal Preference/Familiar Road,,,,,,,[],,,Often,Often,tl,1785082381367,1785082381367
+hP8mO7iqVwI0n3hDbzvN,dev-ulzOmkAiXPHGx4JA1Ilv-0,ulzOmkAiXPHGx4JA1Ilv,Shortcut/Faster Route/Personal Preference/Familiar Road,,,,,,,[],,,Often,Often,tl,1785139216357,1785139216357
+hVW9KVACqnUlz1Yxhv96,dev-jmMRQmtIgBrUHyJYMGlP-0,jmMRQmtIgBrUHyJYMGlP,Shortcut/Faster Route/Personal Preference/Familiar Road,,,,,,,[],,,Always,Often,en,1785081101310,1785081101310
+lY5J8cCceIP4SnahHWSi,dev-EnIyBdLJqSlgyALD2oSX-4,EnIyBdLJqSlgyALD2oSX,Avoid Intersection,,3 = Moderate,No,Unsure,,,[],,,Often,Sometimes,en,1784906632138,1784906632138
+nzbCTikss9ytjYT1TRDU,dev-EnIyBdLJqSlgyALD2oSX-0,EnIyBdLJqSlgyALD2oSX,Shortcut/Faster Route/Personal Preference/Familiar Road,,,,,,,[],,,Often,Sometimes,en,1784906632136,1784906632136
+olCF47XEMNfY5Cuyum48,dev-ulzOmkAiXPHGx4JA1Ilv-1,ulzOmkAiXPHGx4JA1Ilv,Shortcut/Faster Route/Personal Preference/Familiar Road,,,,,,,[],,,Often,Often,tl,1785139216358,1785139216358
+rNBJpddSuL47CI8d8w3k,dev-EnIyBdLJqSlgyALD2oSX-2,EnIyBdLJqSlgyALD2oSX,Traffic Congestion,,2 = Light,No,No,,,[],,,Often,Often,en,1784906632137,1784906632137
+uwnSZBLo4an0SDMGTefQ,dev-EnIyBdLJqSlgyALD2oSX-3,EnIyBdLJqSlgyALD2oSX,Traffic Congestion,,2 = Light,No,Unsure,,,[],,,Often,Often,en,1784906632137,1784906632137
+vXyaMkg09XVV0M1j0igS,dev-fsyywUuXJq0Pkixim4IZ-0,fsyywUuXJq0Pkixim4IZ,Other,Mas pinili ko ang main road,,,,,,[],,,Often,Sometimes,en,1784876733915,1784876733915
+vlaZc7Bpx3Lnr5yuMArI,dev-aOy5nRqwR4sQA5XKsSQj-0,aOy5nRqwR4sQA5XKsSQj,Shortcut/Faster Route/Personal Preference/Familiar Road,,,,,,,[],,,Sometimes,Rarely,en,1785209203175,1785209203175
+yB7JlqzDg1ZFUhgHLCEw,dev-C0oYDSgOs81FSV4IU7kf-0,C0oYDSgOs81FSV4IU7kf,Traffic Congestion,,4 = Heavy,No,Unsure,,,[],,,Often,Sometimes,en,1785208789846,1785208789846
+zuHsUlGozHBREhbKLdn0,dev-3fbSxwzOxepchACHthvs-0,3fbSxwzOxepchACHthvs,Shortcut/Faster Route/Personal Preference/Familiar Road,,,,,,,[],,,Sometimes,Sometimes,en,1784871979431,1784871979431

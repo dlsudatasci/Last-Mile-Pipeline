@@ -1,0 +1,298 @@
+{
+  "checkpoint": "outputs\\gps_test_checkpoint.pt",
+  "training_summary": {
+    "examples": 8,
+    "riders": 6,
+    "followed": 5,
+    "deviated": 3,
+    "road_decisions": 28,
+    "followed_road_decisions": 25,
+    "deviation_road_decisions": 3,
+    "epochs": 2,
+    "initial_loss": 1.9978973865509033,
+    "final_loss": 1.9347984790802002,
+    "in_sample_road_classification_correct": 25,
+    "preference_pairs": 3,
+    "in_sample_ranking_correct": 1,
+    "epoch_losses": [
+      1.9978973865509033,
+      1.9652481079101562
+    ]
+  },
+  "provenance": {
+    "kind": "approved real decision training run",
+    "approved_artifact_sha256": "e4c31ec4d0a28afb72fbc225dcc9ae4e926b1f0671fad412464b1c498da28fef",
+    "traffic": "historical rider-GPS motorcycle probe speeds; target ride and post-decision records excluded",
+    "evaluation": "in-sample only; not a rider-generalization estimate",
+    "graphml_sha256": "b3e3b09db14dd6f0d75eba6e08faba6400cb870149f3994327089d278b35260b",
+    "node_features_sha256": "68ede82f8c2a58632360456b7747496fff829565349efa1704beeaae736c508d",
+    "edge_dynamic_schema": [
+      "congestion_normalized",
+      "speed_ratio_to_reference",
+      "congestion_observed",
+      "speed_observed",
+      "traffic_age_scaled"
+    ],
+    "gps_traffic_build": {
+      "source": "rider_gps_motorcycle_probe_speeds",
+      "rides": 56,
+      "rides_with_matched_speed": 48,
+      "gps_points": 11435,
+      "speed_records": 6657,
+      "matched_edges": 494,
+      "invalid_or_orphan_points": 0,
+      "median_sampling_interval_s": 2.001,
+      "requested_sampling_interval_s": 2,
+      "skipped_segments": {
+        "gap_too_long": 119,
+        "implausible_speed": 3,
+        "unmatched_segment": 4600
+      },
+      "parameters": {
+        "match_radius_m": 60.0,
+        "max_gap_s": 20.0,
+        "max_speed_mps": 35.0,
+        "stationary_distance_m": 3.0
+      }
+    },
+    "traffic_history": {
+      "9d8b7bf677b875c5": {
+        "source": "historical_rider_gps_speed_profile",
+        "cutoff_ms": 1784946867266,
+        "steps": 6,
+        "interval_seconds": 300,
+        "profile_bin_seconds": 300,
+        "observed_edges_per_step": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "speed_records_per_step": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "source_rides": 0,
+        "source_riders": 0,
+        "excluded_riders": 0,
+        "excluded_rides": 1,
+        "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+      },
+      "fe40c13cde670e01": {
+        "source": "historical_rider_gps_speed_profile",
+        "cutoff_ms": 1784956537871,
+        "steps": 6,
+        "interval_seconds": 300,
+        "profile_bin_seconds": 300,
+        "observed_edges_per_step": [
+          0,
+          0,
+          0,
+          2,
+          7,
+          2
+        ],
+        "speed_records_per_step": [
+          0,
+          0,
+          0,
+          9,
+          55,
+          5
+        ],
+        "source_rides": 2,
+        "source_riders": 2,
+        "excluded_riders": 0,
+        "excluded_rides": 1,
+        "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+      },
+      "f26b013dda58e426": {
+        "source": "historical_rider_gps_speed_profile",
+        "cutoff_ms": 1785070262334,
+        "steps": 6,
+        "interval_seconds": 300,
+        "profile_bin_seconds": 300,
+        "observed_edges_per_step": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "speed_records_per_step": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "source_rides": 0,
+        "source_riders": 0,
+        "excluded_riders": 0,
+        "excluded_rides": 1,
+        "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+      },
+      "cf736fccb501412b": {
+        "source": "historical_rider_gps_speed_profile",
+        "cutoff_ms": 1784872275275,
+        "steps": 6,
+        "interval_seconds": 300,
+        "profile_bin_seconds": 300,
+        "observed_edges_per_step": [
+          0,
+          0,
+          0,
+          5,
+          3,
+          0
+        ],
+        "speed_records_per_step": [
+          0,
+          0,
+          0,
+          29,
+          21,
+          0
+        ],
+        "source_rides": 1,
+        "source_riders": 1,
+        "excluded_riders": 0,
+        "excluded_rides": 1,
+        "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+      },
+      "1dbf260f252a39b0": {
+        "source": "historical_rider_gps_speed_profile",
+        "cutoff_ms": 1784950234241,
+        "steps": 6,
+        "interval_seconds": 300,
+        "profile_bin_seconds": 300,
+        "observed_edges_per_step": [
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        "speed_records_per_step": [
+          31,
+          20,
+          0,
+          0,
+          0,
+          0
+        ],
+        "source_rides": 1,
+        "source_riders": 1,
+        "excluded_riders": 0,
+        "excluded_rides": 1,
+        "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+      },
+      "11930c364eaa39de": {
+        "source": "historical_rider_gps_speed_profile",
+        "cutoff_ms": 1785152472973,
+        "steps": 6,
+        "interval_seconds": 300,
+        "profile_bin_seconds": 300,
+        "observed_edges_per_step": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "speed_records_per_step": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "source_rides": 0,
+        "source_riders": 0,
+        "excluded_riders": 0,
+        "excluded_rides": 1,
+        "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+      },
+      "33fc9d0edd61ebaa": {
+        "source": "historical_rider_gps_speed_profile",
+        "cutoff_ms": 1784907881417,
+        "steps": 6,
+        "interval_seconds": 300,
+        "profile_bin_seconds": 300,
+        "observed_edges_per_step": [
+          0,
+          0,
+          0,
+          5,
+          5,
+          0
+        ],
+        "speed_records_per_step": [
+          0,
+          0,
+          0,
+          43,
+          50,
+          0
+        ],
+        "source_rides": 1,
+        "source_riders": 1,
+        "excluded_riders": 0,
+        "excluded_rides": 1,
+        "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+      },
+      "2222bc21d470f3b9": {
+        "source": "historical_rider_gps_speed_profile",
+        "cutoff_ms": 1785487223415,
+        "steps": 6,
+        "interval_seconds": 300,
+        "profile_bin_seconds": 300,
+        "observed_edges_per_step": [
+          0,
+          0,
+          0,
+          13,
+          5,
+          0
+        ],
+        "speed_records_per_step": [
+          0,
+          0,
+          0,
+          96,
+          30,
+          0
+        ],
+        "source_rides": 1,
+        "source_riders": 1,
+        "excluded_riders": 0,
+        "excluded_rides": 1,
+        "interpretation": "historical motorcycle probe-speed context, not direct network-wide traffic"
+      }
+    },
+    "traffic_policy": {
+      "steps": 6,
+      "interval_s": 300,
+      "profile_bin_s": 300,
+      "future_records_allowed": false,
+      "target_ride_allowed": false
+    },
+    "training_settings": {
+      "epochs": 2,
+      "learning_rate": 0.005,
+      "preference_weight": 1.0,
+      "seed": 17
+    }
+  }
+}
