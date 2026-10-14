@@ -21,7 +21,7 @@ from shapely.ops import transform
 
 from .geometry import GeoPoint, parse_gps_location, parse_route_points
 from .audit_map_matching import EXCLUDED_REASONS, _edge_overlap, _sample_points
-from .map_matching import EdgeId, HiddenMarkovMatcher, TimedObservation
+from .map_matching import EdgeId, StrictJitterMatcher, TimedObservation
 from .audit_road_network import RoadEdgeIndex, _is_taft_edge
 from .preference_pairs import DivergencePair, extract_divergence_pair
 
@@ -175,14 +175,15 @@ def build_candidates(data_dir: Path, graphml_path: Path) -> dict:
     graph = nx.read_graphml(graphml_path, force_multigraph=True)
     edge_index = RoadEdgeIndex(graph)
     taft_index = RoadEdgeIndex(graph, _is_taft_edge)
-    matcher = HiddenMarkovMatcher(
+    matcher = StrictJitterMatcher(
         graph,
         edge_index,
         search_radius_m=80.0,
-        max_candidates=4,
+        max_candidates=6,
         gps_sigma_m=15.0,
         transition_beta_m=50.0,
         max_speed_mps=45.0,
+        backward_jitter_m=8.0,
     )
 
     rides = _read_csv(data_dir / "rides_clean.csv")
