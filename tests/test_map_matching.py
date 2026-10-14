@@ -47,6 +47,64 @@ class HiddenMarkovMatcherTests(unittest.TestCase):
                 [self.observation(283_920.0, 1_610_000.0, 10_000), self.observation(283_950.0, 1_610_000.0, 10_000)]
             )
 
+class StrictJitterMatcherTests(unittest.TestCase):
+    """Verify backward-jitter handling without private GPS data."""
 
+    def test_same_edge_backward_jitter(self):
+        from stgat_lstm.map_matching import (
+            HiddenMarkovMatcher,
+            StrictJitterMatcher,
+            MatchState,
+        )
+
+        # Construct both matchers without a graph because
+        # this test only exercises same-edge transitions.
+        original = HiddenMarkovMatcher.__new__(HiddenMarkovMatcher)
+        jitter = StrictJitterMatcher.__new__(StrictJitterMatcher)
+        jitter.backward_jitter_m = 8.0
+
+        edge = ("a", "b", "ab")
+        left = MatchState(edge, 1.0, 50.0, 100.0)
+
+        # Five metres backward: new matcher tolerates it.
+        right_small = MatchState(edge, 1.0, 45.0, 100.0)
+        self.assertEqual(
+            jitter._network_transition(left, right_small),
+            (0.0, ()),
+        )
+
+        # Eight metres backward: inclusive boundary.
+        right_boundary = MatchState(edge, 1.0, 42.0, 100.0)
+        self.assertEqual(
+            jitter._network_transition(left, right_boundary),
+            (0.0, ()),
+        )
+
+        # Nine metres backward: no jitter exemption.
+        # Mock the connector to make the strict fallback predictable.
+        original._connector = lambda source, target: None
+        jitter._connector = lambda source, target: None
+
+        right_large = MatchState(edge, 1.0, 41.0, 100.0)
+
+        self.assertIsNone(
+            original._network_transition(left, right_small)
+        )
+        self.assertIsNone(
+            jitter._network_transition(left, right_large)
+        )
+
+        # Forward travel remains unchanged.
+        right_forward = MatchState(edge, 1.0, 55.0, 100.0)
+
+        self.assertEqual(
+            original._network_transition(left, right_forward),
+            (5.0, ()),
+        )
+        self.assertEqual(
+            jitter._network_transition(left, right_forward),
+            (5.0, ()),
+        )
+        
 if __name__ == "__main__":
     unittest.main()

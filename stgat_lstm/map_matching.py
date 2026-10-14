@@ -233,3 +233,34 @@ class HiddenMarkovMatcher:
 
     def _emission(self, state: MatchState) -> float:
         return -0.5 * (state.observation_distance_m / self.gps_sigma_m) ** 2
+
+class StrictJitterMatcher(HiddenMarkovMatcher):
+
+    def __init__(
+        self,
+        *args,
+        backward_jitter_m: float = 8.0,
+        **kwargs,
+    ) -> None:
+        if backward_jitter_m < 0:
+            raise ValueError("Backward jitter tolerance must be nonnegative")
+
+        super().__init__(*args, **kwargs)
+        self.backward_jitter_m = float(backward_jitter_m)
+
+    def _network_transition(
+        self,
+        left: MatchState,
+        right: MatchState,
+    ) -> tuple[float, tuple[EdgeId, ...]] | None:
+
+        if left.edge_id == right.edge_id:
+            displacement = (
+                right.distance_along_edge_m
+                - left.distance_along_edge_m
+            )
+
+            if -self.backward_jitter_m <= displacement < 0.0:
+                return 0.0, ()
+
+        return super()._network_transition(left, right)
