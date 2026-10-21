@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import unittest
 
-from stgat_lstm.geometry import GeoPoint, haversine_m, parse_gps_location, parse_route_points, point_to_polyline_distance_m
+from stgat_lstm.preprocessing.geometry import GeoPoint, haversine_m, parse_gps_location, parse_route_points, point_to_polyline_distance_m
 
 
 class GeometryTests(unittest.TestCase):

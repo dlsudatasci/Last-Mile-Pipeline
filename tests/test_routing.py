@@ -4,12 +4,12 @@ import unittest
 from unittest.mock import Mock
 
 import torch
-from pyproj import Transformer
 
 from graph_test_data import build_test_graph_data
-from stgat_lstm.audit_road_network import RoadEdgeIndex
-from stgat_lstm.mapbox_traffic import match_traffic_segment
-from stgat_lstm.predict_route import route_request, shortest_real_preference_path, snap_coordinate
+from stgat_lstm.preprocessing.audit_road_network import RoadEdgeIndex
+from stgat_lstm.preprocessing.coordinates import Transformer
+from stgat_lstm.preprocessing.mapbox_traffic import match_traffic_segment
+from stgat_lstm.routing.predict_route import route_request, shortest_real_preference_path, snap_coordinate
 
 
 class RoutingTests(unittest.TestCase):
@@ -33,11 +33,12 @@ class RoutingTests(unittest.TestCase):
         self.assertEqual(result["recommended_route"]["edge_ids"], ["1|2|0", "2|3|0", "3|4|0"])
         self.assertGreater(result["recommended_route"]["distance_m"], result["distance_baseline"]["distance_m"])
         self.assertEqual(result["recommended_route"]["geometry"]["type"], "MultiLineString")
-        road_predictions = result["recommended_route"]["road_deviation_predictions"]
+        road_predictions = result["recommended_route"]["road_choice_predictions"]
         self.assertEqual(len(road_predictions), 3)
         choices = [item for item in road_predictions if item["is_decision_point"]]
         self.assertTrue(choices)
         self.assertAlmostEqual(choices[0]["deviation_probability"], 0.5)
+        self.assertAlmostEqual(sum(item["probability"] for item in choices[0]["outgoing_choices"]), 1.0)
         with self.assertRaisesRegex(ValueError, "same node"):
             route_request(model, self.data, "1", "1")
         with self.assertRaisesRegex(ValueError, "No routable path"):
@@ -53,7 +54,7 @@ class RoutingTests(unittest.TestCase):
         self.assertTrue(result["detour_constraint"]["applied"])
         self.assertEqual(result["recommended_route"]["edge_ids"], ["1|2|0", "2|4|0"])
         self.assertEqual(
-            len(result["recommended_route"]["road_deviation_predictions"]),
+            len(result["recommended_route"]["road_choice_predictions"]),
             len(result["recommended_route"]["edge_ids"]),
         )
         self.assertAlmostEqual(result["detour_constraint"]["max_detour_ratio"], 1.10)

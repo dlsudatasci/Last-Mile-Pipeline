@@ -6,10 +6,9 @@ import unittest
 from datetime import datetime, timezone
 from pathlib import Path
 
-from pyproj import Transformer
-
 from graph_test_data import build_test_graph_data
-from stgat_lstm.gps_traffic import GPSSpeedRecord, GPSTrafficArchive
+from stgat_lstm.preprocessing.coordinates import Transformer
+from stgat_lstm.preprocessing.gps_traffic import GPSSpeedRecord, GPSTrafficArchive
 
 
 class GPSTrafficTests(unittest.TestCase):

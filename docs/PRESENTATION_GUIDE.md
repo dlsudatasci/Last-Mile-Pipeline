@@ -1,204 +1,387 @@
-# Demo-first presentation guide: STGAT-LSTM checkpoint
+# Complete presentation guide: STGAT-LSTM route preference system
 
-> Use `python -m stgat_lstm --help` for commands. Checkpoint prediction runs through `predict_route.py`, and training accepts only automatically validated official rider examples.
+Approved follow-up, 21 October 2026: RUNBOOK Section 11 compares three training
+recipes using NLL checkpoint selection on the same saved rider groups. It is
+opt-in, changes training/selection only, and has no full real-data results yet.
+The completed figures below remain the measured baseline. Both completed runs
+and a source rollback snapshot are preserved. Architecture and features remain
+unchanged; no new temporal-benefit or accuracy claim is supported yet.
 
-## New endpoint-routing demonstration
+Latest evaluation, reviewed 21 October 2026: three-fold rider-grouped comparison
+completed all 12 fits. Use RUNBOOK Section 10 for the saved run and reproduction.
+Two models with inner validation and development refit require 12 fits. The
+pooled report separates exact alternative-road selection from followed-road
+selection and binary deviation detection. It tests each original choice once
+across held-out riders; recovered extra follows remain fitting-only. This
+changes evaluation, not the GATv2-LSTM architecture or losses. Retain the
+completed fixed-split scores below as a separate protocol. New pooled results:
+STGAT-LSTM 10/17 exact deviations, 17/51 followed roads, 27/68 overall (39.7%);
+GATv2 5/17, 28/51, 33/68 (48.5%); always-follow 0/17, 51/51, 51/68 (75%).
+LSTM selected epochs are 45/5/1. This is a mixed internal result, not proof of
+reliability, a temporal-history benefit, or improvement over the old 1/4 test.
 
-```bat
-call .venv\Scripts\activate.bat
-python -m stgat_lstm dashboard
-```
+Input update, 20 October 2026: current real-training commands now use the cleaned
+amenity CSV, retain the first-visit policy, and save to
+`artifacts/experiments/real_cleaned_osm_20261020`. The run through Step 8 is
+complete and reviewed: 12/13 selection-validation choices; 63/98 development
+choices; 9/14 (64.3%) exact held-out choices, versus 10/14 (71.4%) always-follow.
+Test choice NLL is 0.871 and ranking is 2/3. Only one of four actual alternative
+roads is selected correctly. Binary follow/deviate accuracy at the selected
+threshold is 11/14 (78.6%), a different metric. Reload reproduces test predictions
+exactly; both route demos pass. This is an internal pilot, not validated broad
+reliability. Dashboard/visualization improvements are deferred. Existing older
+results/slides below describe the earlier features. For replaying any
+saved pre-cleanup checkpoint without retraining, substitute the feature CSV in
+`artifacts/inputs/osm_before_amenity_cleanup`. RUNBOOK is the current full run
+procedure; the architecture and road-choice labels have not changed.
 
-Open http://127.0.0.1:8765. Choose two road points and generate a route. Explain: "The GATv2 encodes neighboring road context. The edge LSTM encodes the supplied temporal snapshots. The preference head outputs positive edge costs, and Dijkstra finds a route with the lowest sum. The green route uses those costs; the blue comparison uses distance. Neither cost nor probability is a predicted travel time."
+This is the slide-by-slide guide for presenting the current project. It is
+aligned with the outgoing-road model, GPS-derived traffic histories, controlled
+synthetic experiment, fixed rider-disjoint evaluation, and routing dashboard.
 
-Show `predict_route.py:route_request` for the model-to-search connection and `dashboard.py:DashboardApplication.route` for the interactive request. New endpoints do not require rider labels. The shared model has no rider-specific profile embedding. Turn restrictions are not represented, so this is a research routing prototype.
+Folder layout updated 19 October 2026. All code references and commands below
+use the organized source folders and the `generated`, `artifacts`, and `outputs`
+locations. The architecture and experiment results are unchanged by the move.
+Archived experiment provenance retains its original paths; the location map is
+`artifacts/layout_manifest.json`.
 
-To explain traffic, show `gps_traffic.py:GPSTrafficArchive.profile_sequence` and `train_model.py:attach_gps_traffic`: consecutive app GPS fixes are direction-matched to OSM edges and converted into motorcycle speed observations for six historical slots. Only observations before the decision are allowed, and the target ride or held-out riders are excluded. Uncovered roads remain explicitly unknown. Mapbox code remains optional compatibility code and is not the main thesis traffic source.
+Updated 18 October 2026: the current refinement has 77 approved examples from
+36 rides and all 15 riders, producing 115 junction targets (98 suggested roads
+and 17 alternatives). It preserves all original road labels, corrects four
+route destinations, and extracts 47 additional followed choices from training
+riders only. The architecture is unchanged. Three validation-only ranking-weight
+trials select a setup for a final refit on the 12 development riders; the same
+three test riders remain excluded. Current artifacts are under
+`artifacts/experiments/real_refined_20261018`. Slide 12 explains this protocol.
 
-The current training report is `outputs\training_report.json`: 100 epochs on 28 road-choice labels reconstructed from eight approved real examples, loss 1.998 to 0.728, 19/28 training road labels at threshold 0.5, and 3/3 training preference rankings. Six historical GPS-derived frames are now supplied per decision, but coverage is sparse and uneven. This tests software connectivity and fit to the small training set; it is not evidence that LSTM improves accuracy. The separate held-out-rider report remains the relevant generalization evidence.
+The user's local first-visit run has produced its checkpoint and report under
+`artifacts/experiments/real_first_visit_20261018`. It omits three later repeated-junction
+followed targets within original training examples, retaining all examples and
+alternative labels. Validation/test targets and the previously selected settings
+stay fixed. Its scores await review; the last reviewed refined result is
+9/14 (64.3%). Do not present the small fitting check as test accuracy.
 
-The official export snapshot contains 56 rides from 12 riders, 170 generated-route records, 34 deviations with 34 deviation responses, 11,435 GPS points, and 44 post-trip questionnaires. Only 17 rides remain fully inside the provisional Taft corridor, and strict reconstruction yields five followed examples plus three deviation examples. The supplied OSM graph contains 36,375 nodes and 104,019 directed edges; all graph nodes have a matching feature row and all three deviation paths are covered by the extracted model graph.
+The original preparation before refinement has 30 approved examples from
+28 rides and all 15 riders, 68 junction targets (51 suggested and 17 alternative
+roads), and 12 optional ranking pairs. The trial is under
+`artifacts/experiments/real_navigation_20261016`. Full-data training completed 100 epochs:
+loss 1.8917 to 0.2863, 62/68 training choices correct, and 11/12 training pairs
+correctly ranked. Checkpoint reload and connected routing passed. These are
+in-sample checks. The original fixed-split baseline used nine training, three
+validation, and three test riders and fitted five variants once each. The
+refinement reuses these groups for three selection trials and one final refit;
+the earlier 75-fit leave-one-rider-out comparison was stopped.
+Six events were recovered by looking back
+to the turn during the same active-route period rather than assuming reports
+occur within 60 seconds of a turn. Post-report GPS is not mandatory.
+Recorded navigation, heading, event location, and directed GPS geometry now
+resolve one additional choice without requiring an exact incoming HMM edge.
+That label is inferred, with its evidence recorded, and trains the choice
+objective without a full ranking pair. Navigation text remains label-only.
+The original real fixed-split results are on Slide 15 as a baseline. The separate archived
+16-example strict-baseline table is historical and does not evaluate the
+revised labels.
 
-## What the presentation should prove
+If asked why evaluation mentioned 75 models: it means 15 held-out-rider folds
+times five model variants. Those are temporary training fits for comparison,
+separate from the one checkpoint used for routing. The current deployment
+checkpoint has finished training; this larger benchmark has not finished.
+The fixed split provides a smaller independent comparison and does not load
+that full-data checkpoint to score the test set.
+It has now completed: ST-GAT-LSTM gets 10/14 test road choices correct, with
+deviation F1 0.500. Choice accuracy ties the suggestion baseline, probability
+quality is worse, and only 1/3 test route pairs is correctly ranked. Present
+this as mixed internal pilot evidence, not a reliable deployed model.
 
-Current evaluation explanation: "We hold out one entire rider at a time, train on the other riders, and pool the unseen-rider predictions. Balanced accuracy is our proposed primary metric because it weights followed and deviated classes equally. We also report class-specific precision, recall and F1, macro-F1, average precision, ROC-AUC, Brier score, log loss, and the confusion counts. Preference-ranking accuracy checks whether the model gives the observed deviation path a lower cost than the rejected suggestion. These are different from training accuracy."
+Use the documents for different purposes:
 
-For the LSTM question: "We compare spatial GATv2, full-history GATv2-LSTM, and a control with the same LSTM architecture and sequence length but only its latest snapshot repeated. The control helps separate historical information from model capacity. Only one current real example has changing observed history, and none has changing observations on its suggested path, so the real evaluation cannot prove that history adds value. In the controlled hotspot test, full history also does not beat latest-only because the injected target is a spatial road preference rather than a traffic-dependent choice." Run the real evaluation with `--temporal-ablation`; the synthetic fixed-split command is in RUNBOOK section 10.
+- `PRESENTATION_GUIDE.md`: what to place on slides, what to say, which code to
+  show, and which commands to demonstrate.
+- `MODEL_EXPLANATION.md`: the detailed technical reference for tensors,
+  equations, features, model layers, losses, evaluation, and limitations.
+- `SYNTHETIC_RUNBOOK.md`: exact commands for reproducing the controlled
+  synthetic experiment from start to finish.
+- `RUNBOOK.md`: the corresponding workflow for official rider data.
 
-Turn restrictions are outside the agreed study scope. Describe the routes as demonstrations of learned preference costs over the directed OSM graph, not a complete navigation service.
+## The claim you can defend now
 
-The updated forty-epoch pilot evaluation (28 road decisions from eight examples, six held-out-rider folds, seed 17) reports GATv2 balanced accuracy 0.300, deviation F1 0.000, and ROC-AUC 0.000. Full-history ST-GAT-LSTM reaches 0.387 balanced accuracy, 0.111 deviation F1, and 0.293 ROC-AUC; its matched latest-only LSTM reaches 0.553, 0.211, and 0.293. Both LSTM variants rank all three held-out preference pairs correctly. Historical variation is present, but the full history does not outperform latest-only, so these results do not establish an LSTM benefit, superiority, or reliable generalization. The report is `outputs\rider_holdout_evaluation.json`. Do not replace held-out results with in-sample training scores.
+> We implemented an end-to-end supervised route-preference pipeline. It turns
+> app GPS and survey records into graph-valid outgoing-road choices, encodes the
+> directed OSM network with GATv2, encodes six GPS-derived traffic snapshots
+> with an edge-level LSTM, learns probabilities over accessible roads at each
+> junction, converts those probabilities to additive costs, and uses Dijkstra
+> to generate a connected route. A separated synthetic rider split shows that
+> the implementation can learn the injected spatial and temporal rule. The real
+> rider set is still too small for a final generalization claim.
 
-The presentation should demonstrate one complete path through the project:
+Do not say that the synthetic metrics prove real rider behavior. They prove
+that the complete implementation can recover a known rule on unseen synthetic
+riders under controlled conditions.
 
-```text
-reviewed rider decision
-        ↓
-directed OSM graph and road features
-        ↓
-GATv2 spatial encoding + LSTM temporal interface
-        ↓
-per-road deviation probabilities + learned edge costs
-        ↓
-connected route from Dijkstra
-```
+## Recommended presentation structure
 
-Use this checkpoint statement:
-
-> We have implemented and trained the complete GATv2-LSTM pipeline on approved real rider decisions. The checkpoint can be saved, reloaded, used to predict whether a rider will reject each suggested road at a branching point, and used to produce learned edge costs for routing. The current run is a software and training milestone, not a generalization result, because it contains only 28 correlated road labels reconstructed from eight examples. The preliminary rider-disjoint evaluation is weak.
-
-The main presentation can fit in 10–12 slides. Keep detailed comparisons and limitations as backup slides.
+Use 15 main slides. Keep the code on each slide focused on one concept. The
+backup section contains answers to likely panel questions.
 
 ---
 
-## Slide 1 — What we will demonstrate
+## Slide 1 - Research problem and objectives
 
-**Title:** Learning Motorcycle Route Preferences on Taft Avenue with GATv2-LSTM
+**Title:** Learning Motorcycle Riders' Route Preferences with GATv2-LSTM
 
 **Show:**
 
-- Vehicle: motorcycle
-- Area: Taft Avenue corridor, Manila
-- Prediction target: will the rider follow or intentionally deviate from the suggested route?
-- Routing target: find a connected path with low learned rider-preference cost
+1. Capture and contextualize driver deviation.
+2. Learn tacit route preference from the captured context.
+3. Generate a connected route using the learned preference.
 
 **Say:**
 
-> This demo starts with a reviewed rider decision, passes the Taft road graph through our trained model, predicts follow or deviate, and uses the learned edge costs to generate a route. Travel time is contextual information, not the training target.
+> A conventional router minimizes a hand-defined quantity such as distance or
+> time. Our goal is to learn which road a rider tends to choose when several
+> legal roads are available, then use those learned choices as routing costs.
+> Travel-time improvement is a possible side effect, not the objective.
+
+**Current scope:** motorcycle riders, Taft Avenue corridor, directed OSM road
+network, no turn-restriction model.
 
 ---
 
-## Slide 2 — Demo roadmap
+## Slide 2 - What the system predicts
 
-```mermaid
-flowchart LR
-    A[Review a rider decision] --> B[Show graph inputs]
-    B --> C[Show GATv2-LSTM code]
-    C --> D[Show training checkpoint]
-    D --> E[Run predict_route.py]
-    E --> F[Explain prediction and route]
-```
-
-**Say:**
-
-> The app is used for data collection. This Python project reconstructs labels, trains the model, and demonstrates inference and routing.
-
----
-
-## Slide 3 — Demo the reviewed training evidence
-
-Open the existing review page:
-
-```bat
-start "" "outputs\candidate_review_map.html"
-```
-
-Show one event and point out:
-
-- green line: observed rider path
-- red line: route suggested before the decision
-- label: followed or intentionally deviated
-- road names and path lengths
-- approval means the example may be used for training
-
-Current approved artifact:
-
-- 8 decisions
-- 6 riders
-- 5 followed cases
-- 3 intentionally deviated cases
-
-**Say:**
-
-> GPS and survey responses establish the label. The model does not receive the later observed path or survey response during prediction. At inference time it receives the suggested route, road graph, destination context, and traffic available by that time.
-
-**Important files:**
-
-- `stgat_lstm/build_decision_candidates.py`
-- `stgat_lstm/create_review_map.py`
-- `stgat_lstm/review_decisions.py`
-- `outputs/approved_training_examples.json`
-
-**Commands for this section:**
-
-If you need to regenerate the review artifact before presenting, run these in order:
-
-```bat
-python -m stgat_lstm build-deviations "data\real\rider_exports" "data\real\osm\metro_manila_processed.graphml" --output outputs\deviation_candidates.json --geojson-output outputs\deviation_candidates.geojson
-python -m stgat_lstm build-decisions "data\real\rider_exports" "data\real\osm\metro_manila_processed.graphml" --deviation-candidates outputs\deviation_candidates.json --output outputs\decision_candidates.json --geojson-output outputs\decision_candidates.geojson
-python -m stgat_lstm review-map outputs\decision_candidates.geojson --output outputs\candidate_review_map.html
-python -m stgat_lstm review auto outputs\decision_candidates.json --output outputs\approved_training_examples.json
-```
-
-The automatic step applies versioned survey, GPS, path-connectivity and common-endpoint rules. The HTML map remains optional visual evidence. Do not regenerate candidates during the presentation because doing so changes the artifact hashes and can make the checkpoint provenance stale.
-
----
-
-## Slide 4 — What enters the model
-
-The full supplied Metro Manila graph contains 36,375 nodes and 104,019 directed edges. The current Taft corridor extraction contains 1,368 nodes and 3,418 directed edges.
-
-| Input | Meaning |
-|---|---|
-| Node features | position, intersection context, traffic signals, nearby POIs |
-| Static edge features | length, lanes, speed reference, direction, access and road type |
-| Dynamic edge features | speed ratio, congestion, availability masks and observation age |
-| Destination features | position of an edge relative to the requested destination |
-| Suggested road choices | candidate outgoing roads whose local deviation probabilities are predicted |
-
-**Short map-matching explanation:**
-
-> Raw GPS coordinates are not road-edge IDs. A Hidden Markov Model considers both GPS-to-road distance and whether consecutive road candidates form a plausible directed journey. Viterbi decoding returns the most likely connected road sequence.
-
-**Important files:**
-
-- `stgat_lstm/map_matching.py`
-- `stgat_lstm/graph_data.py`
-
-**Commands for this section:**
-
-Run these before presenting when you want to show that the input data and graph were audited:
-
-```bat
-python -m stgat_lstm audit-data "data\real\rider_exports"
-python -m stgat_lstm audit-network "data\real\rider_exports" "data\real\osm\metro_manila_processed.graphml" --node-features "data\real\osm\road_node_features.csv"
-python -m stgat_lstm audit-matching "data\real\rider_exports" "data\real\osm\metro_manila_processed.graphml"
-python -m stgat_lstm gps-traffic "data\real\rider_exports" "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" --output outputs\gps_traffic_audit.json
-```
-
-These commands audit and summarize the inputs. They do not train the model.
-
-`map_matching.py` and most of `graph_data.py` are library modules used by these commands; they are not normally launched as separate presentation commands.
-
----
-
-## Slide 5 — The important GAT concept
-
-Show this simplified idea before showing code:
+**Show:**
 
 ```text
-ordinary aggregation: all connected neighbors contribute similarly
-graph attention:     the model learns how much each connected neighbor matters
+At a branching node u:
+
+                 road e1
+               /
+incoming road -+-- road e2       model predicts P(e1|u), P(e2|u), P(e3|u)
+               \
+                 road e3
 ```
 
-For a road-network node `i`, attention assigns a learned weight to each connected neighbor `j`:
+The primary target is the **outgoing road chosen by the rider**. A binary label
+is derived for reporting:
 
 ```text
-new representation of i = Σ attention(i, j) × transformed features of j
+followed = chosen road equals suggested road
+deviated = chosen road differs from suggested road
 ```
 
-In this implementation, road-edge attributes also participate in the attention calculation. This lets the model distinguish neighbors using properties such as road class, length, access, and available traffic.
+**Say:**
 
-Show the actual architecture block from `stgat_lstm/model.py`:
+> We changed from predicting one whole-route deviation probability to predicting
+> the preferred outgoing edge at each real decision point. This matches the
+> action a rider actually takes, gives multiple supervised choices along a
+> route, and connects naturally to route generation. The reported deviation
+> probability is one minus the probability of the candidate route's road.
+
+**Formula:**
+
+$$
+p_e = \operatorname{softmax}_{e\in A(u)}(z_e),
+\qquad
+p_{\text{deviation}} = 1-p_{\text{suggested}}.
+$$
+
+Here, $A(u)$ is the set of accessible outgoing roads at source node $u$, and
+$z_e$ is the model's raw utility logit for road $e$.
+
+---
+
+## Slide 3 - Complete system flow
+
+**Show:**
+
+```text
+App export                         OSM graph and node features
+  |                                           |
+  +--> audit and map matching <---------------+
+  |              |
+  |              +--> graph-valid road choices and route pairs
+  |
+  +--> consecutive GPS fixes --> historical road-speed frames
+                                 |
+                                 v
+OSM graph + destination + six traffic frames + choice labels
+                                 |
+                                 v
+                      GATv2 -> edge embeddings -> LSTM
+                                 |
+                                 v
+                  outgoing-road logits and probabilities
+                                 |
+                                 v
+                  -log(probability) edge costs -> Dijkstra
+                                 |
+                                 v
+                       recommended connected route
+```
+
+**Say:**
+
+> Data preparation establishes what the rider chose. The neural model learns
+> from those labels. At inference, the later survey answer and observed route
+> are absent; the checkpoint receives only the graph, destination, and traffic
+> context and produces road-choice probabilities and routing costs.
+
+---
+
+## Slide 4 - Data, labels, and leakage boundary
+
+**Show this table:**
+
+| Information | During training | During new-route inference |
+|---|---:|---:|
+| OSM topology and node features | Yes | Yes |
+| Static road attributes | Yes | Yes |
+| Destination displacement | Yes | Yes |
+| Pre-decision GPS speed history | Yes | Yes, when available |
+| Suggested road and accessible alternatives | Used to form supervision | Candidate route is evaluated after scoring |
+| Road actually chosen by rider | Label only | No |
+| Later GPS path and survey answer | Label evidence only | No |
+| Rider identity | Used only to group evaluation folds | No rider embedding |
+
+**Say:**
+
+> The rider's deviation is present in the dataset as the answer the model must
+> learn, not as an input feature that reveals the answer. We also exclude the
+> target ride from its own traffic history. During evaluation, all records from
+> the held-out rider are excluded from training and traffic profiles.
+
+---
+
+## Slide 5 - Map matching and candidate construction
+
+**Show the candidate map:**
+
+```bat
+start "" "outputs\maps\synthetic_hotspot\candidate_review_map.html"
+```
+
+- Green: observed rider path.
+- Red dashed: prior suggested path.
+- Gray: road-network context.
+- Repeated events are intentional observations from different rides or riders.
+
+**Say:**
+
+> Raw latitude and longitude are not graph edges. The map matcher finds a
+> directionally plausible OSM edge sequence using GPS distance and path
+> continuity. Candidate construction keeps intentional, connected outgoing-road
+> choices. Rejoining is needed only for the optional comparable route-ranking
+> pair. Automatic validation rejects GPS
+> errors, wrong turns, missing answers, and disconnected paths. Candidate
+> selection has no fixed distance-to-Taft cutoff; proximity is a diagnostic.
+
+**Code to open:**
+
+- `stgat_lstm/preprocessing/map_matching.py`
+- `stgat_lstm/preprocessing/build_deviation_candidates.py`
+- `stgat_lstm/preprocessing/build_decision_candidates.py`
+- `stgat_lstm/preprocessing/review_decisions.py`
+
+**Synthetic reconstruction commands:**
+
+```bat
+python -m stgat_lstm build-deviations generated\synthetic_hotspot "data\real\osm\metro_manila_processed.graphml" --output generated\synthetic_hotspot\reconstructed_deviation_candidates.json --geojson-output generated\synthetic_hotspot\reconstructed_deviation_candidates.geojson
+python -m stgat_lstm build-decisions generated\synthetic_hotspot "data\real\osm\metro_manila_processed.graphml" --deviation-candidates generated\synthetic_hotspot\reconstructed_deviation_candidates.json --output generated\synthetic_hotspot\reconstructed_decision_candidates.json --geojson-output generated\synthetic_hotspot\reconstructed_decision_candidates.geojson
+python -m stgat_lstm review auto generated\synthetic_hotspot\reconstructed_decision_candidates.json --output generated\synthetic_hotspot\reconstructed_approved_training_examples.json
+```
+
+---
+
+## Slide 6 - Controlled synthetic experiment
+
+**Show:**
+
+| Property | Controlled value |
+|---|---:|
+| Artificial decision riders | 12 |
+| Labeled decision rides | 144 |
+| Followed / deviated | 72 / 72 |
+| Separate traffic-probe rides | 144 |
+| Hotspots | 2 graph-valid Taft choices |
+| GPS sampling interval | 2 seconds |
+| Traffic history | 6 frames, 5 minutes apart |
+| Split | 8 train / 2 validation / 2 untouched test riders |
+
+The injected traffic histories are:
+
+```text
+worsening:  12, 10, 8, 6, 4, 8 m/s -> choose alternative
+recovering:  4,  6, 8,10,12, 8 m/s -> follow suggestion
+```
+
+Both end at 8 m/s. A model that sees only the latest frame cannot distinguish
+the two histories reliably.
+
+**Say:**
+
+> The synthetic records follow the same six CSV schemas, OSM paths, two-second
+> GPS structure, map matching, validation, feature builder, model, losses, and
+> routing code as the real workflow. The labels and repeated patterns are
+> controlled. This makes the experiment a capacity and integration check. It
+> does not reproduce the natural variation or uncertainty of real riders.
+
+**Generation command:**
+
+```bat
+python -m stgat_lstm synthetic-hotspot "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" generated\real\approved_training_examples.json --output-dir generated\synthetic_hotspot
+```
+
+---
+
+## Slide 7 - Model inputs and tensor shapes
+
+**Show:**
+
+| Tensor | Meaning | Shape |
+|---|---|---:|
+| `node_features` | 13 values for every node | `[N, 13]` |
+| `edge_index` | source and destination index for every directed edge | `[2, M]` |
+| `edge_static` | 19 static OSM road values | `[M, 19]` |
+| `edge_dynamic[t]` | 5 traffic values at time frame `t` | `[M, 5]` |
+| `destination_features` | 2 values from edge endpoint to destination | `[M, 2]` |
+| `routable_mask` | whether each directed edge may be routed | `[M]` |
+
+Refined real model graph: 2,625 nodes and 6,765 directed edges, covering approved
+evidence and actual route destinations. With six traffic frames, `T=6`,
+`N=2625`, and `M=6765`. The original real graph has 2,379 nodes and 6,098 edges.
+The archived strict/synthetic graph used
+1,368 nodes and 3,418 edges. Feature dimensions stay the same.
+
+**Feature groups:**
+
+- Nodes: normalized coordinates, signal, street count, and nearby POI context.
+- Static edges: length, reference time, direction, lanes, speed, access, bridge,
+  tunnel, and road-class indicators.
+- Dynamic edges: slowdown, speed ratio, observed masks, and observation age.
+- Destination: normalized x and y displacement from an edge's target node.
+
+**Say:**
+
+> `edge_index` contains connectivity, not measured attributes. The node and edge
+> feature matrices hold the measurements. The graph topology determines which
+> neighbors exchange information.
+
+---
+
+## Slide 8 - GATv2 spatial encoder
+
+**Code from `stgat_lstm/modeling/model.py`:**
 
 ```python
+self.node_projection = nn.Linear(node_feature_dim, hidden_channels)
+
 self.spatial_1 = GATv2Conv(
     hidden_channels,
     hidden_channels,
     heads=2,
     concat=False,
     edge_dim=edge_static_dim + edge_dynamic_dim,
-    negative_slope=0.2,
+    negative_slope=attention_negative_slope,
 )
 self.spatial_2 = GATv2Conv(
     hidden_channels,
@@ -206,756 +389,716 @@ self.spatial_2 = GATv2Conv(
     heads=2,
     concat=False,
     edge_dim=edge_static_dim + edge_dynamic_dim,
-    negative_slope=0.2,
+    negative_slope=attention_negative_slope,
 )
 ```
 
-Explain only these four points:
+**Forward code:**
 
-1. Two GATv2 layers allow information to pass through approximately two graph hops.
-2. Two attention heads learn two views of neighboring road context.
-3. `concat=False` averages the heads and keeps the hidden dimension manageable.
-4. `negative_slope=0.2` configures the LeakyReLU used internally to calculate attention weights.
+```python
+node_embedding = F.relu(self.node_projection(inputs.node_features))
+attention_edge_attr = torch.cat((inputs.edge_static, edge_dynamic), dim=-1)
+node_embedding = F.elu(
+    self.spatial_1(node_embedding, inputs.edge_index, attention_edge_attr)
+)
+node_embedding = F.elu(
+    self.spatial_2(node_embedding, inputs.edge_index, attention_edge_attr)
+)
+```
 
-**Why GATv2:**
+**Say:**
 
-> The original GAT learns neighbor importance, but GATv2 changes the attention operation so the ranking can depend more expressively on the querying node. That is useful when the relevance of a neighboring road depends on the current location and context.
+> The linear projection changes each measured 13-value node vector into a
+> learned 16-value representation. GATv2 then assigns attention to connected
+> neighbors using the endpoint representations and 24 road-context values: 19
+> static plus 5 dynamic. LeakyReLU with slope 0.2 is inside `GATv2Conv` when it
+> calculates attention scores. ELU is applied after each layer's aggregation.
+> Two heads are averaged because `concat=False`, so the width remains 16.
 
-References:
-
-- [Graph Attention Networks](https://arxiv.org/abs/1710.10903)
-- [How Attentive Are Graph Attention Networks? — GATv2](https://openreview.net/pdf?id=F72ximsx7C1)
-- [PyTorch Geometric GATv2Conv](https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.nn.conv.GATv2Conv.html)
-
-**Command for this section:**
-
-There is no separate GAT-only command. The GATv2 layers run when either training or inference calls the model. Show the code in `stgat_lstm/model.py`, then use the training or inference command in Slides 7 and 9.
+Layer 1 combines immediate-neighbor context. Layer 2 combines already
+contextualized neighbors, giving an approximate two-hop receptive field.
 
 ---
 
-## Slide 6 — From GAT features to LSTM and two outputs
+## Slide 9 - Road-edge embeddings and LSTM
 
-After GATv2 encodes each graph snapshot, the model creates an embedding for every directed road edge using:
+**Code from `stgat_lstm/modeling/model.py`:**
+
+```python
+edge_embedding = torch.cat(
+    (
+        node_embedding[source],          # 16
+        node_embedding[destination],     # 16
+        inputs.edge_static,              # 19
+        edge_dynamic,                    # 5
+        inputs.destination_features,     # 2
+    ),
+    dim=-1,
+)                                          # [M, 58]
+edge_embedding = F.relu(self.edge_projection(edge_embedding))  # [M, 16]
+
+sequence = torch.stack(
+    [self._spatial_snapshot(inputs, frame)
+     for frame in inputs.temporal_edge_features],
+    dim=1,
+)                                          # [M, 6, 16]
+embedding, _ = self.temporal(sequence)
+last = embedding[:, -1, :]                 # [M, 16]
+```
+
+**Say:**
+
+> GATv2 encodes each distinct traffic frame; exactly repeated frames reuse the
+> same spatial result. For every directed road, we combine
+> its source-node embedding, destination-node embedding, road attributes,
+> traffic values, and destination direction. A projection compresses the 58
+> values to a 16-value road embedding. The six embeddings of the same road form
+> a chronological sequence. The shared LSTM learns whether the road context is
+> worsening, recovering, or stable, and its final hidden state summarizes that
+> history. It does not create a separate prediction; it changes the final road
+> representation used by the choice head.
+
+---
+
+## Slide 10 - How the model learns rider preference
+
+**Choice head:**
+
+```python
+self.edge_choice_head = nn.Sequential(
+    nn.Linear(hidden, hidden),
+    nn.ReLU(),
+    nn.Linear(hidden, 1),
+)
+```
+
+**Training target and loss from `stgat_lstm/modeling/train_model.py`:**
+
+```python
+indices = [lookup[edge_id] for edge_id in target.candidate_edge_ids]
+chosen = target.candidate_edge_ids.index(target.chosen_edge_id)
+
+choice_losses.append(F.cross_entropy(
+    edge_logits[indices].unsqueeze(0),
+    torch.tensor([chosen], dtype=torch.long),
+))
+```
+
+For an intentional deviation, the auxiliary route-ranking loss is:
+
+$$
+L_{rank}=\operatorname{softplus}(C_{observed}-C_{suggested}).
+$$
+
+The total objective is:
+
+$$
+L=L_{choice}+\lambda L_{rank}, \qquad \lambda=0.1
+$$
+
+**Say:**
+
+> Cross-entropy raises the utility of the outgoing road the rider chose relative
+> to all other accessible roads at that junction. For intentional deviations,
+> ranking loss also penalizes the model when the full observed path costs more
+> than the rejected suggested path. Adam updates the GATv2, edge projection,
+> LSTM, and choice-head weights together through backpropagation.
+
+This is supervised learning. Dijkstra does not participate in gradient-based
+training; route pairs are scored by summing differentiable edge costs.
+
+---
+
+## Slide 11 - From probabilities to a connected route
+
+**Code from `stgat_lstm/modeling/model.py`:**
+
+```python
+probabilities = softmax(edge_logits[indices], source_nodes[indices])
+costs[inputs.routable_mask] = (
+    -log_probabilities[inputs.routable_mask]
+    + length_tiebreaker[inputs.routable_mask]
+)
+```
+
+**Formula:**
+
+$$
+c_e=-\log(p_e)+\epsilon_e,
+\qquad
+P^*=\arg\min_P\sum_{e\in P}c_e.
+$$
+
+**Say:**
+
+> A highly preferred road has a large probability and therefore a small cost.
+> A route's cost is the sum of its road costs. Dijkstra finds the connected path
+> with the smallest total learned cost. Roads tagged `access=no` or
+> `access=private` are excluded. If the learned route exceeds 1.30 times the
+> shortest-distance route, the prototype falls back to the distance route to
+> prevent extreme loops or detours.
+
+The distance term in the cost is only a tiny tie-breaker. The 1.30 rule is a
+system-level constraint, not a learned preference.
+
+---
+
+## Slide 12 - Training, validation, and testing
+
+**Official real-data version of this slide:**
 
 ```text
-source-node embedding
-+ destination-node embedding
-+ static road features
-+ dynamic traffic features
-+ destination-relative features
+15 real riders, 77 approved examples, 115 junction choices
+  |
+  +-- 9 training riders: 65 examples, 88 choices
+  +-- 3 validation riders: 6 examples, 13 choices
+  +-- 3 test riders: 6 examples, 14 choices
+
+Compare 3 ranking weights on training/validation riders
+  |
+  +-- Freeze selected weight and epoch count
+  +-- Refit on 12 development riders: 71 examples, 101 choices
+  +-- Score the original 3 test riders: 6 examples, 14 choices
 ```
 
-The temporal layer is explicitly implemented as:
-
-```python
-self.temporal = nn.LSTM(
-    hidden_channels,
-    hidden_channels,
-    batch_first=True,
-)
-```
-
-For multiple timestamped snapshots, the same edge is represented through time and the final LSTM state is used.
-
-The shared representation has two outputs:
-
-```mermaid
-flowchart LR
-    A[GATv2 + LSTM edge embeddings] --> B[Road-deviation head]
-    A --> C[Positive edge-cost head]
-    B --> D[Probability for each road]
-    C --> E[Dijkstra route]
-```
-
-Show this code:
-
-```python
-edge_embeddings = self.backbone.encode_edges(inputs)
-edge_costs = self.backbone.costs_from_embeddings(edge_embeddings, inputs)
-edge_deviation_logits = self.edge_deviation_head(
-    edge_embeddings
-).squeeze(-1)
-```
-
-**Be precise about the current LSTM status:**
-
-> The LSTM is implemented and its weights are present in the trained checkpoint. Consecutive rider GPS fixes are converted into direction-matched motorcycle speed records, then aggregated into six pre-decision time-of-day graph frames. Target rides, future records, and held-out riders are excluded. The current coverage is too sparse to claim that temporal history improves prediction.
-
-**GPS traffic command for this section:**
-
-This derives the LSTM input source from the same rider export:
+The refinement uses AdamW (learning rate 0.001, weight decay 0.0001), label
+smoothing 0.05, training-only traffic masking 0.15, and ride-balanced choice
+weights. Three ranking weights (0, 0.1, 1) are compared on validation riders.
+Each trial has a 60-epoch ceiling and retains its best validation checkpoint;
+early stopping waits three validation checks. The final development refit uses
+the selected fixed epoch count. It does not select settings against test results.
+The main binary metrics use 0.5; a separate field uses a validation-selected
+threshold. The test uses known roads and previously inspected test riders, so
+describe this as a repeated internal unseen-rider pilot.
 
 ```bat
-python -m stgat_lstm gps-traffic "data\real\rider_exports" "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" --output outputs\gps_traffic_audit.json
+python -m stgat_lstm evaluate "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" artifacts\experiments\real_fixed_split_20261018\approved_training_examples.json --refine --first-visit-only --split-file artifacts\experiments\real_fixed_split_20261018\rider_split.json --gps-traffic-data artifacts\experiments\real_navigation_20261016\source_snapshot\rider_exports --history-steps 6 --history-interval-seconds 300 --gps-profile-bin-seconds 300 --epochs 60 --batch-size 8 --output artifacts\experiments\real_cleaned_osm_20261020\evaluation_report.json
 ```
 
----
+This performs four fits: three selection trials and one final development fit.
+The older five-architecture fixed-split comparison is a separate baseline. During
+selection, GPS profiles exclude validation/test riders. During the final refit
+and test they exclude test riders. They always exclude the target ride and future
+observations. Save and reuse the rider split; do not regenerate groups to improve
+the score. The extra 47 labels are real followed choices, not new deviations or
+independent riders.
 
-## Slide 7 — Train and save the checkpoint
+**If asked how overfitting is checked:** show `overfitting_checks` in the saved
+report. It compares each selected checkpoint's training and validation accuracy,
+and the final checkpoint's clean development/test accuracy and choice NLL.
+The training objective and validation NLL have different definitions; compare
+their trends carefully, not their absolute values. Also show per-rider results
+and alternative-road performance. Early stopping and regularization reduce
+risk, but do not prove overfitting is absent. Validation riders join development
+training only after selection, and their earlier scores cannot validate the
+refitted checkpoint. The test riders were inspected in the prior experiment;
+describe the new result as a repeated internal pilot.
 
-The command is:
+**Separate controlled synthetic version:**
 
-```bat
-python -m stgat_lstm train real "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --gps-traffic-data "data\real\rider_exports" --history-steps 6 --history-interval-seconds 300 --gps-profile-bin-seconds 300 --epochs 100 --batch-size 8 --output outputs\gatv2_lstm_checkpoint.pt
-```
-
-What it does:
-
-1. Refuses a decision artifact that has not passed the automatic validation gate.
-2. Builds the Taft graph tensors for each approved decision.
-3. Converts reviewed segments into road-choice targets and trains one deviation probability per road.
-4. For deviation cases, teaches the chosen path to have lower cost than the rejected suggestion.
-5. Saves weights, model configuration, training summary, and provenance.
-
-Show this short loss block from `stgat_lstm/train_model.py`:
-
-```python
-classification_loss = F.binary_cross_entropy_with_logits(
-    torch.cat(classification_logits),
-    torch.cat(classification_labels),
-    pos_weight=positive_weight,
-)
-loss = classification_loss
-if ranking_losses:
-    loss += preference_weight * torch.stack(ranking_losses).mean()
-loss.backward()
-torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=5.0)
-optimizer.step()
-```
-
-The examples are shuffled each epoch, and every mini-batch performs one Adam
-update. Graphs in a batch remain disconnected, so riders cannot exchange graph
-messages.
-
-The path-ranking loss asks for:
+**Show:**
 
 ```text
-cost(observed intentional choice) < cost(rejected suggested path)
+12 artificial riders
+  |
+  +-- 8 riders: train model weights
+  +-- 2 riders: choose alternative-choice weight and threshold
+  +-- 2 riders: final untouched test
 ```
+
+**Say:**
+
+> We split by rider, not by individual road choice. This prevents choices from
+> the same rider appearing in both training and testing. Four class-weight
+> settings are compared only on validation riders. The test riders are used
+> once for final metrics. After evaluation, a separate demonstration checkpoint
+> is trained on all synthetic examples; its training figures must not replace
+> the held-out test report.
+
+**Evaluation command:**
+
+```bat
+python -m stgat_lstm evaluate "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" generated\synthetic_hotspot\approved_training_examples.json --gps-traffic-data generated\synthetic_hotspot\traffic_probes --history-steps 6 --history-interval-seconds 300 --gps-profile-bin-seconds 300 --epochs 10 --batch-size 8 --preference-weight 0.1 --synthetic-fixed-split --synthetic-tune --output outputs\reports\synthetic_hotspot\rider_holdout_evaluation.json
+```
+
+**Models compared:**
+
+- prevalence baseline: always follows the common class;
+- spatial GATv2: graph and latest traffic frame, no LSTM history;
+- full ST-GAT-LSTM: all six chronological frames;
+- latest-only LSTM: same LSTM architecture, latest frame repeated six times.
 
 ---
 
-## Slide 8 — Show the checkpoint result
+## Slide 13 - Controlled test results
 
-Display the readable report:
+**Show this table:**
+
+| Model | Choice accuracy | Choice NLL | Balanced accuracy | Deviation F1 | ROC-AUC | AP |
+|---|---:|---:|---:|---:|---:|---:|
+| Prevalence | 0.846 | 0.902 | 0.500 | 0.000 | 0.500 | 0.154 |
+| GATv2 | 0.769 | 0.366 | 0.886 | 0.615 | 0.858 | 0.468 |
+| ST-GAT-LSTM | **0.846** | **0.282** | **0.955** | **0.800** | **0.955** | **0.833** |
+| LSTM latest-only | 0.769 | 0.368 | 0.864 | 0.571 | 0.864 | 0.500 |
+
+All learned models obtain 1.000 route-pair ranking accuracy on the controlled
+test pairs.
+
+**Say:**
+
+> Raw choice accuracy alone is misleading because 66 of the 78 test junction
+> choices follow the suggestion. The prevalence baseline reaches 84.6 percent
+> by always following, but detects no deviations. ST-GAT-LSTM has the same raw
+> choice accuracy while reaching 0.800 deviation F1, 0.955 balanced accuracy,
+> and much lower negative log-likelihood. It also outperforms the latest-only
+> control, which is evidence that the injected temporal sequence was useful in
+> this controlled experiment.
+
+Metric meanings:
+
+- choice accuracy: fraction of junctions where the exact chosen outgoing road
+  is top-ranked;
+- choice NLL: how much probability the model assigns to the actual chosen road;
+  lower is better;
+- balanced accuracy: average recall for followed and deviated classes;
+- deviation F1: balance of precision and recall for deviations;
+- ROC-AUC and AP: ranking quality for derived deviation scores.
+
+---
+
+## Slide 14 - Demonstrate that traffic history changes routing
+
+Train the final demonstration checkpoint if needed:
 
 ```bat
-type outputs\training_report.json
+python -m stgat_lstm train real "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" generated\synthetic_hotspot\approved_training_examples.json --gps-traffic-data generated\synthetic_hotspot\traffic_probes --history-steps 6 --history-interval-seconds 300 --gps-profile-bin-seconds 300 --batch-size 8 --tuning-report outputs\reports\synthetic_hotspot\rider_holdout_evaluation.json --output artifacts\checkpoints\synthetic_hotspot\checkpoint.pt --report-output outputs\reports\synthetic_hotspot\training_report.json
 ```
 
-Current development-training result:
+Replay the same origin and destination under two histories:
 
-| Item | Result |
+```bat
+python -m stgat_lstm predict artifacts\checkpoints\synthetic_hotspot\checkpoint.pt "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" --origin-node 1034 --destination-node 35633 --gps-traffic-data generated\synthetic_hotspot\traffic_probes --traffic-cutoff-ms 1767571217000 --max-detour-ratio 1.30 --output outputs\predictions\synthetic_hotspot\worsening_route_prediction.json
+
+python -m stgat_lstm predict artifacts\checkpoints\synthetic_hotspot\checkpoint.pt "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" --origin-node 1034 --destination-node 35633 --gps-traffic-data generated\synthetic_hotspot\traffic_probes --traffic-cutoff-ms 1771203600000 --max-detour-ratio 1.30 --output outputs\predictions\synthetic_hotspot\recovering_route_prediction.json
+```
+
+Expected road sequences:
+
+```text
+worsening:  Decena Street -> A. Arnaiz Avenue -> Taft Avenue
+recovering: Decena Street -> Protacio Street -> Taft Avenue
+```
+
+**Say:**
+
+> The checkpoint, graph, origin, and destination are identical. Only the traffic
+> cutoff changes which six historical snapshots are supplied. The model weights
+> stay fixed, but the edge embeddings, probabilities, costs, and chosen route
+> can change with context. Morning and afternoon requests do not retrain the
+> model; they build different input frames for the existing model.
+
+**Dashboard command:**
+
+```bat
+python -m stgat_lstm dashboard --checkpoint artifacts\checkpoints\synthetic_hotspot\checkpoint.pt --graphml "data\real\osm\metro_manila_processed.graphml" --node-features "data\real\osm\road_node_features.csv" --gps-traffic-data generated\synthetic_hotspot\traffic_probes --traffic-cutoff-ms 1767571217000 --max-detour-ratio 1.30
+```
+
+Open `http://127.0.0.1:8765`. Use endpoint
+`/route?origin=1034&destination=35633` for the exact controlled hotspot.
+
+---
+
+## Slide 15 - Status, contribution, and next transition
+
+**Implemented:**
+
+- app-shaped data audit and automatic validation;
+- directed map matching and outgoing-road label construction;
+- 13 node, 19 static-edge, 5 dynamic-edge, and 2 destination features;
+- two-layer edge-aware GATv2;
+- six-frame edge-level LSTM;
+- outgoing-road softmax and derived deviation score;
+- weighted cross-entropy plus route-ranking loss;
+- rider-disjoint validation and test protocol;
+- learned-cost Dijkstra routing and 1.30 detour guard;
+- reproducible synthetic capacity experiment and interactive dashboard.
+
+**Limits on thesis conclusions from the final real export:**
+
+- 17 alternative-road targets survive the revised local-choice reconstruction;
+- historical GPS coverage depends on road, time slot, and rider exclusions;
+- the real comparison must be reported separately from synthetic results;
+- few positive targets and a single training seed limit claims of model superiority;
+- probabilities have not been calibrated on an adequate independent real set;
+- held-out folds must not be reused to choose hyperparameters.
+
+**Say:**
+
+> The implementation milestone is complete at undergraduate proof-of-concept
+> level. We have now also run the final real export through the same pipeline.
+> The refinement has 77 approved examples and 115 junction choices, including
+> the original 17 alternative-road choices. It adds genuine followed decisions
+> from training riders, corrects destination context, selects settings using
+> validation riders, and refits on the 12 development riders before testing the
+> same three excluded riders. Show the current report's development/test gap,
+> per-rider results, and probability quality alongside accuracy. This remains
+> an internally evaluated prototype with a small, previously inspected test set.
+> Synthetic results are a separate controlled capacity check.
+
+### Current refined real results to show
+
+Open `artifacts\experiments\real_refined_20261018\run_summary.json` for the short result and
+`evaluation_report.json` for detailed predictions, per-rider metrics, and
+`overfitting_checks`. The selected nine-rider checkpoint scores 12/13 on
+validation at epoch 45 with ranking weight 1.0. The final checkpoint was then
+refitted separately on the 12 development riders.
+
+| Measure | Final development | Final test | Always-follow test baseline |
+|---|---:|---:|---:|
+| Preferred outgoing roads correct | 67/101 | 9/14 | 10/14 |
+| Choice accuracy | 66.3% | 64.3% | 71.4% |
+| Clean choice NLL | 0.813 | 0.911 | 0.911 |
+| Route pairs correct | 8/9 | 2/3 | n/a |
+
+**Say:**
+
+> The refinement did not reach our roughly 80% target and did not beat the
+> always-follow baseline on exact road choice. Test balanced accuracy is 0.650
+> and deviation F1 is 0.500. It identifies eight of ten followed roads and one
+> of four actual alternative roads. Binary deviation detection recognizes two
+> deviations, but one chooses the wrong alternative, so these are different
+> metrics. Relative to the older pilot, probability quality and route ranking
+> improve, while exact choice accuracy decreases by one road. The small
+> development/test gap does not prove no overfitting. This remains a small
+> internal pilot on previously inspected test riders.
+
+The accuracy gap is 2.05 percentage points and the NLL gap is 0.099. The selected
+trial's validation accuracy drops from 12/13 at epoch 45 to 10/13 at epoch 60;
+the code retains epoch 45. Test per-rider results are 1/1, 8/11, and 0/2.
+The same 14 target roads and candidate sets are preserved. No extra settings
+were selected against the new test score. The older architecture table below
+uses different preparation and training, so it is not a controlled architecture
+comparison with this refined checkpoint.
+
+All 89 tests and checkpoint reload pass, including reproduction of all 14 test
+predictions. A historical 400-to-6 route is connected and 1,365.8 m versus the
+1,320.5 m distance baseline, passing the detour guard without fallback. These
+checks establish pipeline operation, not independently validated route quality.
+
+### Original real fixed-split baseline
+
+The report is `artifacts\experiments\real_fixed_split_20261018\evaluation_report.json`;
+`run_summary.json` is the shorter explanation. Five variants were each trained
+once for 100 epochs. The test set contains six examples, 14 choices, four
+alternative targets, and three comparable route pairs from three riders.
+Binary metrics below use the fixed 0.5 threshold.
+
+| Model | Test road-choice accuracy | Test choice NLL | Balanced accuracy | Deviation F1 | Route ranking |
+|---|---:|---:|---:|---:|---:|
+| Suggestion baseline | 0.714 | 0.830 | 0.500 | 0.000 | n/a |
+| GCN | 0.643 | 2.940 | 0.600 | 0.444 | 0.667 |
+| GAT | 0.643 | 4.175 | 0.650 | 0.500 | 0.333 |
+| GATv2 | 0.643 | 3.562 | 0.600 | 0.444 | 0.333 |
+| ST-GAT-LSTM | 0.714 | 3.373 | 0.650 | 0.500 | 0.333 |
+| LSTM latest-only | 0.643 | 3.974 | 0.525 | 0.286 | 0.333 |
+
+**Explain the limitations alongside the table:**
+
+- ST-GAT-LSTM scores 36/41 choices on training riders versus 10/14 on test riders.
+- It identifies two alternatives, misses two, and falsely flags two followed choices.
+- Lower NLL is better. Its NLL is worse than the baseline because some errors are highly confident; do not present its probabilities as calibrated.
+- Full history beats latest-only by one road choice; a single seed and four alternative targets cannot establish a stable temporal benefit.
+- One test rider contributes 11/14 choices. Per-rider results are 1/1, 9/11, and 0/2; pooled accuracy alone hides that variation.
+- Only 1/6 test examples has changing observed traffic on its suggested path. Five have some traffic observations somewhere in the graph.
+- The saved groups were chosen before fitting. Do not regenerate them or repeatedly tune against these test results.
+
+### Archived strict-baseline evidence to have available
+
+The final dataset was supplied on 14 October 2026. The archived run is under
+`artifacts\experiments\real_final_20261014`; the folder name records the export/run start date.
+
+| Quantity | Final real export / retained examples |
 |---|---:|
-| Approved decisions | 8 |
-| Riders | 6 |
-| Epochs | 100 |
-| Initial loss | 1.9979 |
-| Final loss | 0.7283 |
-| Training road labels fit | 19/28 at threshold 0.5 |
-| Preference pairs correctly ranked | 3/3 |
+| Source rides / riders | 69 / 15 |
+| GPS points | 7,826 |
+| Reported deviations / responses | 37 / 37 |
+| Post-trip questionnaires | 69 / 69 |
+| Automatically approved examples | 16 from ten riders |
+| Approved followed / deviated examples | 13 / 3 |
+| Junction targets | 54: 51 followed, 3 alternative roads |
+| Matched speed segments / roads | 6,801 / 161 |
+| Median GPS interval | 2.001 seconds |
+| Full-data training loss | 2.0788 to 0.2040 after 100 epochs |
+| In-sample road choices / ranking pairs correct | 43/54 and 3/3 |
 
-**Say:**
+The real held-out report trains each architecture for 40 epochs in each of ten
+rider folds. Inspect `rider_holdout_evaluation.json` for the final values rather
+than substituting the synthetic table on Slide 13. Always following the
+suggestion reaches 51/54 = 0.944 choice accuracy but zero deviation F1.
 
-> The falling loss, 19 of 28 training road labels, all three training route rankings, and successful checkpoint reload show that the implementation trains end to end. These are training-set checks, not test accuracy. Generalization must be judged from the rider-disjoint evaluation.
+| Model | Real choice accuracy | Real balanced accuracy | Real deviation F1 | Real route ranking |
+|---|---:|---:|---:|---:|
+| Suggestion baseline | 0.944 | 0.500 | 0.000 | n/a |
+| GCN | 0.593 | 0.784 | 0.214 | 0.333 |
+| GAT | 0.574 | 0.794 | 0.222 | 0.333 |
+| GATv2 | 0.667 | 0.814 | 0.240 | 0.667 |
+| ST-GAT-LSTM | 0.556 | 0.745 | 0.188 | 1.000 |
+| LSTM latest-only | 0.537 | 0.745 | 0.188 | 0.333 |
+
+**Say about the real results:**
+
+> The real outgoing-road results are weak. The full model detects all three
+> deviations but falsely flags 26 followed choices. Spatial GATv2 performs
+> better on choice accuracy and F1. Full history improves probability ranking
+> and route-pair ranking over latest-only, but not deviation F1. Three positive
+> targets and three route pairs are too few to establish a reliable advantage.
+
+Use `artifacts\experiments\real_final_20261014\run_summary.json` as the readable record of
+audits, retention, training, evaluation, traffic, routing, and provenance.
+
+Both tested fresh real route requests triggered the 1.30 detour guard. This
+shows that connected routing and the guard execute, but does not prove good
+learned route quality. A reviewed deviation replay correctly favors its
+observed route; that replay is an in-sample demonstration.
+
+The friend's supplied notebook explores six candidates and an 8 m backward
+GPS-jitter tolerance. It preserves results in memory rather than exporting
+directed edge sequences into the CSVs. This archived real run uses the former
+project matcher. The notebook's latter trimming and manual audit sections are
+obsolete at the user's instruction and are not used.
 
 ---
 
-## Slide 9 — Run `predict_route.py`
+## State-of-the-art and architecture slide or backup
 
-This is the main live inference demo:
+Use this comparison if the panel asks what published work does and how this
+project differs.
 
-```bat
-python -m stgat_lstm predict outputs\gatv2_lstm_checkpoint.pt "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --example-key 9d8b7bf677b875c5 --output outputs\reviewed_example_prediction.json
-```
+| Component | Published basis | What this project does |
+|---|---|---|
+| Graph attention | GAT, Velickovic et al. (2018) | Uses graph neighborhoods instead of a flat road table |
+| Dynamic graph attention | GATv2, Brody et al. (2022) | Uses PyTorch Geometric `GATv2Conv` with node and edge context |
+| Temporal memory | LSTM, Hochreiter and Schmidhuber (1997) | Encodes six road-context frames per edge |
+| Spatial then temporal order | ST-GAT traffic forecasting precedent, Zhang et al. (2019) | Applies GATv2 per frame and LSTM across the resulting edge embeddings |
+| Route preference | Pairwise preference/ranking idea | Learns chosen outgoing roads and ranks observed intentional paths below rejected suggestions in cost |
+| Route construction | Dijkstra | Searches over learned positive additive edge costs |
 
-`predict_route.py` does not train or change the checkpoint. It:
+**Defensible answer:**
 
-1. rebuilds the same graph feature structure,
-2. loads the saved `.pt` model configuration and weights,
-3. selects one approved decision,
-4. predicts a deviation probability for each branching road,
-5. calculates suggested and observed path costs,
-6. calculates a minimum learned-cost connected route.
+> We use standard, maintained GATv2 and LSTM components. Our contribution is
+> their task-specific integration with destination-conditioned road embeddings,
+> GPS-derived motorcycle traffic histories, supervised outgoing-road choices,
+> a route-ranking objective, and learned-cost routing. We should call the
+> implementation state-of-the-art-informed, not claim that its current real-data
+> performance is state of the art.
 
-If `--example-key` is omitted, it uses the first approved example. The explicit key makes the presentation repeatable.
+The model uses the **PyTorch Geometric GATv2 library operator**. It is not a
+handwritten reproduction of the authors' repository and not a line-for-line
+copy of a complete paper architecture.
 
-**Important caution:** this example was part of training. The command proves checkpoint reload and inference; it does not measure unseen-rider performance.
+## The six files to understand first
 
-The command requires these four inputs, in order:
+| Order | File | Why it matters |
+|---:|---|---|
+| 1 | `stgat_lstm/preprocessing/graph_data.py` | Defines features, Taft subgraph, accessible edges, and model tensors |
+| 2 | `stgat_lstm/modeling/model.py` | Implements node projection, GATv2, edge projection, LSTM, choice head, and costs |
+| 3 | `stgat_lstm/modeling/train_model.py` | Builds choice targets, attaches traffic, computes losses, trains, and saves checkpoint/report |
+| 4 | `stgat_lstm/modeling/evaluate_model.py` | Creates rider splits, trains baselines and ablations, selects validation settings, and reports test metrics |
+| 5 | `stgat_lstm/preprocessing/gps_traffic.py` | Converts consecutive GPS fixes into leakage-aware historical road-speed frames |
+| 6 | `stgat_lstm/routing/predict_route.py` | Loads the checkpoint, scores roads, runs Dijkstra, applies detour guard, and formats route output |
 
-```text
-checkpoint → graphml → node feature CSV → approved decision JSON
-```
+Supporting files:
 
-If `--example-key` is omitted, the first approved example is selected.
-
----
-
-## Slide 10 — Explain the prediction output
-
-The expected structure is:
-
-```json
-{
-  "suggested_route_deviation_probability": 0.2644,
-  "suggested_road_deviation_predictions": [
-    {
-      "edge_id": "401|400|0",
-      "road_name": "Taft Avenue",
-      "is_decision_point": true,
-      "deviation_probability": 0.18
-    }
-  ],
-  "reviewed_decision_road": {
-    "edge_id": "401|400|0",
-    "deviation_probability": 0.18
-  },
-  "predicted_label": "followed",
-  "approved_label": "followed",
-  "suggested_path_preference_cost": 4.9508,
-  "observed_path_preference_cost": 4.9508,
-  "recommended_route": {
-    "road_names": [
-      "Taft Avenue",
-      "Pablo Ocampo Street",
-      "Leveriza Street"
-    ],
-    "total_learned_preference_cost": 3.5184
-  },
-  "traffic": "historical traffic unknown"
-}
-```
-
-Explain each field:
-
-| Field | Meaning |
+| Concern | Files |
 |---|---|
-| `suggested_road_deviation_predictions` | one conditional deviation probability at every branching road |
-| `suggested_route_deviation_probability` | optional summary derived from the road probabilities |
-| `reviewed_decision_road` | the first reviewed branching road used for the displayed event-level comparison |
-| `predicted_label` | model prediction |
-| `approved_label` | validated training label used for comparison |
-| path preference costs | dimensionless learned preference scores; lower is preferred |
-| `recommended_route` | connected path found by Dijkstra using all learned edge costs |
-| `traffic` | historical traffic is explicitly marked unknown instead of fabricated |
+| Command dispatcher | `stgat_lstm/__main__.py` |
+| Input audits | `audit_rider_data.py`, `audit_road_network.py` |
+| Map matching | `map_matching.py` |
+| Candidate construction | `build_deviation_candidates.py`, `build_decision_candidates.py` |
+| Automatic approval and map | `review_decisions.py`, `create_review_map.py` |
+| Synthetic generator | `synthetic_hotspot.py` |
+| Dashboard | `dashboard.py` |
+| Regression checks | `tests/test_*.py` |
 
-For a followed case, the observed and suggested paths are the same, so their displayed costs are expected to be equal.
+The files are modules called by `python -m stgat_lstm <command>`. You normally
+do not run `model.py` or `train_model.py` directly. `__main__.py` dispatches the
+command to the correct module, which imports and calls the architecture and
+training functions.
 
-**Command for this section:**
+### Complete Python module map
 
-No additional command is required. Read the JSON printed by Slide 9. The `recommended_route` object is the routing result produced after the model scores the edges.
+| File | Called by or used for | Purpose |
+|---|---|---|
+| `__init__.py` | Python package import | Marks `stgat_lstm` as the project package |
+| `__main__.py` | Every `python -m stgat_lstm ...` command | Parses the first command and forwards remaining arguments to its module |
+| `audit_rider_data.py` | `audit-data` | Counts rides, GPS fixes, questionnaires, gaps, and provisional deviations |
+| `audit_road_network.py` | `audit-network`; imported by matching and traffic | Checks graph CRS, features, Taft coverage, and provides the road spatial index |
+| `audit_map_matching.py` | `audit-matching` | Measures whether eligible rider events can be sequence-matched to OSM |
+| `geometry.py` | Imported by audit, matching, and traffic | Haversine distance, polylines, and small geometry helpers |
+| `coordinates.py` | Imported by graph and routing modules | Implements the project's WGS84/UTM coordinate conversion without an external PROJ DLL |
+| `map_matching.py` | Candidate builders and map-match audit | HMM/Viterbi sequence matching from noisy GPS fixes to directed roads |
+| `preference_pairs.py` | Deviation-candidate construction | Finds comparable observed and suggested subpaths with common endpoints |
+| `build_deviation_candidates.py` | `build-deviations` | Extracts intentional local road choices and optional comparable route pairs |
+| `build_decision_candidates.py` | `build-decisions` | Adds followed controls and converts routes into outgoing-road decisions |
+| `review_decisions.py` | `review auto` | Applies deterministic validity rules and records approval/rejection reasons |
+| `create_review_map.py` | `review-map` | Writes the local Leaflet map used to inspect green and red paths |
+| `graph_data.py` | Training, evaluation, prediction | Extracts the Taft graph and creates all model tensors and choice targets |
+| `gps_traffic.py` | `gps-traffic`; training, evaluation, prediction | Derives historical motorcycle probe-speed frames from two-second GPS fixes |
+| `mapbox_traffic.py` | Optional `traffic` and legacy live-traffic flags | Compatibility path for Mapbox observations; not the main thesis traffic source |
+| `model.py` | Imported by train, evaluate, and predict | Contains GCN/GAT/GATv2 baselines and the final GATv2-LSTM choice model |
+| `train_model.py` | `train real` | Prepares approved examples, attaches traffic, optimizes weights, and saves checkpoint/report |
+| `evaluate_model.py` | `evaluate` | Runs rider-disjoint splits, validation selection, baselines, ablations, and metrics |
+| `predict_route.py` | `predict` and dashboard | Reloads a checkpoint, creates probabilities and costs, runs Dijkstra, and writes JSON |
+| `synthetic_hotspot.py` | `synthetic-hotspot` | Generates app-shaped decisions and separate controlled traffic probes |
+| `dashboard.py` | `dashboard` | Serves coordinate snapping, route requests, and the browser interface |
+| `dashboard.html` | Loaded by `dashboard.py` | Browser-side map and route visualization |
 
----
+### What the test files cover
 
-## Slide 11 — Why routing is separate
+The files under `tests/` are automated regression checks. They are run together
+with `python -m unittest discover -s tests -v`; they are not separate pipeline
+steps.
 
-Show the key relationship:
-
-```text
-neural model scores every directed edge
-                 ↓
-Dijkstra enforces a connected, traversable route
-```
-
-The model uses `softplus` to make every learned edge cost positive:
-
-```python
-return F.softplus(
-    self.cost_head(edge_embeddings).squeeze(-1)
-) * inputs.edge_static[:, 0] + 1e-4
-```
-
-**Say:**
-
-> The neural network learns what roads appear preferable. Dijkstra performs the discrete graph search and guarantees a connected minimum-cost route under those learned positive costs. The cost is a preference score, not seconds of travel time.
-
-**Command for this section:**
-
-Routing runs inside the inference command from Slide 9. If you need to explain the implementation separately, open `stgat_lstm/predict_route.py`; it does not need to be run as a standalone command.
-
----
-
-## Slide 12 — Honest project status
-
-Completed at this checkpoint:
-
-- directed OSM graph preparation
-- HMM/Viterbi GPS map matching
-- reviewed follow/deviate labels
-- two-layer GATv2 implementation
-- LSTM temporal architecture
-- classification and path-ranking training
-- checkpoint save and reload
-- learned-cost Dijkstra routing
-- GPS-derived historical motorcycle speed profiles on directed OSM roads
-- controlled, separated synthetic Taft hotspot capacity experiment
-
-Still required for research validation:
-
-- substantially more Taft decisions and riders
-- denser GPS-speed coverage around more rider decisions
-- rider-disjoint train/validation/test splits
-- GCN, GAT, GATv2 without LSTM, and STGAT-LSTM comparisons
-- held-out classification, ranking, calibration, and route-quality metrics
-
-**Closing statement:**
-
-> The engineering milestone is complete: reviewed rider decisions and GPS-derived histories can train a GATv2-LSTM checkpoint, and that checkpoint can drive prediction and routing. The remaining research milestone is more independent rider choices, denser historical coverage, and unseen-rider evaluation.
-
-**Command for this section:**
-
-Run the test suite before presenting:
-
-```bat
-python -m unittest discover -s tests -v
-```
-
-This verifies the software components. It is separate from held-out model evaluation.
-
----
-
-## The specific answer to “How did you do it?”
-
-Use this answer when the panel wants implementation detail:
-
-> First, we converted the supplied directed OSM graph into a Taft Avenue corridor graph and joined the POI feature table by `osmid`. We map-matched rider GPS sequences to directed OSM edges using an HMM/Viterbi procedure. From the matched sequence, the suggested route, and the survey evidence, we constructed a reviewed binary decision: `0` means followed and `1` means intentionally deviated. Only approved examples enter training.
->
-> For each decision, the model receives one graph input. Every graph node has 13 features, every directed edge has 19 static features and 5 dynamic traffic features, and every edge receives two destination-relative features. The graph structure is stored as `edge_index`, so message passing follows actual road connectivity. The node features are projected to 16 hidden dimensions. Two GATv2 layers aggregate neighboring node information using edge attributes such as length, road type, speed, access, and traffic availability.
-
-If asked why 16, explain that it is a tunable hidden width. The learned node projection uses a `[16, 13]` weight matrix, so it converts each 13-feature row into 16 learned values. Fifteen, 17, or 18 would also run; 16 is a compact baseline with 7,458 total parameters and must eventually be compared on rider-disjoint validation data.
->
-> We then combine the source-node embedding, destination-node embedding, static edge features, dynamic edge features, and destination features to create one embedding per directed road edge. For six historical GPS-speed snapshots, an LSTM processes each edge over time and keeps the final state. Missing road-time observations remain explicitly unknown through masks.
->
-> The shared edge embeddings feed two heads. The road-deviation head produces one logit per edge, and the cost head produces one positive preference cost per edge with `softplus`. During training, binary cross-entropy selects reviewed branching roads and teaches whether each was followed or rejected. For an intentional deviation, a ranking loss also teaches the observed path to have lower total learned cost than the rejected suggested path.
->
-> At inference, the model scores every routable edge. We pass those positive scores to Dijkstra, exclude edges restricted to motorcycles, and reconstruct the lowest-cost connected path. Therefore, the neural network learns preference scores while the graph-search algorithm guarantees a legal connected route.
-
-### The one-minute implementation flow
-
-```text
-raw app exports
-  → audit and filter incomplete records
-  → HMM/Viterbi map matching
-  → candidate follow/deviate decision
-  → manual approval and hash-bound training artifact
-  → OSM/POI/traffic tensors
-  → node projection
-  → two GATv2 layers
-  → per-edge embedding
-  → LSTM over timestamped snapshots
-  → road-deviation head + positive cost head
-  → Dijkstra over learned costs
-```
-
-### The most useful code-to-concept mapping
-
-| Concept to explain | Implementation |
+| Test group | Main assurance |
 |---|---|
-| Road graph | `edge_index` contains source and destination node indices for each directed edge |
-| Spatial attention | `GATv2Conv(..., heads=2, edge_dim=24)` in `model.py` |
-| Node-to-edge representation | concatenate source embedding, destination embedding, edge features, and destination features |
-| Temporal encoding | `nn.LSTM(hidden_channels, hidden_channels, batch_first=True)` |
-| Rider decision | each edge embedding is sent to `edge_deviation_head`; reviewed branch edges select the supervised logits |
-| Preference learning | `softplus(observed_cost - suggested_cost)` for intentional deviations |
-| Positive route cost | `softplus(cost_head(...)) * edge_length + 1e-4` |
-| Final route | Dijkstra in `predict_route.py`, with restricted-access edges removed |
+| `test_model.py`, `test_training_pipeline.py` | Tensor shapes, gradients, losses, training, checkpoint provenance |
+| `test_evaluation.py` | Rider separation, controls, metrics, and synthetic tuning protocol |
+| `test_routing.py`, `test_dashboard.py` | Positive-cost Dijkstra, access filtering, detour guard, API behavior |
+| `test_map_matching.py`, `test_preference_pairs.py` | Directed sequence matching and common-endpoint pairs |
+| `test_decision_dataset.py`, `test_review.py`, `test_review_map.py` | Candidate labels, automatic approval, and map output |
+| `test_gps_traffic.py`, `test_traffic.py` | Speed derivation, temporal history, missingness, and optional traffic compatibility |
+| `test_road_network.py`, `test_geometry.py`, `test_coordinates.py` | OSM coverage, distance, geometry, and coordinate conversion |
+| `test_synthetic_hotspot.py` | Synthetic schemas, rider splits, traffic separation, and reproducibility |
+| `graph_test_data.py` | Shared small graph fixture used by the tests; it is not training data |
 
-### What happens to one example inside the model?
+## Presentation-day sequence
 
-For example `9d8b7bf677b875c5`:
-
-1. The approved artifact identifies the origin, destination, suggested edge sequence, observed edge sequence, and followed label.
-2. `graph_data.py` extracts the Taft corridor and creates the graph tensors for that destination.
-3. `model.py` computes hidden representations for connected nodes with GATv2.
-4. Each directed edge receives an embedding, a positive cost, and a deviation logit.
-5. Reviewed branching roads select the logits that are trained as followed or rejected.
-6. All edge costs are passed to Dijkstra.
-7. The result is printed as a probability, path costs, road names, and total learned route cost.
-
-This is why `predict_route.py` is the best live demonstration: it runs steps 2–7 using a saved checkpoint without retraining.
-
-### What the model learns and what it does not learn
-
-It learns statistical associations between graph context and approved rider choices, such as whether a proposed road tends to be accepted or rejected under the available features. It does not automatically discover a human-readable causal rule, and the current small checkpoint cannot support that claim. Attention weights and learned costs are model signals, not causal explanations.
-
-It also does not currently learn a reliable rider-specific embedding. The checkpoint is a shared model across riders. Rider IDs are kept for grouping and future unseen-rider evaluation.
-
-## Function-by-function reference
-
-Use this section when the panel points to a function and asks what it does.
-
-### `model.py`
-
-| Function or method | Role |
-|---|---|
-| `PreferenceModel.__init__` | Validates the architecture and feature dimensions, creates the node projection, GATv2/GAT/GCN layers, edge projection, optional LSTM, and cost head. |
-| `PreferenceModel._spatial_snapshot` | Processes one traffic snapshot: projects node features, performs graph message passing, combines endpoint embeddings with edge and destination features, and returns one embedding per directed edge. |
-| `PreferenceModel.encode_edges` | Processes all available snapshots. It stacks per-snapshot edge embeddings and runs the LSTM when the architecture is `stgat_lstm`; otherwise it uses the latest snapshot. |
-| `PreferenceModel.costs_from_embeddings` | Converts edge embeddings into positive length-scaled preference costs using `softplus`. |
-| `PreferenceModel.forward` | Runs edge encoding followed by cost generation; the basic model output is one cost per graph edge. |
-| `PreferenceModel.configuration` | Serializes architecture and feature dimensions so the checkpoint can recreate the same model later. |
-| `path_cost` | Looks up a sequence of edge IDs and sums their predicted costs to produce a route cost. |
-| `preference_loss` | Compares a preferred route with a rejected route and penalizes the model when the preferred route does not have lower cost. |
-| `DecisionPreferenceModel.__init__` | Wraps the preference backbone and adds the per-road deviation head. |
-| `DecisionPreferenceModel.forward` | Gets edge embeddings and returns `(edge_costs, edge_deviation_logits)`, both with one value per directed graph edge. |
-| `DecisionPreferenceModel.configuration` | Stores the model type and backbone configuration in the checkpoint. |
-
-The main model call chain is:
-
-```text
-DecisionPreferenceModel.forward
-  → PreferenceModel.encode_edges
-    → PreferenceModel._spatial_snapshot
-      → GATv2 layers
-  → PreferenceModel.costs_from_embeddings
-  → edge-deviation head
-```
-
-### `train_model.py`
-
-| Function or class | Role |
-|---|---|
-| `PreparedDecision` | Data container for one training example: graph input, label, suggested route, and optional preference pair. |
-| `DecisionTrainingSummary` | Data container for epoch count, losses, example counts, and in-sample checks. |
-| `train_decision_model` | Creates the model and Adam optimizer, loops through epochs, computes classification and ranking losses, backpropagates, updates weights, and calculates the final in-sample summary. |
-| `prepare_real` | Builds the real Taft graph, loads only approved decisions, creates graph inputs, and assigns observed-versus-suggested preference pairs to deviation cases. |
-| `_save_training` | Saves the PyTorch checkpoint to `.pt` and writes its readable training report to `.json`. |
-| `main` | Parses the `real` training command, prepares approved examples, trains the model, and prints the saved report. |
-
-The real training call chain is:
-
-```text
-main
-  → prepare_real
-    → build_real_graph_data
-    → load_approved_decisions
-  → train_decision_model
-    → DecisionPreferenceModel.forward
-    → classification loss
-    → preference ranking loss for deviations
-  → _save_training
-```
-
-### `predict_route.py`
-
-| Function | Role |
-|---|---|
-| `main` | Parses the checkpoint and graph paths, rebuilds the graph input, selects an approved example or new endpoints, optionally builds GPS history, reloads the saved weights, computes probability and path costs, runs learned-cost routing, saves the JSON result, and prints a short summary. |
-
-The prediction call chain is:
-
-```text
-main
-  → build_real_graph_data
-  → load_approved_decisions
-  → build_model_input
-  → torch.load checkpoint
-  → DecisionPreferenceModel.forward
-  → path_cost
-  → shortest_real_preference_path
-  → saved JSON + terminal summary
-```
-
-The training file changes model weights. The prediction file only reads the saved weights and produces outputs.
-
----
-
-## Presentation-day command sequence
-
-Run from Windows `cmd`:
+The full reproducible workflow is in `SYNTHETIC_RUNBOOK.md`. On presentation
+day, avoid regenerating artifacts unless the panel specifically asks. Use:
 
 ```bat
 cd /d C:\Users\Vince\Downloads\THESIS_APP\T3-NEW-MODEL\STGAT-LSTM
 call .venv\Scripts\activate.bat
-```
-
-There are two different command modes:
-
-1. **Full pipeline mode:** use this when rebuilding the artifacts from fresh app exports or after collecting new data.
-2. **Presentation demo mode:** use this when `outputs\approved_training_examples.json`, `outputs\gatv2_lstm_checkpoint.pt`, and `outputs\candidate_review_map.html` already exist.
-
-### Full pipeline before the presentation
-
-Run these in order when you need to regenerate and retrain:
-
-```bat
 python -m unittest discover -s tests -v
-python -m stgat_lstm audit-data "data\real\rider_exports"
-python -m stgat_lstm audit-network "data\real\rider_exports" "data\real\osm\metro_manila_processed.graphml" --node-features "data\real\osm\road_node_features.csv"
-python -m stgat_lstm audit-matching "data\real\rider_exports" "data\real\osm\metro_manila_processed.graphml"
-python -m stgat_lstm build-deviations "data\real\rider_exports" "data\real\osm\metro_manila_processed.graphml" --output outputs\deviation_candidates.json --geojson-output outputs\deviation_candidates.geojson
-python -m stgat_lstm build-decisions "data\real\rider_exports" "data\real\osm\metro_manila_processed.graphml" --deviation-candidates outputs\deviation_candidates.json --output outputs\decision_candidates.json --geojson-output outputs\decision_candidates.geojson
-python -m stgat_lstm review-map outputs\decision_candidates.geojson --output outputs\candidate_review_map.html
-python -m stgat_lstm review auto outputs\decision_candidates.json --output outputs\approved_training_examples.json
-python -m stgat_lstm train real "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --gps-traffic-data "data\real\rider_exports" --epochs 100 --batch-size 8 --output outputs\gatv2_lstm_checkpoint.pt
+start "" "outputs\maps\synthetic_hotspot\candidate_review_map.html"
+python -m stgat_lstm predict artifacts\checkpoints\synthetic_hotspot\checkpoint.pt "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" generated\synthetic_hotspot\approved_training_examples.json --gps-traffic-data generated\synthetic_hotspot\traffic_probes --output outputs\predictions\synthetic_hotspot\reviewed_example_prediction.json
+python -m stgat_lstm dashboard --checkpoint artifacts\checkpoints\synthetic_hotspot\checkpoint.pt --graphml "data\real\osm\metro_manila_processed.graphml" --node-features "data\real\osm\road_node_features.csv" --gps-traffic-data generated\synthetic_hotspot\traffic_probes --traffic-cutoff-ms 1767571217000 --max-detour-ratio 1.30
 ```
 
-No decision JSON needs to be edited. Do not train until the validated artifact reports `status: "approved_for_training"`. The optional review map can still be opened for explanation or quality-control sampling.
-
-### What each command reads and produces
-
-| Command | What it does | Main inputs it reads | Output |
-|---|---|---|---|
-| `unittest discover` | Runs software tests for geometry, map matching, review, graph features, model, and routing | Test files and their in-memory test graphs | Pass/fail report in the terminal |
-| `python -m stgat_lstm audit-data` | Checks that exported CSVs can be joined and summarizes missing, invalid, future, or ambiguous records | `rides_clean.csv`, `generated_routes_clean.csv`, `deviations_clean.csv`, `deviationResponses_clean.csv`, `map_points_clean.csv` | `rider_data_audit.json` plus a terminal summary |
-| `python -m stgat_lstm audit-network` | Checks graph coverage, edge distances, node-feature joins, and Taft corridor coverage | Clean export directory, OSM `.graphml`, POI/node feature CSV | `road_network_audit.json` plus a terminal summary |
-| `python -m stgat_lstm audit-matching` | Tests whether rider GPS sequences can be matched to connected directed graph edges | Clean export directory and OSM `.graphml` | `map_matching_audit.json` plus a terminal summary |
-| `python -m stgat_lstm gps-traffic` | Converts consecutive GPS fixes into direction-matched historical motorcycle speed records | Clean export directory, OSM `.graphml`, node feature CSV | `gps_traffic_audit.json` plus a terminal summary |
-| `python -m stgat_lstm build-deviations` | Finds strict deviation/rejoin route pairs for validation | Clean rider CSVs and OSM `.graphml` | `deviation_candidates.json` and optional GeoJSON |
-| `python -m stgat_lstm build-decisions` | Adds verified follow cases and imports strict deviation candidates into one decision artifact | Clean rider CSVs, OSM `.graphml`, and `deviation_candidates.json` | `decision_candidates.json` and `decision_candidates.geojson` |
-| `python -m stgat_lstm review-map` | Turns candidate GeoJSON into a browser map | Candidate GeoJSON | `candidate_review_map.html` |
-| `python -m stgat_lstm review auto` | Applies versioned survey, GPS and path rules and records approval/rejection reasons | Candidate JSON | `approved_training_examples.json` |
-| `python -m stgat_lstm train real` | Trains classification and path-preference heads | OSM `.graphml`, node feature CSV, approved decision JSON | `gatv2_lstm_checkpoint.pt` and `training_report.json` |
-| `python -m stgat_lstm predict` | Reloads the checkpoint, scores one decision, and routes with learned edge costs | Checkpoint, OSM `.graphml`, node feature CSV, optional approved decision JSON and GPS history directory | `route_prediction.json` plus a terminal summary |
-| `python -m stgat_lstm synthetic-hotspot` | Builds a separated controlled capacity experiment | OSM graph, node features, approved real path templates | Six app-shaped CSVs, manifest, and synthetic approved artifact |
-
-The audit commands do not create labels. Candidate generation also does not directly train the model. The sequence is deliberately:
+Open these saved results before the presentation:
 
 ```text
-audit → candidate construction → automatic validation → approved artifact → training
+generated\synthetic_hotspot\manifest.json
+outputs\audits\synthetic_hotspot\gps_traffic_audit.json
+outputs\reports\synthetic_hotspot\rider_holdout_evaluation.json
+outputs\reports\synthetic_hotspot\training_report.json
+outputs\predictions\synthetic_hotspot\worsening_route_prediction.json
+outputs\predictions\synthetic_hotspot\recovering_route_prediction.json
 ```
 
-### How to explain “auditing the source data”
+## Likely panel questions
 
-> Auditing means checking whether the exported app records are structurally and temporally reliable enough to analyze. We verify that the required CSV files exist, their IDs can be joined, route geometries and GPS values can be parsed, routes referenced by an event were available before that event, GPS points exist around the event, and the suggested and observed routes have compatible endpoints. The audit reports possible candidates and failure reasons; it does not decide that a rider learned or preferred a road.
+### How does the model actually learn rider behavior?
 
-### How to explain “producing a candidate”
+Every supervised junction lists the legal outgoing roads and the road the rider
+actually chose. Cross-entropy penalizes low probability on that chosen road.
+For intentional deviations, route-ranking loss also penalizes the model when
+the observed route has a higher total learned cost than the rejected suggestion.
+Backpropagation changes the GATv2, edge projection, LSTM, and choice-head weights
+so similar graph, destination, and traffic contexts favor similar choices.
 
-> A candidate is a possible route-choice example, not yet a training label. For a reported deviation, the pipeline selects the latest suggested route that existed before the deviation timestamp, parses the rider GPS sequence, and map-matches both the GPS and route geometry to the directed OSM graph. It keeps the case only when the observed path leaves the suggested path, later rejoins it, has the same practical origin and destination, and has usable survey evidence. Automatic validation then accepts supported intentional reasons with GPS-backed geometry and rejects personal stops, unsupported reasons, missing traffic severity, weak matches, and disconnected paths.
->
-> For a followed case, the pipeline uses a ride without a logged deviation. It requires sufficient GPS coverage inside the Taft corridor, successful directed map matching, strong agreement between GPS and the suggested route, and a verified branching point where the rider continued along the suggestion. It then creates a local followed example. Both types remain training-blocked until automatic validation produces the hash-bound approved artifact.
+### Is the deviation value a label or a probability?
 
-### Current output check and interpretation
+The stored supervision is categorical: followed is 0 and deviated is 1. The
+model outputs a probability distribution over outgoing roads. The candidate
+road's derived deviation probability is `1 - P(candidate road)`. A numeric
+probability should not be called calibrated until enough real held-out examples
+exist.
 
-The current real-data outputs are internally consistent:
+### What exactly does the LSTM learn?
 
-| Artifact | Current status | Interpretation |
-|---|---|---|
-| `decision_candidates.json` | `review_required_not_training_ready` | Expected before automatic validation; this file must not be trained directly |
-| `approved_training_examples.json` | `approved_for_training`; 8 approved | Correct training input: 5 followed, 3 deviated, 6 riders |
-| `gatv2_lstm_checkpoint.pt` | Present; `stgat_lstm` configuration | Trained checkpoint containing GATv2, LSTM, road-deviation head, and cost head weights |
-| `training_report.json` | Present; 100 epochs | GPS-history training report: loss fell from 1.9979 to 0.7283; 19/28 in-sample road classifications and 3/3 preference rankings |
-| `candidate_review_map.html` | Present | Browser evidence used to inspect candidate paths before approval |
+It learns transformations of chronological road embeddings that help predict
+the outgoing road. In the controlled data, worsening and recovering speed
+sequences end at the same latest speed, so sequence order contains information
+that one frame lacks. The LSTM's output still goes to the same road-choice head;
+it does not separately forecast traffic.
 
-The current inference demonstration lists a deviation probability for each branching road, derives an optional route summary, compares it with the approved example, and returns the learned route. This is an in-sample checkpoint-reload demonstration, not held-out accuracy.
+### Why are there six embeddings?
 
-`outputs/gps_traffic_audit.json` records 6,657 usable speed segments on 494 directed roads from 48 rides, with a median interval of 2.001 seconds. Raw GPS coordinates are not written to this audit. Missing road-time coverage is represented by availability masks rather than interpreted as free flow.
+There is one GATv2-derived edge embedding per five-minute history slot. Six
+frames cover five transitions across approximately 25 minutes. Six is a current
+configuration, not a universal optimum; it can be changed and later tuned on
+validation data.
 
-### Before presenting
+### Does the model retrain for a different time of day?
 
-Confirm the code passes:
+No. The trained weights remain fixed. A request at another time builds a
+different six-frame traffic tensor, which can produce different edge embeddings,
+probabilities, costs, and route.
 
-```bat
-python -m unittest discover -s tests -v
-```
+### Why does the synthetic data repeat routes?
 
-If the full pipeline has already been completed and the outputs have not changed, you do not need to rerun audits, candidate generation, automatic validation, or training during the live presentation.
+Repeated observations create a consistent learnable signal across riders and
+traffic regimes. They are intentional samples, not duplicate rows accidentally
+counted twice. Rider-disjoint splitting checks whether the injected rule carries
+to artificial riders absent from training.
 
-### During the presentation
+### Why is the prevalence baseline accuracy already 0.846?
 
-Open the reviewed evidence:
+There are 66 followed and 12 deviated junction choices in the test set. Always
+predicting followed is correct 66/78 times, or 0.846, but its deviation F1 is
+zero and balanced accuracy is 0.5. This is why accuracy must be read with the
+class-sensitive metrics and negative log-likelihood.
 
-```bat
-start "" "outputs\candidate_review_map.html"
-```
+### Does Dijkstra train the network?
 
-Show the saved training report:
+No. Training uses differentiable choice and ranking losses. Dijkstra is called
+after the network produces positive edge costs to construct a valid connected
+route.
 
-```bat
-type outputs\training_report.json
-```
+### Do nodes and edges have weights?
 
-Run checkpoint inference and routing:
+Nodes and edges both have input features. GATv2 learns attention coefficients
+on graph connections. The final scalar routing cost belongs to each directed
+edge. Dijkstra sums edge costs; it does not sum node features.
 
-```bat
-python -m stgat_lstm predict outputs\gatv2_lstm_checkpoint.pt "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --example-key 9d8b7bf677b875c5 --gps-traffic-data "data\real\rider_exports" --output outputs\reviewed_example_prediction.json
-```
+### Why convert node embeddings into edge embeddings?
 
-### Controlled hotspot demonstration
+The decision and route concern a directed road, not only an intersection. A road
+needs information from both endpoints plus its lanes, class, speed context, and
+direction toward the destination. Concatenating these values gives every road a
+representation that the LSTM and choice head can score.
 
-Use the synthetic experiment only to show that a known repeated road pattern is learnable:
+### Is the project personalized?
 
-```bat
-python -m stgat_lstm synthetic-hotspot "data\real\osm\metro_manila_processed.graphml" "data\real\osm\road_node_features.csv" outputs\approved_training_examples.json --output-dir outputs\synthetic_hotspot
-```
+It learns shared patterns across riders. Rider identity is used to prevent data
+leakage in evaluation, but is not an input embedding. True individual
+personalization would require enough repeated choices per rider and a separate
+history or rider embedding.
 
-State that its labels are injected ground truth and are not evidence about real riders.
+### What does the 1.30 distance constraint do?
 
-The current controlled result uses 48 training, 24 validation, and 24 test
-examples with rider-disjoint splits. The 96 labeled decisions cover two approved
-in-corridor deviation patterns and five approved follow-route structures; all
-survive reconstruction and automatic validation. Separate probe rides provide
-slow and free-flow GPS histories without becoming decision labels. Thresholds
-are selected only from validation riders. On unseen synthetic riders, GATv2 and
-full-history ST-GAT-LSTM reach 1.000 deviation F1, AP, ROC-AUC, balanced
-accuracy, and preference-ranking accuracy. The latest-only control reaches
-0.923 F1 and 0.983 balanced accuracy, so the constructed full history adds a
-small measurable benefit. Explain that this proves implementation and temporal
-capacity under injected conditions; the official rider evaluation remains the
-only evidence about real behavior.
+The system computes the shortest-distance route as a guard. If the unconstrained
+learned route is more than 1.30 times that distance, it returns the distance
+route. This prevents an immature cost model from selecting extreme detours.
 
----
+### What came from the older project?
 
-## Files to have open in the editor
+The present repository uses the earlier work as domain and data-format context.
+The current GATv2-LSTM, outgoing-road supervision, temporal GPS profiles,
+evaluation, and Dijkstra integration are implemented in this codebase; there
+are no runtime imports from the old folder.
 
-Open only these tabs before presenting:
+### Are the current results valid?
 
-| File | Code to point out |
-|---|---|
-| `stgat_lstm/model.py` | GATv2 layers, LSTM, road-deviation head and positive cost head |
-| `stgat_lstm/train_model.py` | classification plus preference-ranking loss |
-| `stgat_lstm/predict_route.py` | checkpoint loading, prediction and route generation |
-| `stgat_lstm/predict_route.py` | learned-cost Dijkstra |
-| `outputs/training_report.json` | readable checkpoint result |
+They are valid for the controlled synthetic experiment because train,
+validation, and test riders are separated and the test labels are not used for
+selection. They establish implementation capacity under the injected rule.
+They are not an estimate of performance on real motorcycle riders.
 
-Keep `map_matching.py`, `graph_data.py`, `gps_traffic.py`, and `synthetic_hotspot.py` available as backup files if the panel asks about label construction, graph features, traffic, or the capacity check.
-
----
-
-## Backup questions and answers
-
-### Where did the architecture come from?
-
-> It is not a line-for-line reproduction of one STGAT-LSTM paper. It is a task-specific composition with traceable sources. Graph neighborhood attention comes from Graph Attention Networks by Veličković et al. We use GATv2 from Brody et al. because it replaces the original GAT's static attention with more expressive query-dependent attention. Temporal sequence modeling uses the standard LSTM introduced by Hochreiter and Schmidhuber. The broader idea of combining a road graph's spatial representation with recurrent temporal modeling is established in transportation research such as DCRNN, although our implementation is not DCRNN: it uses GATv2 followed by a per-edge LSTM and predicts rider choice and preference cost rather than future traffic flow.
-
-| Current component | Source or inspiration | Project-specific adaptation |
-|---|---|---|
-| Neighbor attention | Original GAT paper | Applied to the directed OSM road graph with road-edge attributes |
-| Dynamic attention | GATv2 paper | Two PyTorch Geometric `GATv2Conv` layers with two heads |
-| Temporal memory | Hochreiter and Schmidhuber LSTM | LSTM processes the spatial embedding of every road edge across traffic snapshots |
-| Spatial + temporal transportation pattern | DCRNN family | Sequential GATv2 then LSTM; no diffusion-convolution recurrent cell or encoder-decoder forecast |
-| Edge representation | Conceptual lineage from `finalGNNT3` | Concatenates source/destination embeddings with static, dynamic, and destination-relative features |
-| Routing | `finalGNNT3` and standard shortest-path search | Positive learned preference costs with restricted-edge filtering and Dijkstra |
-| Tacit knowledge | Project research objective and old tacit layer | Replaces hand-set survey multipliers with supervised road-deviation and path-ranking losses |
-
-The current `model.py` explicitly cites GAT, GATv2, and GCN in its module documentation. It imports `GATv2Conv` from PyTorch Geometric and calls `nn.LSTM`; no current Python file imports `edge_gat_training.py`, `tacit_layer.py`, or another `finalGNNT3` module.
-
-### Are we using "pure GATv2" or a GATv2 library?
-
-> We use the maintained PyTorch Geometric implementation: `from torch_geometric.nn import GATv2Conv`. We did not rewrite the GATv2 equations by hand and we do not import the authors' experiment repository. This is still the GATv2 operator described by Brody et al.; the authors' official repository explicitly points users to PyTorch Geometric's `GATv2Conv`.
-
-The current call sets `heads=2`, `concat=False`, `edge_dim=24`, and `negative_slope=0.2`. With the installed PyTorch Geometric implementation, the unspecified defaults are `dropout=0.0`, `add_self_loops=True`, `share_weights=False`, and `residual=False`. The `edge_dim=24` extension lets static road attributes and dynamic traffic attributes participate directly in the attention calculation.
-
-### How do the two supplied papers and repositories map to our model?
-
-The titles and repository links must be paired as follows:
-
-- **How Attentive Are Graph Attention Networks?** — [tech-srl/how_attentive_are_gats](https://github.com/tech-srl/how_attentive_are_gats). This is the direct source for the GATv2 attention operator used through PyTorch Geometric.
-- **Solve routing problems with a residual edge-graph attention neural network** — [Lei-Kun/DRL-and-graph-neural-network-for-routing-problems](https://github.com/Lei-Kun/DRL-and-graph-neural-network-for-routing-problems). This is a related routing architecture, not the source of GATv2.
-
-| Question | Residual E-GAT routing paper | Current project |
-|---|---|---|
-| Task | Construct solutions for TSP, CVRP, and MDCVRP | Predict motorcycle road-level deviation behavior and learn route-preference costs |
-| Graph encoder | Custom edge-aware GAT with residual connections | Two PyTorch Geometric GATv2 layers with node and edge attributes |
-| Route construction | Transformer-style attention/pointer decoder selects the next unvisited node | Dijkstra searches the legal OSM graph using positive learned edge costs |
-| Training | Deep reinforcement learning with PPO or improved REINFORCE | Supervised decision classification plus pairwise path-preference ranking |
-| Temporal component | No LSTM in the cited routing architecture | Per-edge LSTM over successive graph/traffic snapshots |
-
-We should not copy the paper's complete residual E-GAT/Transformer/RL pipeline into this project. It solves a different optimization problem on generated problem instances. Its useful design idea for a later experiment is the residual connection. Modern PyTorch Geometric exposes a `residual` option for `GATv2Conv`, but our current layers leave it at the default `False`. Adding it would change the architecture and require a new checkpoint plus a controlled comparison.
-
-The other useful experiment is attention dropout. It is currently `0.0`. Residual connections, dropout, and normalization are possible hyperparameters rather than missing requirements of GATv2. With only eight approved decisions, changing them now would not establish an improvement. The higher-priority scientific work is collecting enough rider decisions and time-aligned traffic snapshots, making rider-disjoint train/validation/test splits, and comparing GCN, original GAT, spatial-only GATv2, and GATv2-LSTM under the same split.
-
-### What exactly came from `finalGNNT3`?
-
-> The previous project established the domain concept and data foundation: an OSM road graph, node and edge features, a two-layer graph-attention encoder, endpoint embeddings combined into an edge prediction, traffic adjustment, tacit survey penalties, and shortest-path routing. The current implementation preserves those useful ideas and the underlying OSM/POI lineage. It replaces the old travel-time regression target and hand-selected tacit multipliers with reviewed rider-choice supervision, GATv2, an LSTM interface, a per-road deviation head, learned positive preference costs, and a ranking loss.
-
-Evidence from the old source:
-
-- `finalGNNT3/edge_gat_training.py` defines two original `GATConv` layers, concatenates source and destination node embeddings with edge features, and trains with MSE against `simulated_travel_time`.
-- `finalGNNT3/tacit_layer.py` assigns configured penalties from survey-reason strings.
-- `finalGNNT3/routing_engine.py` calculates `final_cost = traffic_adjusted_time * tacit_multiplier` and provides Dijkstra/A* routing.
-- The current package contains no import of those modules. Its `model.py` and the old `edge_gat_training.py` also have different SHA-256 hashes, confirming that they are different source files rather than identical copies.
-
-**Recommended wording:**
-
-> Our architecture was inspired by the graph-to-edge approach of the earlier thesis prototype and by published GAT, GATv2, LSTM, and spatiotemporal traffic-modeling research. We did not copy a complete architecture from one paper. We composed these components for a new target: motorcycle rider deviation probability per branching road and learned path preference.
-
-References:
-
-- [Veličković et al., Graph Attention Networks](https://arxiv.org/abs/1710.10903)
-- [Brody et al., How Attentive Are Graph Attention Networks?](https://openreview.net/pdf?id=F72ximsx7C1)
-- [Official GATv2 implementation repository](https://github.com/tech-srl/how_attentive_are_gats)
-- [Lei et al., Solve Routing Problems with a Residual Edge-Graph Attention Neural Network](https://doi.org/10.1016/j.neucom.2022.08.005)
-- [Official residual E-GAT routing repository](https://github.com/Lei-Kun/DRL-and-graph-neural-network-for-routing-problems)
-- [Hochreiter and Schmidhuber, Long Short-Term Memory](https://doi.org/10.1162/neco.1997.9.8.1735)
-- [Li et al., DCRNN: Data-Driven Traffic Forecasting](https://openreview.net/pdf?id=SJiHXGWAZ)
-
-### What do state-of-the-art spatiotemporal graph models do?
-
-> Most state-of-the-art models in this area are built for traffic-state forecasting. They receive historical measurements such as speed, flow, or occupancy from many road sensors and predict those values at future times. Their main challenge is learning both spatial dependence between roads and temporal dependence across a long history. DCRNN models directed traffic diffusion with recurrent units; Graph WaveNet learns hidden spatial dependencies and long temporal patterns with dilated convolutions; PDFormer uses dynamic long-range attention and explicitly models propagation delay. Their usual evidence is performance on large public traffic datasets using MAE, RMSE, or MAPE.
-
-### How is our model different from those models?
-
-| Dimension | Traffic-forecasting state of the art | Our STGAT-LSTM checkpoint |
-|---|---|---|
-| Main question | What will traffic speed or flow be later? | Will a motorcycle rider reject this suggested road at this branching point? |
-| Input | Long historical sensor sequences over many locations | Directed OSM graph, road/POI features, suggested path, and traffic available at the decision time |
-| Output | Future speed, flow, occupancy, or congestion | Per-road deviation probabilities and learned edge-preference costs |
-| Spatial modeling | Often adaptive, long-range, or delay-aware dependencies | Two local GATv2 layers over the directed OSM topology |
-| Temporal modeling | Usually many historical time steps and multi-step forecasting | Per-edge LSTM over six historical rider-GPS speed-profile snapshots |
-| Decision layer | Usually stops at forecasting | Uses positive learned costs with Dijkstra to produce a connected route |
-| Data scale | Large sensor benchmarks with held-out time periods | 28 road labels from eight examples and six riders; held-out results are preliminary |
-
-**The key distinction to say aloud:**
-
-> We are not claiming that our small checkpoint outperforms DCRNN, Graph WaveNet, or PDFormer at traffic forecasting. Those models solve a different prediction problem. Our adaptation uses the graph and temporal ideas for a rider-choice problem: learning behavioral preference from followed and intentionally deviated routes, then passing the learned preference costs to a router.
-
-### Is our architecture itself state of the art?
-
-> We do not claim that. GATv2 and recurrent temporal encoding are established components. Our contribution at this stage is the task-specific pipeline: reconstructing leakage-controlled motorcycle road choices from GPS and surveys, representing the OSM road graph, learning road-level deviation and path preference together, and integrating the result with directed graph routing. A state-of-the-art performance claim would require larger data, rider-disjoint validation and testing, and controlled comparisons against baselines.
-
-### What would a fair comparison require?
-
-> We would split complete riders into train, validation, and test sets, then evaluate the road-level target with balanced accuracy, precision, recall, F1, average precision, ROC-AUC, Brier score, and calibration. For routing, we need a separate evaluation of whether the recommended route matches later rider choices and how it affects secondary outcomes such as travel time. We should compare a prevalence baseline, GCN, original GAT, GATv2 without temporal history, STGAT-LSTM, and simpler tabular or discrete-choice baselines. We should not compare our tiny pilot directly with benchmark scores from large traffic datasets.
-
-### Is this state of the art?
-
-> It uses GATv2, a more expressive successor to the original GAT, with an LSTM temporal interface. We do not claim state-of-the-art measured performance. Large models such as Graph WaveNet and PDFormer are mainly evaluated on traffic forecasting benchmarks, while our target is motorcycle rider road-deviation behavior and path preference. A performance comparison requires more riders and a separate held-out test set.
-
-### Why use a graph neural network?
-
-> A road network is defined by connectivity. GATv2 can combine information from roads and intersections that are actually connected, while learning that some neighbors matter more than others. A regular tabular network would not know the road topology unless we manually encoded it.
-
-### Where is LeakyReLU?
-
-> It is applied internally by `GATv2Conv` when attention logits are calculated. We explicitly set `negative_slope=0.2`. ELU is separately applied to the output of the attention layers.
-
-### Is the LSTM implemented or pending?
-
-> It is implemented and trained as part of the checkpoint. It processes six historical graph snapshots derived from direction-matched rider GPS speeds. Current coverage is sparse, so the temporal ablation and more rider choices are still needed before claiming that the LSTM improves prediction.
-
-### Does the model optimize travel time?
-
-> No. It learns rider behavior and rider-preference cost. Travel time can be an input or a secondary evaluation outcome, but it is not the main target.
-
-### What does `predict_route.py` prove?
-
-> It proves that the saved checkpoint can be reconstructed in a separate process, run on graph inputs, produce a deviation probability for each branching road, score paths, and provide costs to routing. It is an inference demo, not an evaluation script.
-
-### Why are there only eight examples?
-
-> The reconstruction rules are conservative. Ambiguous GPS matching, incomplete routes, cases outside the corridor, and deviations unrelated to route preference are excluded. These examples are sufficient for an end-to-end checkpoint test, not a generalization claim.
-
-### Is the model personalized?
-
-> The current checkpoint learns shared behavior across riders. Reliable rider embeddings would require more examples per rider. Rider IDs are retained for a future rider-disjoint evaluation so the test can measure behavior on unseen riders.
-
-### How is data leakage prevented?
-
-> The later observed path and survey response construct the target label but are excluded from inference features. GPS speed profiles use only records before the decision and exclude the target ride. Held-out evaluation also excludes all records from the test rider.
-
-### Why use Dijkstra after the neural network?
-
-> The neural network estimates positive edge preference costs. Dijkstra uses those costs while enforcing graph connectivity and access restrictions. This prevents the model from returning a disconnected road sequence.
-
-### How does this compare with the old `finalGNNT3` folder?
-
-> We retained the project concept and the underlying OSM and POI data foundation. The old model predicted simulated travel time and applied heuristic tacit penalties. The current pipeline replaces that model with reviewed rider-choice labels, directed HMM map matching, GATv2-LSTM training, checkpointed inference, and learned preference-cost routing. No old Python module is imported by the current package.
-
-References for comparison:
-
-- [DCRNN](https://openreview.net/pdf?id=SJiHXGWAZ)
-- [Graph WaveNet](https://www.ijcai.org/proceedings/2019/264)
-- [PDFormer](https://ojs.aaai.org/index.php/AAAI/article/view/25556)
-- [Hidden Markov Map Matching Through Noise and Sparseness](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/12/map-matching-ACM-GIS-camera-ready.pdf)
+### What happens when real data is ready?
+
+Audit the new export, reconstruct and automatically validate candidates, build
+historical GPS profiles that predate each decision, run rider-disjoint
+evaluation, and train a final checkpoint using the selected settings. The main
+code does not need a new architecture merely because the data source changes.

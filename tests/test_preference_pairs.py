@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import unittest
 
-from stgat_lstm.map_matching import MapMatchResult, MatchState
-from stgat_lstm.preference_pairs import extract_divergence_pair
+from stgat_lstm.preprocessing.map_matching import MapMatchResult, MatchState
+from stgat_lstm.preprocessing.preference_pairs import extract_divergence_pair
 
 
 def result(edges, offsets) -> MapMatchResult:

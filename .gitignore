@@ -22,8 +22,6 @@ dist/
 .DS_Store
 Thumbs.db
 
-# Private rider data, generated reports, and model weights
-
 # Temporary files
 *.log
 *.tmp
@@ -32,3 +30,24 @@ Thumbs.db
 
 # Local research notes and cloned reference repositories
 .review-references/
+/docs/reference_code/
+
+# Regenerable outputs and model binaries
+/outputs/
+/generated/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# Local archives, code rollback snapshots, and standalone checkpoints
+/artifacts/archive/
+/artifacts/rollback/
+/artifacts/checkpoints/
+
+# Private rider exports, frozen copies, and derived per-rider experiments
+/data/real/rider_exports/
+/artifacts/experiments/
+
+# Public OSM inputs, source code, tests, README, and docs remain versioned.
+# Restore private inputs locally before following real-data RUNBOOK commands.

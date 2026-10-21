@@ -11,7 +11,7 @@ from urllib.error import HTTPError
 from unittest.mock import Mock, patch
 
 from graph_test_data import build_test_graph_data
-from stgat_lstm.dashboard import DashboardApplication, handler_for
+from stgat_lstm.routing.dashboard import DashboardApplication, handler_for
 
 
 class DashboardTests(unittest.TestCase):
@@ -56,11 +56,34 @@ class DashboardTests(unittest.TestCase):
             application.traffic_archive = Path(directory)
             archive = Mock()
             archive.sequence.return_value = ((Mock(),), {"observed_edges_per_step": [1]})
-            with patch("stgat_lstm.dashboard.collect_live_route_observation",
+            with patch("stgat_lstm.routing.dashboard.collect_live_route_observation",
                        return_value=(Path(directory) / "traffic_live.json", {})) as collect, patch(
-                       "stgat_lstm.dashboard.TrafficArchive.from_directory", return_value=archive), patch(
-                       "stgat_lstm.dashboard.route_request", return_value={"recommended_route": {}}):
+                       "stgat_lstm.routing.dashboard.TrafficArchive.from_directory", return_value=archive), patch(
+                       "stgat_lstm.routing.dashboard.route_request", return_value={"recommended_route": {}}):
                 result = application.route("1", "4")
             collect.assert_called_once()
             self.assertEqual(result["traffic"]["status"], "live_mapbox")
             self.assertEqual(result["traffic"]["live_observation_file"], "traffic_live.json")
+
+    def test_gps_route_uses_fixed_traffic_cutoff(self):
+        application = DashboardApplication.__new__(DashboardApplication)
+        application.data = build_test_graph_data()
+        application.model = Mock()
+        application.policy = {"steps": 6, "interval_s": 300, "profile_bin_s": 300}
+        application.traffic_archive = None
+        application.gps_archive = Mock()
+        application.gps_archive.profile_sequence.return_value = (
+            (Mock(),), {"observed_edges_per_step": [1]}
+        )
+        application.live_traffic = False
+        application.max_detour_ratio = 1.30
+        application.traffic_cutoff_ms = 1_767_571_217_000
+        with patch("stgat_lstm.routing.dashboard.route_request", return_value={"recommended_route": {}}):
+            result = application.route("1", "4")
+        application.gps_archive.profile_sequence.assert_called_once_with(
+            1_767_571_217_000,
+            steps=6,
+            interval_s=300,
+            profile_bin_s=300,
+        )
+        self.assertEqual(result["traffic"]["status"], "historical_rider_gps")

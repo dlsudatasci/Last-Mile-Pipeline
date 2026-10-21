@@ -5,10 +5,51 @@ from __future__ import annotations
 import json
 import unittest
 
-from stgat_lstm.review_decisions import apply_automatic_rules, apply_decisions, create_decision_template
+from stgat_lstm.preprocessing.review_decisions import apply_automatic_rules, apply_decisions, create_decision_template
 
 
 class ReviewDecisionTests(unittest.TestCase):
+    def test_local_choice_can_be_approved_without_rejoin_or_new_route_overlap(self) -> None:
+        artifact = {
+            "status": "review_required_not_training_ready",
+            "examples": [{
+                "example_key": "local",
+                "target": {"label": "deviated"},
+                "has_route_pair": False,
+                "routing_context": {"origin_node_id": "1", "destination_node_id": "9"},
+                "suggested_path": {"edges": [{"u": "1", "v": "2", "key": "0"}]},
+                "observed_path_label_evidence": {"edges": [{"u": "1", "v": "3", "key": "0"}]},
+                "road_choice": {"source_node_id": "1", "suggested_edge_id": "1|2|0",
+                                "chosen_edge_id": "1|3|0", "supporting_gps_points": 2},
+                "survey_evidence": {"primary_reason": "Traffic Congestion", "traffic_severity": "4"},
+                "quality": {"mean_gps_to_matched_edge_m": 5,
+                            "gps_edge_overlap_with_prior": 0.8,
+                            "gps_edge_overlap_with_regenerated": None},
+            }],
+        }
+        result = apply_automatic_rules(json.dumps(artifact).encode())
+        self.assertEqual(result["review"]["approved"], 1)
+        record = artifact["examples"][0]
+        record["decision_timestamp_ms"] = 1000
+        record["recorded_navigation"] = {"deviatedEdge": "Drive east."}
+        record["road_choice"]["label_method"] = "recorded_navigation_and_local_geometry"
+        evidence = {"method": "recorded_navigation_and_local_geometry", "status": "resolved_unique_choice",
+                    "candidate_choices": [{"suggested_edge_id": "1|2|0", "chosen_edge_id": "1|3|0",
+                                           "decision_timestamp_ms": 1000}]}
+        record["road_choice"]["inference_evidence"] = evidence
+        self.assertEqual(apply_automatic_rules(json.dumps(artifact).encode())["review"]["approved"], 1)
+        evidence["candidate_choices"][0]["decision_timestamp_ms"] = 2000
+        with self.assertRaisesRegex(ValueError, "rejected every"):
+            apply_automatic_rules(json.dumps(artifact).encode())
+        evidence["candidate_choices"][0]["decision_timestamp_ms"] = 1000
+        evidence["status"] = "ambiguous_choices"
+        with self.assertRaisesRegex(ValueError, "rejected every"):
+            apply_automatic_rules(json.dumps(artifact).encode())
+        evidence["status"] = "resolved_unique_choice"
+        artifact["examples"][0]["road_choice"]["supporting_gps_points"] = 1
+        with self.assertRaisesRegex(ValueError, "rejected every"):
+            apply_automatic_rules(json.dumps(artifact).encode())
+
     def setUp(self) -> None:
         self.candidates = json.dumps(
             {

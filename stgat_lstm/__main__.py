@@ -7,20 +7,20 @@ import sys
 
 
 COMMANDS = {
-    "audit-data": ("audit_rider_data", "inspect exported rider data"),
-    "audit-network": ("audit_road_network", "check the OSM graph and feature join"),
-    "audit-matching": ("audit_map_matching", "diagnose GPS map matching"),
-    "build-deviations": ("build_deviation_candidates", "build strict deviation candidates"),
-    "build-decisions": ("build_decision_candidates", "build follow/deviate candidates"),
-    "review-map": ("create_review_map", "create the local review map"),
-    "review": ("review_decisions", "initialize or finalize review decisions"),
-    "traffic": ("mapbox_traffic", "collect one Mapbox traffic observation"),
-    "gps-traffic": ("gps_traffic", "derive historical road-speed context from rider GPS"),
-    "synthetic-hotspot": ("synthetic_hotspot", "build a controlled Taft learning experiment"),
-    "train": ("train_model", "train the decision-preference model"),
-    "evaluate": ("evaluate_model", "run rider-disjoint evaluation"),
-    "predict": ("predict_route", "predict and route with a real checkpoint"),
-    "dashboard": ("dashboard", "serve the local routing dashboard"),
+    "audit-data": ("preprocessing.audit_rider_data", "inspect exported rider data"),
+    "audit-network": ("preprocessing.audit_road_network", "check the OSM graph and feature join"),
+    "audit-matching": ("preprocessing.audit_map_matching", "diagnose GPS map matching"),
+    "build-deviations": ("preprocessing.build_deviation_candidates", "build strict deviation candidates"),
+    "build-decisions": ("preprocessing.build_decision_candidates", "build follow/deviate candidates"),
+    "review-map": ("preprocessing.create_review_map", "create the local review map"),
+    "review": ("preprocessing.review_decisions", "initialize or finalize review decisions"),
+    "traffic": ("preprocessing.mapbox_traffic", "collect one Mapbox traffic observation"),
+    "gps-traffic": ("preprocessing.gps_traffic", "derive historical road-speed context from rider GPS"),
+    "synthetic-hotspot": ("generation.synthetic_hotspot", "build a controlled Taft learning experiment"),
+    "train": ("modeling.train_model", "train the outgoing-road choice model"),
+    "evaluate": ("modeling.evaluate_model", "run rider-disjoint evaluation"),
+    "predict": ("routing.predict_route", "predict preferred roads and generate a route"),
+    "dashboard": ("routing.dashboard", "serve the local routing dashboard"),
 }
 
 

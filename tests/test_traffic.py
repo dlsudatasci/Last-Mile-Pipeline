@@ -9,8 +9,8 @@ from unittest.mock import Mock, patch
 import torch
 
 from graph_test_data import build_test_graph_data
-from stgat_lstm.audit_road_network import EdgeMatch
-from stgat_lstm.mapbox_traffic import (
+from stgat_lstm.preprocessing.audit_road_network import EdgeMatch
+from stgat_lstm.preprocessing.mapbox_traffic import (
     TrafficArchive,
     build_edge_snapshot,
     collect_live_route_observation,
@@ -40,8 +40,8 @@ class TrafficTests(unittest.TestCase):
         }
         fake_index = Mock()
         fake_index.nearest.return_value = EdgeMatch("1", "2", "0", 2.0, "Taft Avenue")
-        with patch("stgat_lstm.mapbox_traffic.RoadEdgeIndex", return_value=fake_index), patch(
-                "stgat_lstm.mapbox_traffic.match_traffic_segment",
+        with patch("stgat_lstm.preprocessing.mapbox_traffic.RoadEdgeIndex", return_value=fake_index), patch(
+                "stgat_lstm.preprocessing.mapbox_traffic.match_traffic_segment",
                 return_value=EdgeMatch("1", "2", "0", 2.0, "Taft Avenue")):
             snapshot = build_edge_snapshot(self.data, observation, now_epoch_ms=1_800_000)
 
@@ -73,7 +73,7 @@ class TrafficTests(unittest.TestCase):
                     "received_at": f"1970-01-01T{received}Z"}), encoding="utf-8")
                 paths.append(path)
             archive = TrafficArchive(self.data, paths)
-            with patch("stgat_lstm.mapbox_traffic.build_edge_snapshot", return_value=snapshot) as convert:
+            with patch("stgat_lstm.preprocessing.mapbox_traffic.build_edge_snapshot", return_value=snapshot) as convert:
                 frames, report = archive.sequence(600_000, steps=3, interval_s=300, max_age_s=360)
                 self.assertEqual(report["observed_edges_per_step"], [0, 1, 1])
                 self.assertEqual(len(report["used_observation_sha256"]), 1)
@@ -98,7 +98,7 @@ class TrafficTests(unittest.TestCase):
                 frame = self.data.build_model_input("4").temporal_edge_features[0].clone()
                 frame[index, speed] = 1.0
                 snapshots.append(frame)
-            with patch("stgat_lstm.mapbox_traffic.build_edge_snapshot", side_effect=snapshots):
+            with patch("stgat_lstm.preprocessing.mapbox_traffic.build_edge_snapshot", side_effect=snapshots):
                 frames, report = archive.sequence(300_000, steps=1)
                 self.assertEqual(report["observed_edges_per_step"], [2])
                 self.assertEqual(float(frames[0][0, speed]), 1.0)
@@ -124,7 +124,7 @@ class TrafficTests(unittest.TestCase):
                 if index != 1:
                     frame[0, columns["congestion_observed"]] = 1.0
                 snapshots.append(frame)
-            with patch("stgat_lstm.mapbox_traffic.build_edge_snapshot", side_effect=snapshots):
+            with patch("stgat_lstm.preprocessing.mapbox_traffic.build_edge_snapshot", side_effect=snapshots):
                 archive = TrafficArchive(self.data, paths)
                 frames, _ = archive.sequence(120_000, steps=1)
                 self.assertAlmostEqual(float(frames[0][0, columns["traffic_age_scaled"]]), 60 / 3600)
@@ -144,7 +144,7 @@ class TrafficTests(unittest.TestCase):
         }
         with tempfile.TemporaryDirectory() as directory, patch.dict(
                 "os.environ", {"TEST_MAPBOX_TOKEN": "secret-token"}), patch(
-                "stgat_lstm.mapbox_traffic.fetch_directions_traffic", return_value=payload) as fetch:
+                "stgat_lstm.preprocessing.mapbox_traffic.fetch_directions_traffic", return_value=payload) as fetch:
             path, document = collect_live_route_observation(
                 self.data, "1", "4", Path(directory), token_env="TEST_MAPBOX_TOKEN"
             )

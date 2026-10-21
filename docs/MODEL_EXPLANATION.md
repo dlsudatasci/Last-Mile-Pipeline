@@ -1,13 +1,85 @@
 # STGAT-LSTM model explanation
 
-This guide explains the implemented model from inputs to route output. Each part includes the code worth showing, the mathematical interpretation, and the point to say during a presentation.
+Input update, 20 October 2026: the active OSM CSV/GeoJSON have cleaned amenity
+counts. Feature dimensions and architecture are unchanged. All previous
+performance tables below use the earlier features. The cleaned-input run is
+complete under `artifacts/experiments/real_cleaned_osm_20261020`: selection
+validation 12/13, fitted development 63/98, exact test choices 9/14 (64.3%),
+test choice NLL 0.871, and test ranking 2/3. Always-follow scores 10/14 (71.4%).
+Only 1/4 actual alternatives is chosen correctly. The validation-threshold binary
+follow/deviate accuracy is 11/14 (78.6%); it is not exact road-choice accuracy.
+Checkpoint reload and the two route demonstrations pass; this remains an
+internal pilot on three previously inspected riders. Dashboard improvements
+are deferred. Follow RUNBOOK for the retained first-visit training procedure.
+To replay an older checkpoint, use the matching feature CSV
+under `artifacts/inputs/osm_before_amenity_cleanup`, not the active cleaned CSV.
+
+This is the technical reference for the implemented model from inputs to route
+output. It explains the exact tensors, features, equations, architecture,
+losses, training protocol, evaluation, routing behavior, and limitations. Use
+`PRESENTATION_GUIDE.md` to turn this material into slides and speaker notes; use
+`SYNTHETIC_RUNBOOK.md` or `RUNBOOK.md` for commands.
+
+Folder layout updated 19 October 2026: model/training/evaluation code is in
+`stgat_lstm/modeling`; graph, labels, map matching, and traffic code is in
+`stgat_lstm/preprocessing`; routing/dashboard code is in `stgat_lstm/routing`;
+the synthetic generator is in `stgat_lstm/generation`. Data prepared by these
+tools is under `generated`, saved models/run bundles are under `artifacts`, and
+inspection files are under `outputs`. This relocation does not change the model.
+
+The current refinement is under `artifacts/experiments/real_refined_20261018`. It contains
+77 approved examples from 36 rides and the same 15 riders: 60 followed examples
+and the original 17 deviations. The 47 additional examples are verified real
+junction choices from training riders only. Four original followed examples
+now use the actual suggested-route destination instead of the local review
+window endpoint. Their road labels remain unchanged. The model graph has
+2,625 nodes and 6,765 directed edges; the 7,441-parameter architecture is unchanged.
+The refinement uses three validation-only ranking-weight trials, regularized
+training with checkpoint selection, and a final refit on 12 development riders.
+See Section 15 and `RUNBOOK.md`, Section 6, for the protocol.
+
+A separate approved comparison under `artifacts/experiments/real_first_visit_20261018` is
+ready with only one supervision change: keep the earliest visit to a junction
+within each original training example. Three later followed targets are omitted,
+leaving 85 selection-training targets and 98 fitted development targets. All
+examples, alternative labels, and the 13 validation/14 test targets stay intact.
+The original 101-target development set is also scored for direct comparison.
+The architecture and previous settings are fixed; this is not a new parameter
+search. The user's local run has now produced its checkpoint and completed
+evaluation report. Its scores await review; the older tables below remain the
+last reviewed results. The file reorganization does not reinterpret those scores.
+
+Why this matters: one decision example supplies one destination and traffic
+history. If its matched path leaves a junction, returns, and takes a different
+exit, the present model sees the same context for both visits. It has no trip
+prefix to tell them apart. The comparison keeps the first target for fitting;
+it does not declare the second observation false or erase it. Different choices
+across examples or riders remain in training. This supervision policy does not
+remove GPS observations used to build historical speed profiles.
+
+The original 30-example benchmark from 18 October 2026 retains 30 approved
+examples from 28 rides and 15 riders, giving 68 junction targets (51 suggested,
+17 alternative) and 12 optional ranking pairs. It is saved under
+`artifacts/experiments/real_navigation_20261016`. Local labels no longer require rejoining,
+GPS agreement with a regenerated route, or GPS after the report. Late reports
+can recover turns earlier in the same active-route period. Full-data training
+has completed 100 epochs. Real evaluation now supports a saved fixed split
+with nine training, three validation, and three test riders, fitting five
+variants once each. Section 15 separates current training results, the fixed
+evaluation protocol, and archived strict-baseline results.
+
+Recorded navigation instructions now supply additional label evidence. A
+fallback resolves compass headings and road-name aliases against the active
+route's outgoing alternatives, event location, and directed raw GPS movement.
+It does not require an exact shared incoming HMM edge. One unique supported
+choice is required; metadata, supporting later GPS, and inferred chosen roads
+are not inference features. A future maneuver named in the original instruction
+does not automatically identify the immediate outgoing edge. This recovered
+one additional deviation: Fidel A. Reyes Street versus Castro Street.
 
 ## 1. What the model is solving
 
-The project has two related prediction tasks:
-
-1. **Road-deviation prediction:** at every eligible road choice, estimate whether a motorcycle rider will reject the suggested outgoing road.
-2. **Route preference learning:** assign a positive preference cost to every directed road edge so an observed intentional route receives a lower total cost than the rejected suggestion.
+The primary task is **outgoing-road choice**: at each eligible branching node, estimate a probability distribution over the accessible outgoing roads and identify which road a motorcycle rider would prefer. A follow/deviate value is derived by comparing the preferred road with a proposed route's road. Intentional deviations also supply an auxiliary route-ranking objective.
 
 The neural network does not directly emit a complete route. It emits edge costs. Dijkstra's algorithm constructs a connected route by minimizing their sum.
 
@@ -17,40 +89,47 @@ OSM road graph + destination + traffic history
                     v
          shared GATv2-LSTM backbone
                     |
+                    v
+         utility logit for every edge
+                    |
+                    v
+   softmax among roads from each source
+                    |
           +---------+---------+
-          |                   |
           v                   v
-probability per road    cost for every edge
-                              |
-                              v
-                     Dijkstra route search
+ preferred outgoing road   -log(probability) cost
+                                |
+                                v
+                       Dijkstra route search
 ```
 
-The corresponding model class is in `stgat_lstm/model.py`:
+The corresponding model class is in `stgat_lstm/modeling/model.py`:
 
 ```python
 class DecisionPreferenceModel(nn.Module):
-    """Shared STGAT-LSTM with edge-deviation and routing-cost heads."""
+    """Shared STGAT-LSTM that scores each accessible outgoing road."""
 
     def __init__(self, **preference_configuration):
         super().__init__()
         self.backbone = PreferenceModel(**preference_configuration)
         hidden = self.backbone.hidden_channels
-        self.edge_deviation_head = nn.Sequential(
+        del self.backbone.cost_head
+        self.edge_choice_head = nn.Sequential(
             nn.Linear(hidden, hidden),
             nn.ReLU(),
             nn.Linear(hidden, 1),
         )
 ```
 
-**Presentation explanation:** “One shared representation supports two tasks. The classification head predicts deviation, while the cost head learns which roads riders prefer. Sharing the backbone lets both labels update the graph representation.”
+**Presentation explanation:** "The model scores every accessible road leaving a junction. Softmax turns those scores into competing probabilities that sum to one. The most probable edge is the preferred road, and the same probabilities become additive routing costs."
 
 ## 2. Current assumptions
 
 ### Study and graph assumptions
 
 - The vehicle is a **motorcycle**.
-- The current study graph is the Taft Avenue corridor, extracted within a 1 km buffer of roads named Taft Avenue.
+- The model graph starts with a 1 km buffer around Taft Avenue and expands to include approved path evidence and destinations. The original real set uses 1.7 km, 2,379 nodes, and 6,098 directed edges. The refinement requires 2,625 nodes and 6,765 edges. Checkpoints save the scope used during training, and prediction/dashboard reload it.
+- Candidate selection has no fixed distance-to-Taft limit. The former 500 m event filter and followed-ride corridor checks were removed on 15 October 2026. Proximity counts in the network audit are descriptive only. Graph coverage is checked separately before training.
 - The road network is a directed OSM `MultiDiGraph`. Parallel directed edges are distinguished by `u|v|key`.
 - OSM topology, direction, and road access tags are treated as correct enough for the prototype.
 - Edges marked `access=no` or `access=private` are excluded from routing.
@@ -71,21 +150,43 @@ def extract_taft_subgraph(graph: nx.MultiDiGraph, buffer_m: float = 1_000.0):
         for node_id, data in graph.nodes(data=True)
         if corridor.covers(Point(float(data["x"]), float(data["y"])))
     ]
-    return graph.subgraph(selected).copy()
+    subgraph = graph.subgraph(selected).copy()
+    subgraph.graph["model_corridor_buffer_m"] = buffer_m
+    return subgraph
 ```
 
 ### Learning assumptions
 
-- Label `0` means **followed**; label `1` means **deviated**.
-- A road label applies to a suggested edge whose source node has at least two accessible successor roads.
-- A followed segment supplies label `0` at every observed choice edge. A deviation supplies label `1` to the first rejected suggested edge; any verified earlier choice edges supply label `0`.
-- A reviewed intentional deviation means the observed route is preferred over the suggested route for that event.
-- Followed examples supervise the classification head. They do not currently create a route-ranking pair.
-- The suggested route and destination are available at prediction time.
+- Every supervised target names the road the rider chose from at least two accessible outgoing roads.
+- Label `0` means the chosen edge equals the suggested edge; label `1` means the rider chose another outgoing edge. These binary values are derived reporting labels, not the primary training target.
+- A validated intentional deviation labels the chosen outgoing road rather than the suggested outgoing road at the same branch. It does not imply that two complete paths with different destinations are comparable. Route-ranking supervision is added only when comparable paths exist.
+- Followed examples supervise outgoing-road choice. They do not currently create a route-ranking pair.
+- The destination is available at prediction time. A suggested route is only
+  needed when scoring a reviewed example or reporting deviation from a candidate
+  route; fresh origin-destination routing does not feed a suggested route into
+  the neural model.
 - Later GPS observations and survey answers are label evidence; they are not inference features.
 - The model is shared across riders. There is no rider ID embedding or rider-specific model.
 - Preference cost is additive across road edges.
 - Travel time is not the target. A faster route is only a possible side effect.
+
+The separation between inference features and supervised evidence is essential:
+
+| Information | Neural input | Training evidence or evaluation grouping |
+|---|---:|---:|
+| OSM node and road attributes | Yes | No |
+| Destination displacement | Yes | No |
+| Pre-decision GPS-derived traffic history | Yes | No |
+| Accessible outgoing-road set | Yes, through graph topology and routable mask | Defines the alternatives |
+| Road the rider actually chose | No | Primary class target |
+| Suggested road | No direct feature | Used to derive follow/deviate and route pair |
+| Later observed GPS route | No | Establishes the chosen road and observed path |
+| Survey answer and deviation reason | No | Establishes whether deviation is intentional |
+| Rider identity | No | Keeps complete riders in separate evaluation folds |
+
+This means deviation data are included in training without being leaked into
+the input. The model sees the context, makes a distribution over legal roads,
+and the loss compares that distribution with the road the rider chose.
 
 The real preparation code shows which information becomes supervision:
 
@@ -95,9 +196,13 @@ PreparedDecision(
     rider_group=decision.rider_group,
     label=decision.label,
     suggested_edge_ids=decision.suggested_edge_ids,
-    edge_targets=edge_targets,
-    preferred_edge_ids=decision.observed_edge_ids if decision.label == 1 else None,
-    rejected_edge_ids=decision.suggested_edge_ids if decision.label == 1 else None,
+    choice_targets=choice_targets,
+    preferred_edge_ids=(
+        decision.observed_edge_ids if decision.label == 1 and decision.has_route_pair else None
+    ),
+    rejected_edge_ids=(
+        decision.suggested_edge_ids if decision.label == 1 and decision.has_route_pair else None
+    ),
     inputs=inputs,
 )
 ```
@@ -105,15 +210,16 @@ PreparedDecision(
 Current approved examples are converted into road-choice labels:
 
 - followed examples use five consecutive suggested edges beginning at a real branching node;
-- deviation examples use comparable suggested and observed subpaths between divergence and rejoin;
-- the current eight examples produce 28 supervised road choices: 25 followed-road labels and three rejected-road labels;
-- the model returns one road-deviation logit for every graph edge, while only eligible observed choice edges enter the classification loss.
+- deviation examples identify the suggested and chosen outgoing edges at the same source, supported by an approach fix and at least two consecutive fixes on the alternative continuation; rejoining is not mandatory;
+- the original real preparation produces 30 approved examples and 68 supervised junction choices; the refinement adds 47 genuine followed choices from training riders, yielding 77 examples and 115 choices (98 suggested roads and the same 17 alternatives);
+- 12 deviations also have comparable suggested and observed paths; five supply only the outgoing-road target;
+- the model returns one utility logit for every graph edge, while training normalizes and scores only the accessible alternatives at each supervised source node.
 
-At inference, the model reports the conditional deviation probability at each branching road on a candidate route. Non-branching roads are marked not applicable because the rider has no outgoing road choice there. An optional whole-route summary can be derived from the sequence of conditional road risks, but the road probabilities are the primary output.
+At inference, the model reports the preferred outgoing road and the complete probability distribution at each branching node on a candidate route. Non-branching roads are marked not applicable because the rider has no outgoing road choice there. For compatibility with the thesis deviation framing, the candidate road's derived deviation probability is `1 - P(candidate road)`.
 
-### Removing the limited route-ranking supervision
+### Extending the limited route-ranking supervision
 
-The current edge-cost head receives direct ranking supervision only from intentional deviations. A mature dataset should create a choice set at every verified decision point:
+The current route-ranking objective receives direct supervision only from intentional deviations. A mature dataset could also construct comparable route alternatives for followed decisions:
 
 ```text
 followed decision:
@@ -139,7 +245,11 @@ for rejected_path in feasible_alternatives:
     )
 ```
 
-This removes the present situation in which five followed examples update the classifier but provide no direct route-cost comparison. Multiple decision points may be extracted from one ride, but evaluation must keep all points from the same rider—and preferably the same ride—in one fold.
+This would extend direct route-cost supervision beyond the 12 comparable
+intentional pairs. The current 13 followed examples update the choice head without
+creating ranking pairs. Multiple decision points may be extracted from one
+ride, but evaluation must keep all points from the same rider, including all
+their rides, in one fold.
 
 ### Current temporal-data assumption
 
@@ -161,29 +271,38 @@ if temporal_edge_features is None:
     temporal_edge_features = (unknown,)
 ```
 
-If no GPS observations cover a road and time slot, the existing unknown frame
-logic applies. The current archive contains 6,657 matched speed segments on 494
-directed roads from 48 rides, but coverage at the eight approved decisions is
-sparse and uneven: five of eight examples have at least one observed edge-time
-slot, totaling 52 observed edge slots and 389 matched speed records across all
-six-frame histories. The LSTM is trained on real sequences now; a temporal
-ablation and more independent decisions are still required before claiming that
-history improves prediction.
+If no GPS observations cover a road and time slot, the unknown-frame logic
+applies. On the expanded 1.7 km graph the final export archive contains 7,033
+matched speed segments on 176 directed roads from 69 rides. The archived 1 km
+run had 6,801 segments on 161 roads. These are coverage counts, not proof that
+every target has adequate history. Held-out evaluation also excludes the test
+rider and must be examined separately. The presence of frames does not itself
+prove an LSTM benefit.
+
+For a new route, eligibility also depends on the requested local time of day
+and weekday/weekend class. Existing daytime GPS records do not automatically
+describe a midnight request. The 18 October request had observed-road counts
+`[0, 0, 0, 0, 0, 0]`; a saved daytime historical replay had
+`[10, 9, 0, 19, 13, 16]`, using six source rides. The zeros count missing
+observations, not roads with no congestion. In those empty frames, dynamic
+observation masks are zero and age is marked unknown. The model still runs,
+but that request supplies no observed traffic speeds. A historical replay
+demonstrates recorded context, not present traffic conditions.
 
 ## 3. Expected final outputs
 
 For one destination and traffic context, the neural network returns:
 
 ```python
-edge_costs, edge_deviation_logits = model(inputs)
-edge_deviation_probabilities = torch.sigmoid(edge_deviation_logits)
+edge_costs, edge_choice_logits = model(inputs)
+log_probabilities = outgoing_choice_log_probabilities(edge_choice_logits, inputs)
 ```
 
 Mathematically:
 
-- $c_e > 0$: learned preference cost of directed edge $e$;
-- $z_e$: raw deviation logit for suggested road $e$;
-- $p_e=\sigma(z_e)$: estimated probability that the rider rejects road $e$ when reaching its source;
+- $z_e$: raw utility logit of directed edge $e$;
+- $p_e=\operatorname{softmax}_{A(u)}(z_e)$: probability of choosing edge $e$ among accessible roads leaving source $u$;
+- $c_e=-\log(p_e)+\epsilon_e > 0$: additive preference cost of edge $e$;
 - $P^*=\arg\min_P \sum_{e\in P}c_e$: recommended connected route.
 
 The system-level output contains:
@@ -192,21 +311,25 @@ The system-level output contains:
 - recommended edge sequence and road names;
 - total learned preference cost;
 - shortest-distance baseline;
-- deviation probability for every branching road on the baseline, suggestion, or recommended route;
+- preferred outgoing road and candidate probabilities at every branching source;
+- derived deviation probability `1 - P(candidate road)`;
 - traffic coverage information;
 - route geometry for visualization.
 
 The key distinction to state is:
 
-> The neural network predicts a cost and a deviation probability for each road. Dijkstra uses the costs to produce the final valid route.
+> The neural network predicts a probability distribution over outgoing roads. It identifies the preferred road and converts those same probabilities into costs that Dijkstra uses to produce a connected route.
 
-The primary probability has a local scope: it predicts rejection of one proposed outgoing road at one decision point, given the graph, destination, road attributes, and available pre-decision traffic context. An optional route summary is:
+Each primary probability has a local scope: it scores one accessible outgoing road relative to the alternatives at the same source, given the graph, destination, road attributes, and available pre-decision traffic context. An optional candidate-route deviation summary is:
 
 ~~~math
-p_{route}=1-\prod_k(1-p_k),
+p_{route\ deviation}=1-\prod_k q_k,
 ~~~
 
-Here $p_k$ is interpreted conditionally on the rider reaching choice $k$ after following the route so far. The product is a derived summary; individual road probabilities remain more explainable and need calibration on held-out riders.
+Here $q_k$ is the probability of choosing the candidate route's outgoing edge,
+conditional on reaching choice $k$. The product is a derived summary; individual
+junction distributions remain more explainable and need calibration on held-out
+riders.
 
 The checkpoint contains:
 
@@ -225,9 +348,9 @@ Let:
 
 | Symbol | Meaning | Current shape |
 |---|---|---:|
-| $G=(V,E)$ | Directed road graph | 1,368 nodes; 3,418 edges |
-| $N$ | Number of nodes | 1,368 |
-| $M$ | Number of directed edges | 3,418 |
+| $G=(V,E)$ | Directed road graph | 2,625 nodes; 6,765 edges in the refined real run |
+| $N$ | Number of nodes | 2,625 |
+| $M$ | Number of directed edges | 6,765 |
 | $T$ | Number of traffic snapshots | 6 with GPS history; 1 unknown frame without it |
 | $F_n$ | Node feature dimension | 13 |
 | $F_s$ | Static edge feature dimension | 19 |
@@ -241,8 +364,8 @@ Let:
 | $Q$ | Destination-relative edge features | $M\times2$ |
 | $Z_t$ | Spatial edge embeddings | $M\times16$ |
 | $H_T$ | Final LSTM edge embeddings | $M\times16$ |
-| $c$ | Positive edge costs | $M$ |
-| $z$ | Deviation logit | scalar |
+| $c$ | Positive edge costs derived from choice probabilities | $M$ |
+| $z$ | Edge utility logits | $M$ |
 
 These tensors are grouped by `ModelInput`:
 
@@ -254,6 +377,7 @@ class ModelInput:
     edge_static: Tensor
     temporal_edge_features: tuple[Tensor, ...]
     destination_features: Tensor
+    routable_mask: Tensor
     edge_ids: tuple[str, ...]
 ```
 
@@ -268,10 +392,10 @@ node_feature_dim:          13
 edge_static_dim:           19
 edge_dynamic_dim:          5
 destination_feature_dim:   2
-trainable parameters:      7,458
+trainable parameters:      7,441
 ```
 
-`hidden_channels=16` is a capacity choice, not a mathematical consequence of the 13 inputs. The node projection learns a matrix $W\in\mathbb{R}^{16\times13}$ and bias $b\in\mathbb{R}^{16}$, so $XW^\top+b$ changes `[N, 13]` into `[N, 16]`. Widths 15, 17, or 18 are all valid because the two attention heads are averaged with `concat=False`; 16 is a compact power-of-two baseline. On this model, widths 15, 16, 17, and 18 contain 6,707, 7,458, 8,247, and 9,074 trainable parameters respectively. A larger final dataset should tune this width on rider-disjoint validation data rather than assuming 16 is optimal.
+`hidden_channels=16` is a capacity choice, not a mathematical consequence of the 13 inputs. The node projection learns a matrix $W\in\mathbb{R}^{16\times13}$ and bias $b\in\mathbb{R}^{16}$, so $XW^\top+b$ changes `[N, 13]` into `[N, 16]`. Widths 15, 17, or 18 are all valid because the two attention heads are averaged with `concat=False`; 16 is a compact power-of-two baseline. On this model, widths 15, 16, 17, and 18 contain 6,691, 7,441, 8,229, and 9,055 trainable parameters respectively. A larger final dataset should tune this width on rider-disjoint validation data rather than assuming 16 is optimal.
 
 The shape flow is:
 
@@ -287,8 +411,9 @@ source node + target node
     -> edge projection per time       [M, 16]
     -> stack T snapshots              [M, T, 16]
     -> LSTM final state               [M, 16]
-        -> cost head                  [M]
-        -> road-deviation head        [M]
+        -> outgoing-road choice head  [M]
+        -> per-source softmax          [M]
+        -> -log probability costs      [M]
 ```
 
 Parameter distribution:
@@ -299,9 +424,8 @@ Parameter distribution:
 | Two GATv2 layers | 3,808 |
 | Edge projection | 944 |
 | LSTM | 2,176 |
-| Edge-cost head | 17 |
-| Road-deviation head | 289 |
-| **Total** | **7,458** |
+| Outgoing-road choice head | 289 |
+| **Total** | **7,441** |
 
 ## 5. Input features
 
@@ -376,6 +500,26 @@ edge_dynamic=(
 The masks are essential. Without them, a zero could incorrectly mean free flow
 when there was no rider observation. These features describe motorcycle probe
 speeds and must not be called complete network-wide traffic.
+
+The GPS conversion in `GPSTrafficArchive.from_exports` uses consecutive fixes:
+
+~~~math
+v=\frac{\operatorname{haversine}(p_t,p_{t+1})}
+{(t_{t+1}-t_t)/1000}.
+~~~
+
+A segment is discarded when its timestamp does not increase, its gap exceeds
+20 seconds, its implied speed exceeds 35 m/s, or it cannot be direction-matched
+within 60 m of an available OSM edge. Movement of at most 3 m may remain on the
+last matched edge as a stationary observation. The archive reports the measured
+median interval; the current app-shaped synthetic records produce 2.0 seconds.
+
+For a request cutoff, `profile_sequence` selects only earlier records, separates
+weekdays from weekends, and aggregates records within a circular time-of-day
+window around each slot. The current configuration constructs six slots five
+minutes apart with a five-minute profile bin. The median speed ratio for every
+observed road becomes that slot's dynamic value. Missing roads keep observation
+masks at zero and age at one.
 
 ### Destination features: 2 per road
 
@@ -584,7 +728,9 @@ Z\in\mathbb{R}^{M\times T\times16}.
 ~~~
 
 
-The code treats each road edge as one sequence in the LSTM batch:
+The code treats each road edge as one sequence in the LSTM batch. This compact
+snippet shows the equivalent computation; `encode_edges` now reuses spatial
+work for exactly repeated frames, while preserving every temporal position:
 
 ```python
 self.temporal = nn.LSTM(
@@ -636,96 +782,90 @@ h_t=o_t\odot\tanh(c_t).
 ~~~
 
 
-The final edge state $h_e^{(T)}$ is used by both output heads.
+The final edge state $h_e^{(T)}$ is used by the outgoing-road choice head.
 
 The current policy uses six snapshots at five-minute intervals. Each snapshot
 aggregates earlier rides near the corresponding local time of day, separating
 weekdays from weekends. Future records, the target ride, and held-out riders are
-excluded. The controlled synthetic experiment uses one-minute spacing so its
-short routes provide visible temporal variation. The design follows the broad
+excluded. The controlled synthetic experiment uses the same six five-minute
+frames as the official pipeline. The design follows the broad
 spatial-then-temporal order of Zhang, Yu, and Liu (2019), while the prediction
 target and rider-choice losses are specific to this project.
 
-## 10. Positive edge-cost head
+## 10. Outgoing-road choice head and routing cost
 
-The edge-cost head produces an additive, strictly positive preference cost:
-
-```python
-self.cost_head = nn.Linear(hidden_channels, 1)
-
-return (
-    F.softplus(
-        self.cost_head(edge_embeddings).squeeze(-1)
-    )
-    * inputs.edge_static[:, 0]
-    + 1e-4
-)
-```
-
-For edge $e$:
-
-~~~math
-c_e=
-\operatorname{softplus}(w_c^\top h_e+b_c)
-\cdot\frac{\operatorname{length}_e}{100\text{ m}}
-+10^{-4}.
-~~~
-
-
-This design has three consequences:
-
-1. `softplus` guarantees a nonnegative learned rate.
-2. $10^{-4}$ guarantees a strictly positive cost required by routing checks.
-3. Multiplying by edge length integrates a learned cost per 100 m, reducing sensitivity to how OSM splits the same street into segments.
-
-The costs are dimensionless preference costs. They are not seconds, minutes, or predicted travel time.
-
-## 11. Road-deviation head
-
-The deviation head applies the same multilayer perceptron independently to every final edge embedding:
+The head assigns one utility logit to every directed edge. At a source node, only accessible outgoing edges compete with one another:
 
 ```python
 edge_embeddings = self.backbone.encode_edges(inputs)
-edge_costs = self.backbone.costs_from_embeddings(edge_embeddings, inputs)
-edge_deviation_logits = self.edge_deviation_head(
-    edge_embeddings
-).squeeze(-1)
-return edge_costs, edge_deviation_logits
+edge_choice_logits = self.edge_choice_head(edge_embeddings).squeeze(-1)
+log_probabilities = outgoing_choice_log_probabilities(edge_choice_logits, inputs)
+edge_costs = -log_probabilities + length_tiebreaker
+return edge_costs, edge_choice_logits
 ```
 
-For every directed road edge $e$:
+For the accessible outgoing set $A(u)$ at source node $u$:
 
 ~~~math
-z_e=W_2\operatorname{ReLU}(W_1h_e+b_1)+b_2,
-\qquad p_e=\sigma(z_e).
+P(e\mid u,\text{context})=
+\frac{\exp(z_e)}{\sum_{j\in A(u)}\exp(z_j)}, \qquad e\in A(u).
 ~~~
 
-Both returned tensors have length $M$, the number of directed graph edges. During training, the loss selects only the positions named in `edge_targets`. During routing, the output lists every road in the route and reports $p_e$ at roads whose source is a real branching point. The probabilities are currently uncalibrated because there are only three positive road-deviation labels.
+The probabilities at one source sum to one. The preferred outgoing road is the edge with the greatest probability. If $e_s$ is the road in a proposed route, the displayed deviation probability is a derived quantity:
 
-## 12. Multitask training loss
+~~~math
+P(\text{deviate from }e_s)=1-P(e_s\mid u,\text{context}).
+~~~
 
-### Classification loss
+The model converts a choice probability into an additive routing cost:
 
-All approved road choices contribute weighted binary cross-entropy:
+~~~math
+c_e=-\log P(e\mid u,\text{context})
++10^{-4}\frac{\operatorname{length}_e}{100\text{ m}}+10^{-6}.
+~~~
+
+This cost is positive and dimensionless. The tiny length term only breaks ties and does not make travel time the objective. Restricted edges receive a prohibitive cost and are also excluded by the router.
+
+## 11. Outgoing-road supervision
+
+Each `PreparedRoadChoice` stores the source node, all accessible outgoing candidate edges, the road actually chosen by the rider, and the road that had been suggested. A followed observation has the same chosen and suggested edge. At the first supported divergence, the chosen edge is the observed alternative and the suggested edge is the rejected road.
+
+Training uses multiclass cross-entropy within each candidate set. The original
+baseline weights alternative-road targets by `followed choices / alternative
+choices`. The refinement first reduces the influence of rides with many choices,
+then computes that ratio from the ride-weighted counts. The unsmoothed choice
+loss is:
 
 ```python
-positive_weight = torch.tensor(float(negatives / positives))
-
-classification = F.binary_cross_entropy_with_logits(
-    torch.cat(classification_logits),
-    torch.cat(classification_labels),
-    pos_weight=positive_weight,
+candidate_logits = edge_logits[candidate_indices]
+choice_loss = F.cross_entropy(
+    candidate_logits.unsqueeze(0),
+    torch.tensor([chosen_position]),
 )
 ```
 
-With the current 25 followed-road and three deviated-road labels:
+For chosen edge $e^*$:
 
 ~~~math
-w_+=\frac{25}{3}\approx8.333.
+L_{choice}=-\log P(e^*\mid u,\text{context}).
 ~~~
 
+This directly teaches which outgoing road is preferred. Follow/deviate remains available for reporting: label 0 means $e^*=e_s$ and label 1 means $e^*\ne e_s$.
 
-This gives additional weight to errors on the less frequent deviation class.
+The refinement uses label smoothing $\epsilon=0.05$. With $K_i$ candidates,
+target $y_i$, ride choice count $n_i$, and alternative-choice multiplier $a$:
+
+~~~math
+\tilde q_{ij}=(1-\epsilon)\mathbf 1[j=y_i]+\epsilon/K_i,
+\qquad L_i=-\sum_j\tilde q_{ij}\log p_{ij},
+\qquad w_i=\frac{a^{\mathbf 1[\text{alternative}_i]}}{n_i}.
+~~~
+
+The batch choice loss is $\sum_i w_i L_i / \sum_i w_i$. The multiplier $a$ is
+computed from training targets only. GPS and survey evidence identify $y_i$;
+they are not appended to the inference feature vector.
+
+## 12. Choice and route-ranking loss
 
 ### Route-preference ranking loss
 
@@ -781,27 +921,28 @@ For example (i):
 ~~~math
 L_i
 =
-L_{BCE,i}
+L_{choice,i}
 +
 \mathbb 1[\text{preference pair exists}]
 \lambda L_{rank,i}.
 ~~~
 
 
-The implementation uses $\lambda=1$ by default. It applies the global positive-class weight to every mini-batch and averages the available route-ranking pairs in that batch:
+The implementation uses $\lambda=1$ by default. The controlled synthetic
+validation selected $\lambda=0.1$ together with a 1.0 alternative-choice
+weight. Junction losses are weighted before averaging; route-ranking losses are
+then averaged and added:
 
 ```python
-classification_loss = F.binary_cross_entropy_with_logits(
-    torch.cat(classification_logits),
-    torch.cat(classification_labels),
-    pos_weight=positive_weight,
-)
-loss = classification_loss
+losses = torch.stack(choice_losses)
+weights = losses.new_tensor(choice_weights)
+choice_loss = (losses * weights).sum() / weights.sum()
+loss = choice_loss
 if ranking_losses:
-    loss += preference_weight * torch.stack(ranking_losses).mean()
+    loss = loss + preference_weight * torch.stack(ranking_losses).mean()
 ```
 
-The shared backbone receives gradients from both tasks. The road-deviation head receives classification gradients. The cost head receives ranking gradients from the three approved deviations.
+The GATv2-LSTM backbone and choice head receive gradients from both terms because the routing costs are derived from the same normalized choice probabilities. The original real artifact supplies 68 junction choices and 12 route-ranking pairs. The refined artifact has 115 choices and the same 12 pairs; added follows do not create ranking pairs. Examples without a comparable pair still train through choice cross-entropy. When the validation-selected ranking weight is zero, only the choice term trains the model.
 
 ## 13. Optimization
 
@@ -818,26 +959,90 @@ for epoch in range(epochs):
     for batch in shuffled_decision_batches:
         # Disconnected graph components share no messages.
         optimizer.zero_grad()
-        loss = classification_and_ranking_loss(batch)
+        loss = outgoing_choice_and_ranking_loss(batch)
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=5.0)
         optimizer.step()
 ```
 
-Current settings:
+Original CLI defaults and synthetic settings:
 
-| Hyperparameter | Current value |
-|---|---:|
-| Epochs | 100 |
-| Learning rate | 0.005 |
-| Optimizer | Adam |
-| Preference-loss weight | 1.0 |
-| Seed | 17 |
-| Hidden channels | 16 |
-| Dropout | none |
-| Batch size | 8 disconnected graph examples |
+| Hyperparameter | CLI default | Controlled synthetic final checkpoint |
+|---|---:|---:|
+| Epochs | 40 | 10, selected through the evaluation report |
+| Learning rate | 0.005 | 0.005 |
+| Optimizer | Adam | Adam |
+| Route-ranking weight | 1.0 | 0.1 |
+| Alternative-choice weight | inverse class frequency | 1.0, selected on validation riders |
+| Seed | 17 | 17 |
+| Hidden channels | 16 | 16 |
+| Dropout | none | none |
+| Batch size | 8 disconnected graph examples | 8 |
 
-The main training command fits all eight approved examples. It is used to produce the deployable checkpoint. It does not provide held-out accuracy; evaluation is a separate command.
+The standalone training command fits every example in the approved artifact supplied on
+the command line. The original real artifact contains 30 examples; the
+controlled synthetic artifact contains 144. This command produces a deployable
+checkpoint, but its in-sample summary is not held-out accuracy. Evaluation is a
+separate command.
+
+### Approved real-data refinement
+
+`evaluate --refine` coordinates selection and training inside `evaluate_model.py`.
+It calls `train_decision_model` in `train_model.py`; `model.py` defines the same
+two-layer GATv2 and LSTM used by the original run. It does not use the standalone
+training CLI defaults above.
+
+| Setting | Real refinement |
+|---|---|
+| Optimizer / learning rate / weight decay | AdamW / 0.001 / 0.0001 |
+| Choice-label smoothing | 0.05 |
+| Training traffic masking | 0.15 probability per observed edge/frame |
+| Ride influence | Divide each choice weight by the number of choices from its ride |
+| Alternative-choice weight | Ratio of followed/alternative counts after applying ride weights |
+| Ranking weights compared | 0, 0.1, 1 |
+| Validation selection | Highest outgoing-choice accuracy, then lower choice NLL |
+| Validation schedule | Epoch 1, every five epochs, and the final epoch |
+| Early stopping | Three validation checks without improvement, at most 60 epochs |
+| Final refit | All 12 development riders, at the selected fixed epoch count |
+| Seed / hidden channels / batch size | 17 / 16 / 8 |
+
+Label smoothing spreads 5% of the target distribution uniformly across available
+outgoing candidates. Traffic masking hides some existing observations during
+training by setting the whole dynamic row to its unknown representation. It
+does not invent speeds, alter road labels, or modify validation/test inputs.
+Weight decay limits parameter growth; none of these measures guarantees higher
+test accuracy.
+
+The three trials see nine training riders and three validation riders. The final
+refit includes those 12 development riders, but never the three test riders.
+During selection, GPS profiles exclude all validation/test riders. During the
+final refit and test, they exclude all test riders. Both stages exclude the
+target ride and observations after the decision time.
+
+The approved speed optimization in `PreferenceModel.encode_edges` reuses a
+spatial embedding only when two complete traffic frames are exactly equal.
+Their positions in the six-step LSTM sequence are retained. The reuse is local
+to one forward call, so every parameter update and new request recomputes the
+required embeddings. Frames needing their own input gradients are computed
+separately. Output and parameter-gradient equivalence are tested; this changes
+computation time, not the model's architecture or objective.
+
+`evaluation_report.json` also contains `development` and `overfitting_checks`.
+For each retained trial, compare its training choice accuracy with validation
+accuracy and inspect the saved validation history. For the final checkpoint,
+compare clean development/test choice accuracy and NLL. Both NLL values use the
+same unweighted, unsmoothed definition; the optimization loss includes smoothing,
+class/ride weights, and possibly ranking, so it is not directly comparable with
+validation NLL. A widening performance gap is evidence to investigate, not a
+formal diagnosis on its own. Small gaps do not prove no overfitting. The three
+validation riders are training data after the final refit. The test still has
+only three previously inspected riders, so this is an internal pilot rather
+than a fresh independent validation.
+
+This refinement evaluates ST-GAT-LSTM and an always-follow baseline. The older
+five-architecture table uses the original data preparation and training settings;
+it is historical context, not a controlled comparison against the refined model.
+These results cannot isolate the benefit of the LSTM or of any one refinement.
 
 ## 14. From learned costs to a route
 
@@ -857,7 +1062,7 @@ inputs = graph_data.build_model_input(
 )
 
 with torch.no_grad():
-    scores, edge_deviation_logits = model(inputs)
+    scores, edge_choice_logits = model(inputs)
 ```
 
 It then runs Dijkstra using the learned positive costs:
@@ -891,23 +1096,212 @@ for index, edge_id in enumerate(graph_data.edge_ids):
         )
 ```
 
-The deviation probability is descriptive. The learned route is selected from the edge costs; the probability does not directly choose the route.
+The preferred outgoing road and the routing cost come from the same local probability distribution. The derived deviation probability only restates how much probability lies outside the candidate route's outgoing edge.
+
+The route layer also compares the unconstrained learned route with the
+shortest-distance baseline. With the default maximum detour ratio $r=1.30$:
+
+~~~math
+\text{accept learned route if }d(P_{learned})\leq r\,d(P_{shortest});
+\quad\text{otherwise return }P_{shortest}.
+~~~
+
+This is a safety guard around the prototype cost model. It does not change the
+neural probabilities and does not enter the training loss.
+
+For a traffic-aware request, `--traffic-cutoff-ms` defines the information time.
+`GPSTrafficArchive.profile_sequence` builds the six historical frames from
+records before that time. Changing the cutoff does not retrain the checkpoint;
+it changes the input context and therefore may change road probabilities,
+costs, and the resulting route.
 
 ## 15. Training output versus evaluation output
 
+### Current real refinement: completed
+
+Artifacts are under `artifacts/experiments/real_refined_20261018`. Three validation-only trials
+selected ranking weight 1.0 at epoch 45. That nine-rider checkpoint scores
+12/13 validation roads correctly. The final checkpoint is a separate fit on
+all 12 development riders for 45 epochs; its results are:
+
+| Measure | Final development | Held-out test | Always-follow test baseline |
+|---|---:|---:|---:|
+| Riders | 12 | 3 | 3 |
+| Exact outgoing roads correct | 67/101 | 9/14 | 10/14 |
+| Outgoing-road accuracy | 66.3% | 64.3% | 71.4% |
+| Clean choice NLL | 0.813 | 0.911 | 0.911 |
+| Comparable route pairs correct | 8/9 | 2/3 | n/a |
+
+Test binary balanced accuracy is 0.650 and deviation F1 is 0.500. Exact road
+identification is eight of ten followed roads and one of four alternative
+roads. Binary detection counts two true positives, but one identifies the
+wrong alternative: detecting that a rider rejects a suggestion is not the same
+as selecting their actual outgoing road. Test per-rider results are 1/1, 8/11,
+and 0/2, giving macro rider accuracy 0.576.
+
+The development/test accuracy gap is 2.05 percentage points; the NLL gap is
+0.099. This is not a large training/test accuracy gap, but it does not prove
+overfitting is absent. Low development accuracy can reflect limited fit,
+objective tradeoffs, or heterogeneous choices; these results alone do not
+identify a cause. The selection curve reaches 12/13 at epoch 45 and drops to
+10/13 at epoch 60, illustrating why the earlier checkpoint was retained.
+
+The roughly 80% goal is not met. Relative to the older internal model, NLL
+improves from 3.373 to 0.911 and ranking from 1/3 to 2/3, while choice accuracy
+drops from 10/14 to 9/14. The refined model's NLL is essentially tied with the
+current baseline. These are mixed results, not a validated reliable preference
+model or a controlled demonstration of LSTM superiority. The same 14 target
+roads, candidate sets, and rider groups are preserved, but destination context
+and development preparation changed. No settings were retuned using this final
+test result.
+
+Checkpoint reload reproduces all 14 held-out predictions with maximum
+probability difference zero. All 89 tests pass. A historical fresh route from
+400 to 6 is directed and connected, respects the access mask, and is 1,365.8 m
+versus the 1,320.5 m distance baseline. It passes the 1.30 guard without fallback;
+this is a routing-operation check, not ground-truth evidence of route quality.
+
+`run_summary.json` gives the concise results, `evaluation_report.json` includes
+the full development/test and overfitting diagnostics, and `run_manifest.json`
+records frozen inputs and fitting/post-fit source hashes. The approved speed
+optimization and requested diagnostic reporting were added after the running
+fits loaded their code; reload equivalence is verified with the optimized model.
+
 ### Training report
 
-The current GPS-history complete-data training run reports:
+The original full-data `artifacts/experiments/real_navigation_20261016/training_report.json` records:
 
-- 8 approved examples from 6 riders;
-- 28 road choices: 25 followed and 3 deviated;
-- loss reduced from 1.998 to 0.728 after 100 epochs;
-- 19/28 in-sample road classifications correct at the fixed 0.5 threshold;
+- 30 approved examples from 28 rides and 15 riders;
+- 68 junction targets: 51 suggested roads and 17 alternatives;
+- 100 epochs, loss 1.8917 to 0.2863;
+- 62/68 in-sample outgoing roads correct (91.2%);
+- 11/12 in-sample route pairs correctly ranked;
+- successful checkpoint reload, paired/inferred replays, and connected fresh routing.
+
+These demonstrate training fit and pipeline operation. They do not measure
+unseen-rider generalization. Full-data training fits one model. The optional
+full held-out benchmark fits five variants in each of 15 rider folds, up to
+75 fits; it was stopped before a new report was produced. The earlier archived
+ten-rider benchmark used 50 fits. These fits do not create 75 deployment files.
+
+### Archived strict-baseline training
+
+The archived strict-baseline GPS-history complete-data training run reports:
+
+- 16 approved examples from 10 riders;
+- 54 outgoing-road choices: 51 suggested roads chosen and 3 alternatives chosen;
+- loss reduced from 2.0788 to 0.2040 after 100 epochs;
+- 43/54 in-sample preferred outgoing roads correct;
 - 3/3 in-sample deviation pairs ranked correctly.
 
 These numbers show that the implementation can fit the current examples. They are not evidence of unseen-rider generalization.
 
-### Held-out-rider evaluation
+### Original fixed real rider split
+
+The original baseline command uses `--fixed-split --temporal-ablation`.
+`fixed_rider_assignments` groups the current 15 riders into nine training,
+three validation, and three test riders. A deterministic search balances
+label support and example counts before any fitting. It does not inspect
+model predictions. The saved file binds assignments to the approved-data hash
+and seed, refusing silent reuse for changed data.
+
+The current split contains 18/6/6 examples and 41/13/14 junction choices in
+training/validation/test respectively. All records from validation and test
+riders are excluded from GPS profile construction. Every profile also excludes
+the target ride and observations after its decision cutoff. The known static
+OSM graph can contain roads used by any group; this is rider generalization,
+not an unseen-road test.
+
+```python
+partitions = fixed_rider_partitions(prepared, assignments)
+excluded_riders = {
+    rider for rider, group in assignments.items()
+    if group != "training"
+}
+prepared, traffic_reports = attach_gps_traffic(
+    prepared, gps_archive, excluded_riders=excluded_riders,
+    history_steps=6, history_interval_s=300, gps_profile_bin_s=300,
+)
+```
+
+GCN, GAT, GATv2, ST-GAT-LSTM, and latest-only LSTM are each fitted once
+from scratch using training riders only. The latest-only control repeats the
+last frame six times and retains the full LSTM's parameter count and seed.
+The existing full-data demonstration checkpoint is not used to score the test
+set. Epochs, learning rate, and preference weight are fixed in advance, with no
+test-based tuning. Any alternative-road class weight is calculated from the
+training partition only.
+
+Outgoing-road argmax accuracy and negative log-likelihood are primary. The
+main binary metrics use a fixed 0.5 threshold; a separate JSON field reports
+metrics at a threshold selected using validation riders only. Train,
+validation, test, and per-rider scores remain separate. A correct evaluation
+protocol does not guarantee a good model: three test riders and 14 correlated
+choices provide preliminary evidence only.
+
+The completed 18 October experiment is saved in
+`artifacts/experiments/real_fixed_split_20261018/evaluation_report.json`; the shorter
+`run_summary.json` records the interpretation. All five variants completed
+100 epochs. Main binary metrics use threshold 0.5.
+
+| Model | Training choice accuracy | Validation choice accuracy | Test choice accuracy | Test choice NLL | Test balanced accuracy | Test deviation F1 | Test ranking |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Suggestion baseline | 0.756 | 0.769 | 0.714 | 0.830 | 0.500 | 0.000 | n/a |
+| GCN | 0.756 | 0.923 | 0.643 | 2.940 | 0.600 | 0.444 | 0.667 |
+| GAT | 0.854 | 0.846 | 0.643 | 4.175 | 0.650 | 0.500 | 0.333 |
+| GATv2 | 0.829 | 0.846 | 0.643 | 3.562 | 0.600 | 0.444 | 0.333 |
+| ST-GAT-LSTM | 0.878 | 0.923 | 0.714 | 3.373 | 0.650 | 0.500 | 0.333 |
+| LSTM latest-only | 0.854 | 0.769 | 0.643 | 3.974 | 0.525 | 0.286 | 0.333 |
+
+ST-GAT-LSTM chooses 10/14 roads correctly: 8/10 followed roads and 2/4
+alternatives. Its binary confusion has two true positives, eight true
+negatives, two false positives, and two false negatives. Always following
+gets all ten follows but none of the alternatives. The full model's training
+choice accuracy is 36/41 (87.8%), compared with 10/14 (71.4%) on test riders.
+This gap and the test errors prevent a claim that overfitting is ruled out.
+
+Choice NLL is worse than baseline (3.373 versus 0.830; lower is better),
+showing that some wrong predictions are very confident. Only one of three
+test route pairs is correctly ranked. Per-rider choice results are 1/1,
+9/11, and 0/2, giving macro rider accuracy 0.606. The apparent history
+advantage is only one additional correct road versus latest-only; it does not
+establish a stable LSTM improvement.
+
+After the GPS exclusions, training has observed history at 16/18 examples,
+validation at 1/6, and test at 5/6. Observed values change somewhere in the
+graph at 11/18, 0/6, and 4/6 respectively; changes on the suggested paths occur
+at only 2/18, 0/6, and 1/6. These coverage differences limit temporal claims.
+The result supports an internally evaluated prototype with mixed performance,
+not a reliable or state-of-the-art rider-preference model.
+
+### What validated and reliable mean for this thesis
+
+A valid internal evaluation keeps complete riders separate, builds inputs
+without post-decision label evidence, fixes settings before testing, and reports
+test results separately from training fit. This follows the principles in the
+[grouped cross-validation guidance](https://scikit-learn.org/stable/modules/cross_validation.html#cross-validation-iterators-for-grouped-data)
+and [data-leakage guidance](https://scikit-learn.org/stable/common_pitfalls.html#data-leakage).
+The fixed split supplies this internal test protocol; the score can still be
+poor, and the same dataset has already been used during project development.
+It is not an independent prospective field trial.
+
+A useful rider-preference model should choose roads accurately for held-out
+riders and capture intentional alternatives beyond an always-follow baseline.
+Its probability quality, missed alternatives, false alarms, and per-rider
+variation matter alongside overall accuracy. With ten followed and four
+alternative test choices, always following already achieves 10/14 = 71.4%.
+An arbitrary target such as 80% accuracy is not sufficient by itself.
+
+Stronger reliability evidence would include more independently held-out
+riders and repeated conditions, stability across training seeds, and routes
+that agree with rider preferences while staying connected and within the
+distance guard. A claimed temporal benefit also requires observed relevant
+histories and improvement over the matched latest-only LSTM control. A claim
+that displayed probabilities are calibrated requires separate calibration
+evidence. For an undergraduate thesis, report the implemented pipeline and
+the limitations of its internal pilot without claiming deployment reliability.
+
+### Archived leave-one-rider-out evaluation
 
 Evaluation holds out each complete rider:
 
@@ -925,65 +1319,129 @@ for rider in riders:
 
 The comparison includes:
 
-- prevalence baseline;
+- suggestion-following baseline;
 - GCN;
 - original GAT;
 - spatial-only GATv2;
 - GATv2-LSTM;
 - latest-only LSTM control when actual temporal variation exists.
 
-Current GATv2-LSTM held-out results are weak:
+The final export supplied on 14 October 2026 is evaluated in
+`artifacts/experiments/real_final_20261014/rider_holdout_evaluation.json`. It uses 16 approved
+examples, 54 junction choices, and ten leave-one-rider-out folds. Every fold
+trains each learned model for 40 epochs under the existing runbook settings.
+The full-data demonstration checkpoint uses 100 epochs; its training accuracy
+is not the held-out metric.
 
-| Metric | Current result |
-|---|---:|
-| Balanced accuracy | 0.387 |
-| Deviation F1 | 0.111 |
-| ROC-AUC | 0.293 |
-| Held-out preference ranking | 3/3 |
+The suggestion-following baseline has 0.944 choice accuracy because 51 of 54
+targets follow the suggestion, but it misses every deviation. Only three
+alternative-road choices remained under the former strict reconstruction rules.
+This class imbalance makes choice accuracy alone inadequate for judging the
+learned model. Read its deviation F1, balanced accuracy, probability quality,
+and route-ranking result alongside the exact-choice metric.
 
-The matched latest-only LSTM reaches 0.553 balanced accuracy and 0.211
-deviation F1 with the same 0.293 ROC-AUC and 3/3 ranking. Therefore, the six
-historical frames do not add measured value in this pilot. That negative result
-is expected to remain provisional until the dataset contains more riders,
-positive choices, and denser road-time coverage.
+The completed archived strict-baseline held-out results are:
+
+| Model | Choice accuracy | Choice NLL | Balanced accuracy | Deviation F1 | Route ranking |
+|---|---:|---:|---:|---:|---:|
+| Suggestion baseline | 0.944 | 0.940 | 0.500 | 0.000 | n/a |
+| GCN | 0.593 | 0.938 | 0.784 | 0.214 | 0.333 |
+| GAT | 0.574 | 0.898 | 0.794 | 0.222 | 0.333 |
+| GATv2 | 0.667 | 1.177 | 0.814 | 0.240 | 0.667 |
+| ST-GAT-LSTM | 0.556 | 1.084 | 0.745 | 0.188 | 1.000 |
+| LSTM latest-only | 0.537 | 1.144 | 0.745 | 0.188 | 0.333 |
+
+ST-GAT-LSTM chooses the exact outgoing road correctly on 30/54 held-out
+targets. In the derived binary view it detects all three deviations but falsely
+flags 26 of 51 followed choices, giving precision 0.103 and F1 0.188. Spatial
+GATv2 performs better on choice accuracy, balanced accuracy, and deviation F1.
+The full LSTM has better AP/AUC and route ranking than latest-only, but the same
+binary confusion counts. These mixed results do not establish an overall real
+LSTM advantage.
+
+After excluding the held-out rider, 14/16 examples have some observed history,
+ten have changing observations somewhere in the graph, and only two have
+changing observations on their suggested path. All route-ranking scores are
+based on just three pairs. Both tested fresh route requests triggered the
+detour fallback; thus the successful route execution is not evidence of good
+learned route quality.
 
 The correct interpretation is:
 
-> The pipeline is operational, but 28 correlated road labels from eight examples, including only three deviations, are insufficient to claim reliable rider generalization or an LSTM benefit.
+> The pipeline is operational on the final export, but 54 correlated junction choices from 16 examples, including only three choices that reject the suggestion, provide limited evidence for real rider generalization or an LSTM benefit.
 
 ### Controlled hotspot capacity check
 
 The separated synthetic experiment preserves the app's six CSV schemas and
-two-second GPS structure. It creates 96 labeled decisions from eight artificial
-riders: 48 deviations across two approved in-corridor Taft choice patterns and
-48 follows across five approved follow-route structures. Forty-two separate
-traffic-only rides inject slow morning and free-flow late-morning motorcycle
-probe histories. All 96 decision rides survive the same directed map matching,
-candidate construction, and automatic validation used for official data.
+two-second GPS structure. It creates 144 labeled decisions from 12 artificial
+riders: 72 deviations and 72 follows at the same two graph-valid local Taft
+hotspots. Another 144 probe rides provide six-frame worsening and recovering
+speed histories. The two histories have the same final speed. Their separate
+archive prevents decision GPS from becoming an inference feature. All 144
+decision rides survive the same directed map matching, candidate construction,
+and automatic validation used for official data.
 
-A fixed rider-disjoint experiment trains on 48 examples from four riders, uses
-24 examples from two riders for validation, and tests on 24 examples from two
-other riders. Classification thresholds are selected from validation balanced
-accuracy and frozen before testing. On unseen synthetic riders, GATv2 and
-full-history ST-GAT-LSTM obtain 1.000 deviation F1, AP, ROC-AUC, balanced
-accuracy, and route-ranking accuracy. The latest-only LSTM obtains 0.923 F1,
-0.929 AP, 0.983 ROC-AUC, 0.983 balanced accuracy, and 1.000 ranking accuracy.
-Full-history ST-GAT-LSTM separates its hardest followed and deviated test scores
-by 0.424, compared with 0.002 in the earlier one-hotspot experiment. This shows
-that the implementation can learn multiple injected road patterns and use the
-constructed temporal history. Synthetic performance is not real-rider evidence.
+The fixed split uses eight artificial riders for training, two for validation,
+and two new riders for final testing. Four alternative-road loss weights are
+compared using validation riders only; validation selected 1.0x. On 78
+untouched test junction choices, ST-GAT-LSTM obtains 0.846 outgoing-choice
+accuracy, 0.955 balanced accuracy, 0.800 deviation F1, 0.955 ROC-AUC, 0.833
+average precision, and 1.000 route ranking. It detects all 12 deviations and
+produces six false positives. GATv2 and latest-only each obtain 0.769 choice
+accuracy, with balanced accuracies of 0.886 and 0.864. The prevalence baseline
+also obtains 0.846 choice accuracy, but only by always following; its deviation
+F1 is zero and its choice negative log-likelihood is 0.902 versus 0.282 for
+ST-GAT-LSTM. Synthetic performance is controlled capacity evidence, not
+real-rider evidence.
 
 ## 16. Current implementation limits
 
+After reverting the recent augmentation work, the preserved real-only checkpoint
+was reassessed on 20 October 2026. Fresh inference reproduces its saved 14 test
+predictions and probabilities exactly. Exact choice is 9/14 (64.3%), with
+1/4 alternative roads and 8/10 followed roads correct. Always-follow scores
+10/14 overall, with no alternatives correct. The model's choice NLL is slightly
+better, 0.871 versus 0.906. The 78.6% thresholded follow/deviate score is a
+different task from selecting the correct directed outgoing road.
+
+The final model fits 12/13 development alternatives but only 51/85 followed
+choices. Its overall 63/98 fitting accuracy equals test accuracy; neither
+equality nor the high alternative fitting accuracy establishes generalization.
+The 12/13 validation result belongs to the nine-rider selection fit, before the
+final checkpoint was refitted on twelve development riders.
+
+The fresh input audit finds one pair of conflicting labels among 98 fitted
+choices. Its optimistic observed-row ceiling is 97/98, so exact input conflicts
+cannot explain all 35 fitting errors. Additional optimization, loss-balance,
+input-context, or distribution limitations remain possible; this audit does
+not identify a single cause or justify a test-driven parameter change.
+
+The four actual test deviations illustrate different outcomes:
+
+| Junction | Recorded outgoing road | Predicted outgoing road | Evidence |
+|---|---|---|---|
+| 5144 | San Marcelino Street | Nakpil Street | Four fitted choices at this junction all chose Nakpil; the held-out exit has no fitted choice support there |
+| 149 | Taft Avenue, exit toward node 150 | Taft Avenue, exit toward node 12254 | Different directed exits, roughly opposite directions; a shared street name does not make the prediction correct |
+| 5133 | Leon Guinto Street | Leon Guinto Street | Correct, with no observed local traffic in its incoming two-hop context |
+| 5132 | Taft Avenue | Remedios Street | Wrong despite some fitted support for the recorded exit |
+
+Two cases have no direct candidate-road speed observations across all six
+frames; the other two have only one frame with one observed candidate road.
+Nearby incoming-road observations provide limited additional context. This
+coverage is inadequate to infer temporal value from the architecture alone.
+Eleven of fourteen test choices belong to one rider, further limiting the
+meaning of the aggregate score. A current-data spatial-only comparison remains
+necessary before claiming an LSTM accuracy benefit.
+
 State these directly if asked:
 
-1. **Very small training set:** only eight approved examples, producing 28 correlated road labels.
-2. **Only three route-ranking pairs:** the edge-cost head has limited direct supervision.
-3. **Sparse historical GPS context:** temporal frames now exist, but coverage at the approved decisions is too uneven to establish an LSTM improvement.
+1. **Very small real set:** the refinement has 77 approved examples and 115 correlated junction choices, including only 17 alternatives. Its 47 added followed choices come from existing training riders. The fixed split still leaves only three test riders and 14 test choices. One inferred choice has recorded navigation and local geometry provenance.
+2. **Only 12 real route-ranking pairs:** the auxiliary route-level objective has limited direct supervision on official data. Five other deviations train the choice objective without a route pair.
+3. **Sparse real historical GPS context:** temporal frames now exist, but coverage at the approved decisions is too uneven to establish a real-data LSTM improvement.
 4. **No rider embedding:** behavior is learned across riders rather than personalized to one rider.
 5. **No turn restrictions:** routing is edge-additive.
-6. **No calibrated probability:** only three positive road-deviation labels are available.
-7. **No hyperparameter tuning set:** current held-out folds must not also be used repeatedly to choose settings.
+6. **No calibrated real probability:** only 17 official supervised choices reject the suggested road.
+7. **Small validation and test sets:** real data now have separate validation/test riders, but repeated tuning against the same test scores would invalidate the intended independent test. The synthetic experiment remains a separate capacity check.
 8. **No travel-time objective:** the learned route represents preference cost. A hard 1.30-times-shortest-distance guard prevents excessive detours.
 9. **Limited route context:** the road head sees graph, destination, edge, and traffic context, but it does not yet encode a rider-specific history or the complete prefix of the current trip.
 
@@ -991,7 +1449,7 @@ State these directly if asked:
 
 Use this when asked “How does the whole model work?”
 
-> We represent Taft Avenue as a directed OSM graph. Every intersection has normalized location and surrounding-context features. Every road has static OSM attributes, optional timestamped traffic attributes, and a vector toward the destination. For every traffic snapshot, two GATv2 layers aggregate neighboring road context using dynamic attention informed by node and edge attributes. We then form a road embedding from its source node, destination node, static attributes, traffic, and destination direction. An LSTM processes each road's sequence of spatial embeddings. One head maps each final road embedding to a positive preference cost, while the other maps it to the probability that the rider rejects that road at a branch. Training combines road-level weighted binary cross-entropy with a pairwise ranking loss that encourages an intentionally chosen route to cost less than the rejected suggestion. At inference, the model reports road probabilities, scores all accessible directed roads, and Dijkstra finds the connected route with the lowest total learned preference cost. A hard detour guard falls back to the shortest-distance route if the learned route exceeds 1.30 times that distance.
+> We represent Taft Avenue as a directed OSM graph. Every intersection has normalized location and surrounding-context features. Every road has static OSM attributes, optional timestamped traffic attributes, and a vector toward the destination. For every traffic snapshot, two GATv2 layers aggregate neighboring context using node and edge attributes. We form a directed-road embedding from its endpoint nodes, road attributes, traffic, and destination direction, then an LSTM processes each road through time. The choice head assigns one utility logit to every edge. At a junction, softmax normalizes the accessible outgoing edges and multiclass cross-entropy teaches the road the rider actually chose. The same probability becomes an additive `-log(probability)` routing cost, and an auxiliary ranking loss favors an intentionally chosen route over the rejected suggestion. Dijkstra finds the connected route with the lowest total cost, subject to a 1.30 detour guard.
 
 ## 18. Code files to open during the presentation
 
@@ -1000,21 +1458,92 @@ Use this when asked “How does the whole model work?”
 | Feature definitions and tensor construction | `graph_data.py:build_real_graph_data_from_graph` |
 | Destination and unknown-traffic input | `graph_data.py:RealGraphData.build_model_input` |
 | GATv2 and LSTM architecture | `model.py:PreferenceModel` |
-| Two model outputs | `model.py:DecisionPreferenceModel` |
-| Classification and ranking loss | `train_model.py:train_decision_model` |
+| Choice logits and derived routing costs | `model.py:DecisionPreferenceModel` |
+| Outgoing-choice and ranking loss | `train_model.py:train_decision_model` |
 | Real approved-example preparation | `train_model.py:prepare_real` |
 | GPS-to-road temporal profiles | `gps_traffic.py:GPSTrafficArchive` |
 | Controlled hotspot capacity test | `synthetic_hotspot.py:generate_hotspot_experiment` |
-| Held-out-rider metrics | `evaluate_model.py:evaluate_rider_disjoint` |
+| Real fixed rider assignments and metrics | `evaluate_model.py:fixed_rider_assignments`, `evaluate_fixed_rider_split` |
+| Optional leave-one-rider-out metrics | `evaluate_model.py:evaluate_rider_disjoint` |
+| Three-fold rider evaluation with inner validation | `evaluate_model.py:run_grouped_kfold`, `saved_grouped_rider_folds` |
 | Model-to-Dijkstra connection | `predict_route.py:route_request` |
 | Routing implementation | `predict_route.py:shortest_real_preference_path` |
+
+For the complete command flow and every supporting file, use
+`PRESENTATION_GUIDE.md`. For exact synthetic commands, use
+`SYNTHETIC_RUNBOOK.md`.
 
 The architecture is a task-specific composition. GATv2 comes from Brody et al.
 and is used through PyTorch Geometric. The LSTM is PyTorch's standard
 implementation following Hochreiter and Schmidhuber (1997). The
 spatial-then-temporal order is closest to Zhang, Yu, and Liu, *Spatial-Temporal
 Graph Attention Networks: A Deep Learning Approach for Traffic Forecasting*
-(2019), DOI 10.1109/ACCESS.2019.2953888. The per-road deviation head,
+(2019), DOI 10.1109/ACCESS.2019.2953888. The outgoing-road choice head,
 destination-conditioned edge construction, GPS-derived motorcycle profiles,
 pairwise preference objective, and learned-cost routing connection are
 project-specific.
+
+## 19. Next evaluation: pooled held-out rider choices
+
+The fixed-split baseline remains 1/4 exact alternative roads and 8/10 followed
+roads. Detecting deviation is a different task: a wrong alternative can reject
+the suggestion but still miss the road/direction the rider took.
+
+`evaluate --group-k-folds 3` rotates complete riders through three outer test
+groups. Each fold selects epochs on an inner rider validation group, then fits
+all development riders before testing. The same original decisions are tested
+once each across the folds, including the current 17 deviations from nine
+riders. Extra recovered real followed examples remain fitting-only. Fold-safe
+GPS histories exclude held-out riders, target rides and future records.
+
+The default GATv2/GATv2-LSTM comparison requires 12 fits. It changes evaluation,
+not the architecture or losses. Model selection still uses overall exact-road
+validation accuracy; a deviation-balanced selection criterion has not been
+implemented. See RUNBOOK Section 10 for the single command and report fields.
+Completed and reviewed on 21 October 2026: STGAT-LSTM selects 10/17 actual
+alternatives and 17/51 followed roads (27/68 overall, 39.7%). GATv2 selects
+5/17 alternatives and 28/51 follows (33/68 overall, 48.5%). Always-follow gets
+51/68 overall but none of the alternatives. The LSTM selected epochs are
+45/5/1; seven actual deviation exits have no chosen-exit development supervision
+in their folds. The result is mixed and does not establish temporal benefit or
+reliability. The earlier 1/4 result uses a different fixed-split protocol.
+Report this as internal cross-validation on previously inspected data, not an
+untouched external test.
+
+The model scores outgoing roads at a known junction and destination. OSM road
+and surrounding features and available pre-decision GPS traffic are inputs.
+The actual observed exit and later survey reason supervise learning. The
+approaching road, rider-specific history and full trip prefix are not explicit
+features in the current architecture. Encoding them would be a separate model
+change; supplying a later survey reason to predict that same turn would leak
+the outcome.
+
+## 20. Approved training ablation, 21 October 2026
+
+The next experiment reuses the completed k-fold corpus and exact rider groups.
+Only training and selection are varied: current choice-plus-ranking losses,
+choice-only loss, and choice-only with square-root automatic deviation weight.
+All three choose epochs by lower inner-validation choice NLL. Inner validation
+then chooses one recipe; only that recipe is refitted and tested in each fold.
+STGAT-LSTM alone requires 12 fits. Full real-data results are pending.
+
+For a validation choice with candidate roads C and actual road y, the selection
+loss is `-log P(y | C)`, averaged across validation targets. It is unsmoothed and
+unweighted for evaluation, even though fitting retains its training weights and
+label smoothing. The old ordinary commands still prioritize validation accuracy.
+The new reduced recipe changes the automatic deviation multiplier from w to
+sqrt(w), computed from fitting data only. Ride balancing remains enabled.
+
+The GATv2-LSTM architecture, input features, GPS histories and routing function
+are unchanged. No approaching-road or personal-history features were added.
+The earlier GATv2 metrics used the old selection policy; they remain historical
+references, not a matched architecture comparison with this revised policy.
+Inspect both exact deviation and followed-road performance before claiming a
+better model. Selecting an early epoch can still be legitimate; this experiment
+does not force longer training or guarantee an accuracy increase.
+
+Code: `train_model.py:train_decision_model` has opt-in `checkpoint_selection`
+and `alternative_weight_power` arguments. `evaluate_model.py:run_grouped_kfold`
+accepts the completed `ablation_reference`; `select_training_recipe` uses inner
+validation metrics only. Ordinary defaults remain accuracy selection and power
+1. The exact command, outputs and rollback instructions are in RUNBOOK Section 11.

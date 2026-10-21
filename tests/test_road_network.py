@@ -6,8 +6,8 @@ import unittest
 
 import networkx as nx
 
-from stgat_lstm.geometry import GeoPoint
-from stgat_lstm.audit_road_network import RoadEdgeIndex
+from stgat_lstm.preprocessing.geometry import GeoPoint
+from stgat_lstm.preprocessing.audit_road_network import RoadEdgeIndex
 
 
 class OsmEdgeIndexTests(unittest.TestCase):

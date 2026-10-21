@@ -1,0 +1,1262 @@
+{
+  "date": "2026-10-19",
+  "status": "completed",
+  "note": "Historical experiment contents and provenance remain unchanged. This map records their relocated paths.",
+  "preserved_inputs": {
+    "data/real/rider_exports/rides_clean.csv": "9c3936b2499d8829f163cdae863ee0742aeaeb7ffff5a268f9bac298859cd3dc",
+    "data/real/rider_exports/deviationResponses_clean.csv": "100ed9cd3d33d945cc201a7fbd08964bfcc1f24a187e789841720d8723269da5",
+    "data/real/osm/road_node_features.csv": "68ede82f8c2a58632360456b7747496fff829565349efa1704beeaae736c508d",
+    "data/real/rider_exports/map_points_clean.csv": "c2f42fc164b6471ebcf9442f4f46abe8295a3a2386b645f0cfbcf72afc5364f7",
+    "data/real/rider_exports/generated_routes_clean.csv": "1178be1862a813a8b2fa54715e324d87033713404d8000ff96695cdff4360848",
+    "data/real/osm/road_nodes_with_features.geojson": "6f3c7e9330debd48b7cd89005030d8a8d0d7aa9e7740d184f6ccea59c297a2f3",
+    "docs/ORIGPLAN.md": "ab0b5a2e22050fd8ba31d15da8b608ff908e08b6a2ecbcf39a1f9e459a83b6d0",
+    "data/real/osm/metro_manila_processed.graphml": "b3e3b09db14dd6f0d75eba6e08faba6400cb870149f3994327089d278b35260b",
+    "data/real/rider_exports/deviations_clean.csv": "1aee36828f37f9fb2783f0f524fb66d1d28c7c51804c5c7cbd377f5408c95e24",
+    "data/real/rider_exports/postTripQuestionnaire_clean.csv": "21c1551dba31d3a7a2e1f26538c55759288ec9d05707a16442d443796c1db5ec"
+  },
+  "moves": [
+    {
+      "old": "stgat_lstm/audit_rider_data.py",
+      "new": "stgat_lstm/preprocessing/audit_rider_data.py",
+      "kind": "source",
+      "sha256_before": "e2a5df50eae54b0e75594f59bb65e0adaea7aa1cbef82058b6ea9d36d8fbc6f1",
+      "sha256_after": "582d84afa7071f7346800d745806debf1e7277724a4bf4abf9d98355dff849b6"
+    },
+    {
+      "old": "stgat_lstm/audit_map_matching.py",
+      "new": "stgat_lstm/preprocessing/audit_map_matching.py",
+      "kind": "source",
+      "sha256_before": "965e710d038b499701bcaf41cf5ea6e06e90638da6c1b525b56017990481f617",
+      "sha256_after": "106e31544f18fc01e128285690de31f3c215cfdf251d88d856908ef8a939eb2b"
+    },
+    {
+      "old": "stgat_lstm/audit_road_network.py",
+      "new": "stgat_lstm/preprocessing/audit_road_network.py",
+      "kind": "source",
+      "sha256_before": "80a1211ff6eb7959070d1a012aaa2fab7f9554dce3e5594e1e5b1d1bd1a0317f",
+      "sha256_after": "afffc04ff600299a00fd91eab227fcfff0c9eb98e86b3b72bc14e78b9621923a"
+    },
+    {
+      "old": "stgat_lstm/build_deviation_candidates.py",
+      "new": "stgat_lstm/preprocessing/build_deviation_candidates.py",
+      "kind": "source",
+      "sha256_before": "4601ea1d69f62bd69d208dc445a0288cc34816eba13a4aca1fcf6f3b2460ca6f",
+      "sha256_after": "01ee61c146d33ee836597884bb886d07e964af8fbbf975047df4fa0ccd438f42"
+    },
+    {
+      "old": "stgat_lstm/build_decision_candidates.py",
+      "new": "stgat_lstm/preprocessing/build_decision_candidates.py",
+      "kind": "source",
+      "sha256_before": "b36cfc34a22815bea4d1133975cf39e34294da3267c5e24d0bd6051615bedede",
+      "sha256_after": "c9ed5bb564ec23c48e663360f8e7146ade319c0bc0d378ce5b1e508defa25f41"
+    },
+    {
+      "old": "stgat_lstm/coordinates.py",
+      "new": "stgat_lstm/preprocessing/coordinates.py",
+      "kind": "source",
+      "sha256_before": "c764cf04a8a176f21eae08aabd663e7c896492cc55a17d9e2d6c19b2bc70c127",
+      "sha256_after": "c764cf04a8a176f21eae08aabd663e7c896492cc55a17d9e2d6c19b2bc70c127"
+    },
+    {
+      "old": "stgat_lstm/geometry.py",
+      "new": "stgat_lstm/preprocessing/geometry.py",
+      "kind": "source",
+      "sha256_before": "f3618c5b8ebdd66a2217371e5c60140c8f8b9a27167926a08bc8143fe4a3c352",
+      "sha256_after": "f3618c5b8ebdd66a2217371e5c60140c8f8b9a27167926a08bc8143fe4a3c352"
+    },
+    {
+      "old": "stgat_lstm/graph_data.py",
+      "new": "stgat_lstm/preprocessing/graph_data.py",
+      "kind": "source",
+      "sha256_before": "edd9650093afe82e3c7d7285e38f48adfc87efdf13c9b38577df51d6d477b2d8",
+      "sha256_after": "b40b895bbc459a861e047b22dcf9480d602e5ff1ee085f62d2760ab9d397dfd1"
+    },
+    {
+      "old": "stgat_lstm/map_matching.py",
+      "new": "stgat_lstm/preprocessing/map_matching.py",
+      "kind": "source",
+      "sha256_before": "59894bc80f1ed789121b3cb4b7076a65edaa9d4ac88f45907ab2e983ebb10c90",
+      "sha256_after": "a0934219def57536889c81982e1d90985fa7bb4edd7e98e757e5a349250efeb9"
+    },
+    {
+      "old": "stgat_lstm/preference_pairs.py",
+      "new": "stgat_lstm/preprocessing/preference_pairs.py",
+      "kind": "source",
+      "sha256_before": "53ea433bbcc313a1e78826ded69590b52b9ee1fb741d7c36ccebe3ff8cfc5847",
+      "sha256_after": "8b7ae4c6d89c49fc695dd5cf3d533c2e1293454eb53a66100ff04c57ee5cf0c7"
+    },
+    {
+      "old": "stgat_lstm/review_decisions.py",
+      "new": "stgat_lstm/preprocessing/review_decisions.py",
+      "kind": "source",
+      "sha256_before": "42e95c507e4ef62e4e316992c0dba76ee5f80ceecdeef3963cca3c0e7c9e53bc",
+      "sha256_after": "42e95c507e4ef62e4e316992c0dba76ee5f80ceecdeef3963cca3c0e7c9e53bc"
+    },
+    {
+      "old": "stgat_lstm/gps_traffic.py",
+      "new": "stgat_lstm/preprocessing/gps_traffic.py",
+      "kind": "source",
+      "sha256_before": "cdc1eb53ef2877160f67e59140fb644d3d9d5da34913197ec7bee541564f1684",
+      "sha256_after": "a392e7d2bfba625b7442cfd626b4406b17523b114bea415a1c63ca68e2887b3b"
+    },
+    {
+      "old": "stgat_lstm/mapbox_traffic.py",
+      "new": "stgat_lstm/preprocessing/mapbox_traffic.py",
+      "kind": "source",
+      "sha256_before": "d4c7a990ac533d45ccf887e238c55f0ca9bf412065b773f729277687bdaf9a53",
+      "sha256_after": "9db8c91226d9b5775a70998eefd066666412b3f61bc126adfa828cdfb37dc6b8"
+    },
+    {
+      "old": "stgat_lstm/create_review_map.py",
+      "new": "stgat_lstm/preprocessing/create_review_map.py",
+      "kind": "source",
+      "sha256_before": "5f848a823144174d643387d1b880f2905b9a7ab57fbee31a59f7c9c8e3e9e9df",
+      "sha256_after": "5f848a823144174d643387d1b880f2905b9a7ab57fbee31a59f7c9c8e3e9e9df"
+    },
+    {
+      "old": "stgat_lstm/model.py",
+      "new": "stgat_lstm/modeling/model.py",
+      "kind": "source",
+      "sha256_before": "881af422118b0ff32f9c18a2cc7778777cd9f50bb91fa9b1daf6514031d6ad32",
+      "sha256_after": "881af422118b0ff32f9c18a2cc7778777cd9f50bb91fa9b1daf6514031d6ad32"
+    },
+    {
+      "old": "stgat_lstm/train_model.py",
+      "new": "stgat_lstm/modeling/train_model.py",
+      "kind": "source",
+      "sha256_before": "cf8532d567886c7819a9c046dacef6b27e16a08f245c766717450543f2b7d63a",
+      "sha256_after": "dd935cfddf3b81fd8eb8a80b10c47006deae7008d2380d08e6011b121837657a"
+    },
+    {
+      "old": "stgat_lstm/evaluate_model.py",
+      "new": "stgat_lstm/modeling/evaluate_model.py",
+      "kind": "source",
+      "sha256_before": "9bb6a69e165e8a392d4fde62a5c18bfd052eadd8298f5812c44455f3db9c33ee",
+      "sha256_after": "fafb318c89fa0341abf998731c7fca5bb692a399ae8a54c71fb6483a1b985661"
+    },
+    {
+      "old": "stgat_lstm/predict_route.py",
+      "new": "stgat_lstm/routing/predict_route.py",
+      "kind": "source",
+      "sha256_before": "8f2c00840a8943401cb466b876e7ad6d36f0c9b6ca4d853c12cc51f4c467e73b",
+      "sha256_after": "898e267a7bcb5f3f56f4b176c4a560d0f97585061df56540e6859ea365061419"
+    },
+    {
+      "old": "stgat_lstm/dashboard.py",
+      "new": "stgat_lstm/routing/dashboard.py",
+      "kind": "source",
+      "sha256_before": "96971e546ce1da730969d22ebe14008cc5350c624ec714e948712d066a4cb978",
+      "sha256_after": "94910de7a45e5742249a1a2eeecc2333dfade6d586831f75e0f143b1af6421f9"
+    },
+    {
+      "old": "stgat_lstm/synthetic_hotspot.py",
+      "new": "stgat_lstm/generation/synthetic_hotspot.py",
+      "kind": "source",
+      "sha256_before": "b8701b05da094a58c4a4df81b01a52122110a67912cf57db1a82c9270ec74494",
+      "sha256_after": "6ca57ead4c0e73305ca6c6501608d49eb277a1b99fa1e438d208130626244586"
+    },
+    {
+      "old": "stgat_lstm/dashboard.html",
+      "new": "stgat_lstm/routing/dashboard.html",
+      "kind": "source",
+      "sha256_before": "58bceef60c343299f39683fea813a199a314e7d922663ebfe049d3b68f38cd01",
+      "sha256_after": "58bceef60c343299f39683fea813a199a314e7d922663ebfe049d3b68f38cd01"
+    },
+    {
+      "old": "outputs/approved_training_examples.json",
+      "new": "generated/real/approved_training_examples.json",
+      "kind": "generated",
+      "sha256_before": "32d87ed0535a03ac970883e1290b0a98c9804e30270f965627aedcc3c2940792",
+      "sha256_after": "32d87ed0535a03ac970883e1290b0a98c9804e30270f965627aedcc3c2940792"
+    },
+    {
+      "old": "outputs/candidate_review_decisions.json",
+      "new": "generated/real/candidate_review_decisions.json",
+      "kind": "generated",
+      "sha256_before": "c25244c8d8074dad440c87c26c602fdfbd34c0ccb12f7c8a2cb5cb0024002691",
+      "sha256_after": "c25244c8d8074dad440c87c26c602fdfbd34c0ccb12f7c8a2cb5cb0024002691"
+    },
+    {
+      "old": "outputs/candidate_review_map.html",
+      "new": "outputs/maps/candidate_review_map.html",
+      "kind": "output",
+      "sha256_before": "9bd0e895899f483e1cc0a70f9b3e87298304c1f175940f857bc36bd6ea4ac4a1",
+      "sha256_after": "9bd0e895899f483e1cc0a70f9b3e87298304c1f175940f857bc36bd6ea4ac4a1"
+    },
+    {
+      "old": "outputs/decision_candidates.geojson",
+      "new": "generated/real/decision_candidates.geojson",
+      "kind": "generated",
+      "sha256_before": "a9046ea84f7da48d29f2de32ab11309bc556bede1ba0e6f8a6d1a44143981bd8",
+      "sha256_after": "a9046ea84f7da48d29f2de32ab11309bc556bede1ba0e6f8a6d1a44143981bd8"
+    },
+    {
+      "old": "outputs/decision_candidates.json",
+      "new": "generated/real/decision_candidates.json",
+      "kind": "generated",
+      "sha256_before": "ddaba11f54586b9079cfb667b14b1ef3e675cbc96c16e9c8104c0b8722120b16",
+      "sha256_after": "ddaba11f54586b9079cfb667b14b1ef3e675cbc96c16e9c8104c0b8722120b16"
+    },
+    {
+      "old": "outputs/detour_constraint_check.json",
+      "new": "outputs/reports/detour_constraint_check.json",
+      "kind": "output",
+      "sha256_before": "835ea67bf83ac08ecad9b0fb68b4b116f60451cfe0fd632dc9f839e61c6689b4",
+      "sha256_after": "835ea67bf83ac08ecad9b0fb68b4b116f60451cfe0fd632dc9f839e61c6689b4"
+    },
+    {
+      "old": "outputs/deviation_candidates.geojson",
+      "new": "generated/real/deviation_candidates.geojson",
+      "kind": "generated",
+      "sha256_before": "4eee1f9810d1947639f51051321b46ccca8eee0e03e7ad1c0731189c2abd7e60",
+      "sha256_after": "4eee1f9810d1947639f51051321b46ccca8eee0e03e7ad1c0731189c2abd7e60"
+    },
+    {
+      "old": "outputs/deviation_candidates.json",
+      "new": "generated/real/deviation_candidates.json",
+      "kind": "generated",
+      "sha256_before": "9d2148ec6c8a4ed8405d3100a92223c7c7ab11307bb93eaa635f8b97736f86eb",
+      "sha256_after": "9d2148ec6c8a4ed8405d3100a92223c7c7ab11307bb93eaa635f8b97736f86eb"
+    },
+    {
+      "old": "outputs/gatv2_lstm_checkpoint.pt",
+      "new": "artifacts/checkpoints/gatv2_lstm_checkpoint.pt",
+      "kind": "checkpoint",
+      "sha256_before": "fe0a57fb6d2e231bab033b4d4655fd7f59139687a57cb4617e8d88481380a1e9",
+      "sha256_after": "fe0a57fb6d2e231bab033b4d4655fd7f59139687a57cb4617e8d88481380a1e9"
+    },
+    {
+      "old": "outputs/gps_test_checkpoint.pt",
+      "new": "artifacts/checkpoints/gps_test_checkpoint.pt",
+      "kind": "checkpoint",
+      "sha256_before": "a9f59a13ffcf895c9de70565fd7529722895fa77a19261965984f9660a70173d",
+      "sha256_after": "a9f59a13ffcf895c9de70565fd7529722895fa77a19261965984f9660a70173d"
+    },
+    {
+      "old": "outputs/gps_test_training_report.json",
+      "new": "outputs/reports/gps_test_training_report.json",
+      "kind": "output",
+      "sha256_before": "ae9bb22a6609ac109c36683fdcf1c41710c25d56dae00f2a44d19017890c5bc9",
+      "sha256_after": "ae9bb22a6609ac109c36683fdcf1c41710c25d56dae00f2a44d19017890c5bc9"
+    },
+    {
+      "old": "outputs/gps_traffic_audit.json",
+      "new": "outputs/audits/gps_traffic_audit.json",
+      "kind": "output",
+      "sha256_before": "9cd6a84547ef56a2a2d9d6d7162c5f2dbb49cbbdcdc194171d052048d91b60fa",
+      "sha256_after": "9cd6a84547ef56a2a2d9d6d7162c5f2dbb49cbbdcdc194171d052048d91b60fa"
+    },
+    {
+      "old": "outputs/map_matching_audit.json",
+      "new": "outputs/audits/map_matching_audit.json",
+      "kind": "output",
+      "sha256_before": "2b0c52480419ed18cfd2d4f92f83dbb5ec4c889f1a1e8cc973da9300e0b79cb3",
+      "sha256_after": "2b0c52480419ed18cfd2d4f92f83dbb5ec4c889f1a1e8cc973da9300e0b79cb3"
+    },
+    {
+      "old": "outputs/model_features_audit.json",
+      "new": "outputs/audits/model_features_audit.json",
+      "kind": "output",
+      "sha256_before": "9be8b7b214e41c85031708d42c5c7dfcd0cf0ef1f7652d16416d756b0806f4dd",
+      "sha256_after": "9be8b7b214e41c85031708d42c5c7dfcd0cf0ef1f7652d16416d756b0806f4dd"
+    },
+    {
+      "old": "outputs/new_route_prediction.json",
+      "new": "outputs/predictions/new_route_prediction.json",
+      "kind": "output",
+      "sha256_before": "26211abc851e721e9bc240aa91c5713b7054094d21e7817fbdb8e47c983b6f0f",
+      "sha256_after": "26211abc851e721e9bc240aa91c5713b7054094d21e7817fbdb8e47c983b6f0f"
+    },
+    {
+      "old": "outputs/reviewed_example_prediction.json",
+      "new": "outputs/predictions/reviewed_example_prediction.json",
+      "kind": "output",
+      "sha256_before": "9777eaa1ceacd03ac6ba9c2105678e8c63ea93713b3c1aacf643e2ca80696c1f",
+      "sha256_after": "9777eaa1ceacd03ac6ba9c2105678e8c63ea93713b3c1aacf643e2ca80696c1f"
+    },
+    {
+      "old": "outputs/rider_data_audit.json",
+      "new": "outputs/audits/rider_data_audit.json",
+      "kind": "output",
+      "sha256_before": "b7bd5fe6c1d53ed3f88a46706e6971fe47e640a463a722f4a2d2b549deee15cf",
+      "sha256_after": "b7bd5fe6c1d53ed3f88a46706e6971fe47e640a463a722f4a2d2b549deee15cf"
+    },
+    {
+      "old": "outputs/rider_holdout_evaluation.json",
+      "new": "outputs/reports/rider_holdout_evaluation.json",
+      "kind": "output",
+      "sha256_before": "0f2d558e7c5057bcd05bfff20876984196758a0e830ecbf1b656317ce579641d",
+      "sha256_after": "0f2d558e7c5057bcd05bfff20876984196758a0e830ecbf1b656317ce579641d"
+    },
+    {
+      "old": "outputs/road_network_audit.json",
+      "new": "outputs/audits/road_network_audit.json",
+      "kind": "output",
+      "sha256_before": "ee572cbe8448b13e56da87de015156fd7a62238fa6abc3b0ac599c391c030fba",
+      "sha256_after": "ee572cbe8448b13e56da87de015156fd7a62238fa6abc3b0ac599c391c030fba"
+    },
+    {
+      "old": "outputs/route_prediction.json",
+      "new": "outputs/predictions/route_prediction.json",
+      "kind": "output",
+      "sha256_before": "51dedb31a041fd39a35b02949f44a8e4d2dc1cc34818edc5059640b72cf03555",
+      "sha256_after": "51dedb31a041fd39a35b02949f44a8e4d2dc1cc34818edc5059640b72cf03555"
+    },
+    {
+      "old": "outputs/training_report.json",
+      "new": "outputs/reports/training_report.json",
+      "kind": "output",
+      "sha256_before": "094886772ff0ed8a2dec02867b98381f1faa303403d2833410f2388e7ca16ad1",
+      "sha256_after": "094886772ff0ed8a2dec02867b98381f1faa303403d2833410f2388e7ca16ad1"
+    },
+    {
+      "old": "outputs/real_final_20261014/approved_training_examples.json",
+      "new": "artifacts/experiments/real_final_20261014/approved_training_examples.json",
+      "kind": "experiment",
+      "sha256_before": "2d410510b292fcf11efeefa6c1a6611d042c2a03a6ebfe2c629ad917713896ae",
+      "sha256_after": "2d410510b292fcf11efeefa6c1a6611d042c2a03a6ebfe2c629ad917713896ae"
+    },
+    {
+      "old": "outputs/real_final_20261014/candidate_review_map.html",
+      "new": "artifacts/experiments/real_final_20261014/candidate_review_map.html",
+      "kind": "experiment",
+      "sha256_before": "d8da5c879f1dd03cc95a9c45c3396c68aef5ed35af59032a356b458205284507",
+      "sha256_after": "d8da5c879f1dd03cc95a9c45c3396c68aef5ed35af59032a356b458205284507"
+    },
+    {
+      "old": "outputs/real_final_20261014/decision_candidates.geojson",
+      "new": "artifacts/experiments/real_final_20261014/decision_candidates.geojson",
+      "kind": "experiment",
+      "sha256_before": "87ff27168a628804e3b421143e70657f02a99d6d4a3f3f456badca3fbd6c482a",
+      "sha256_after": "87ff27168a628804e3b421143e70657f02a99d6d4a3f3f456badca3fbd6c482a"
+    },
+    {
+      "old": "outputs/real_final_20261014/decision_candidates.json",
+      "new": "artifacts/experiments/real_final_20261014/decision_candidates.json",
+      "kind": "experiment",
+      "sha256_before": "fe8a4b0526daa2e948b021f295c1bba890bdb23678273d29aebec99f7e563a8c",
+      "sha256_after": "fe8a4b0526daa2e948b021f295c1bba890bdb23678273d29aebec99f7e563a8c"
+    },
+    {
+      "old": "outputs/real_final_20261014/deviated_example_prediction.json",
+      "new": "artifacts/experiments/real_final_20261014/deviated_example_prediction.json",
+      "kind": "experiment",
+      "sha256_before": "9307acd9b4a09a3dd3b8b9cdcde4608e45239b498050f368f5bd014792f3d80c",
+      "sha256_after": "9307acd9b4a09a3dd3b8b9cdcde4608e45239b498050f368f5bd014792f3d80c"
+    },
+    {
+      "old": "outputs/real_final_20261014/deviation_candidates.geojson",
+      "new": "artifacts/experiments/real_final_20261014/deviation_candidates.geojson",
+      "kind": "experiment",
+      "sha256_before": "0be317b128570890fcef08e7593f7c852fccc8d377154ffc7dcb3428f513cec9",
+      "sha256_after": "0be317b128570890fcef08e7593f7c852fccc8d377154ffc7dcb3428f513cec9"
+    },
+    {
+      "old": "outputs/real_final_20261014/deviation_candidates.json",
+      "new": "artifacts/experiments/real_final_20261014/deviation_candidates.json",
+      "kind": "experiment",
+      "sha256_before": "4661cec44ba80f975c929d365018babfa38d47b0f78d0a2d361fbdf72cd3c43e",
+      "sha256_after": "4661cec44ba80f975c929d365018babfa38d47b0f78d0a2d361fbdf72cd3c43e"
+    },
+    {
+      "old": "outputs/real_final_20261014/gatv2_lstm_checkpoint.pt",
+      "new": "artifacts/experiments/real_final_20261014/gatv2_lstm_checkpoint.pt",
+      "kind": "experiment",
+      "sha256_before": "5a2b17214d7ca71789ae98ab375ee5d50598b997bc7a09ebeb40a21967b4dfd0",
+      "sha256_after": "5a2b17214d7ca71789ae98ab375ee5d50598b997bc7a09ebeb40a21967b4dfd0"
+    },
+    {
+      "old": "outputs/real_final_20261014/gps_traffic_audit.json",
+      "new": "artifacts/experiments/real_final_20261014/gps_traffic_audit.json",
+      "kind": "experiment",
+      "sha256_before": "9cd6a84547ef56a2a2d9d6d7162c5f2dbb49cbbdcdc194171d052048d91b60fa",
+      "sha256_after": "9cd6a84547ef56a2a2d9d6d7162c5f2dbb49cbbdcdc194171d052048d91b60fa"
+    },
+    {
+      "old": "outputs/real_final_20261014/historical_route_prediction.json",
+      "new": "artifacts/experiments/real_final_20261014/historical_route_prediction.json",
+      "kind": "experiment",
+      "sha256_before": "e0ae062926fd982d680cdb1c8ca85822b62a15a69fb251d786dcc0ee27e0b8f8",
+      "sha256_after": "e0ae062926fd982d680cdb1c8ca85822b62a15a69fb251d786dcc0ee27e0b8f8"
+    },
+    {
+      "old": "outputs/real_final_20261014/map_matching_audit.json",
+      "new": "artifacts/experiments/real_final_20261014/map_matching_audit.json",
+      "kind": "experiment",
+      "sha256_before": "96a27afee8835fbc4194de15d6337c705542446e6d2cce1899cf5d7d2a8d2bd4",
+      "sha256_after": "96a27afee8835fbc4194de15d6337c705542446e6d2cce1899cf5d7d2a8d2bd4"
+    },
+    {
+      "old": "outputs/real_final_20261014/new_route_prediction.json",
+      "new": "artifacts/experiments/real_final_20261014/new_route_prediction.json",
+      "kind": "experiment",
+      "sha256_before": "a37f893c873415dd5100520f27588c3d318f07a215cdc5c54090bbc82e1ce2dd",
+      "sha256_after": "a37f893c873415dd5100520f27588c3d318f07a215cdc5c54090bbc82e1ce2dd"
+    },
+    {
+      "old": "outputs/real_final_20261014/reviewed_example_prediction.json",
+      "new": "artifacts/experiments/real_final_20261014/reviewed_example_prediction.json",
+      "kind": "experiment",
+      "sha256_before": "66a666ab95f67cfcf6f0533d82de715f03b3141bcba1686b25e488c8a4f1800f",
+      "sha256_after": "66a666ab95f67cfcf6f0533d82de715f03b3141bcba1686b25e488c8a4f1800f"
+    },
+    {
+      "old": "outputs/real_final_20261014/rider_data_audit.json",
+      "new": "artifacts/experiments/real_final_20261014/rider_data_audit.json",
+      "kind": "experiment",
+      "sha256_before": "b7bd5fe6c1d53ed3f88a46706e6971fe47e640a463a722f4a2d2b549deee15cf",
+      "sha256_after": "b7bd5fe6c1d53ed3f88a46706e6971fe47e640a463a722f4a2d2b549deee15cf"
+    },
+    {
+      "old": "outputs/real_final_20261014/rider_holdout_evaluation.json",
+      "new": "artifacts/experiments/real_final_20261014/rider_holdout_evaluation.json",
+      "kind": "experiment",
+      "sha256_before": "f17a3799c78922052e018bd4507e28335d4ea60c80592b5769be0a24f8b2cd33",
+      "sha256_after": "f17a3799c78922052e018bd4507e28335d4ea60c80592b5769be0a24f8b2cd33"
+    },
+    {
+      "old": "outputs/real_final_20261014/road_network_audit.json",
+      "new": "artifacts/experiments/real_final_20261014/road_network_audit.json",
+      "kind": "experiment",
+      "sha256_before": "35bbf2f43ba21b7ce431ca6d8613717705d9421d464aa0f7ad544f3d9284bfc2",
+      "sha256_after": "35bbf2f43ba21b7ce431ca6d8613717705d9421d464aa0f7ad544f3d9284bfc2"
+    },
+    {
+      "old": "outputs/real_final_20261014/run_manifest.json",
+      "new": "artifacts/experiments/real_final_20261014/run_manifest.json",
+      "kind": "experiment",
+      "sha256_before": "41d76971ee4d0b890227243090373b7566c70c92a30e3465135ce1ed0f5ee3ff",
+      "sha256_after": "41d76971ee4d0b890227243090373b7566c70c92a30e3465135ce1ed0f5ee3ff"
+    },
+    {
+      "old": "outputs/real_final_20261014/run_summary.json",
+      "new": "artifacts/experiments/real_final_20261014/run_summary.json",
+      "kind": "experiment",
+      "sha256_before": "4d2046b79fd54985e3edd61d3809793265f2b516848da4134ce9bc6cb43cff9d",
+      "sha256_after": "4d2046b79fd54985e3edd61d3809793265f2b516848da4134ce9bc6cb43cff9d"
+    },
+    {
+      "old": "outputs/real_final_20261014/training_report.json",
+      "new": "artifacts/experiments/real_final_20261014/training_report.json",
+      "kind": "experiment",
+      "sha256_before": "4e6d13ef0836708945ddf35c22e822e018c301dec612b86eac65330eca8e015e",
+      "sha256_after": "4e6d13ef0836708945ddf35c22e822e018c301dec612b86eac65330eca8e015e"
+    },
+    {
+      "old": "outputs/real_first_visit_20261018/approved_training_examples.json",
+      "new": "artifacts/experiments/real_first_visit_20261018/approved_training_examples.json",
+      "kind": "experiment",
+      "sha256_before": "614cfbc660d66a80aea100e95bed4ac44bdf205ed1827d339d83565e9a6b9f4b",
+      "sha256_after": "614cfbc660d66a80aea100e95bed4ac44bdf205ed1827d339d83565e9a6b9f4b"
+    },
+    {
+      "old": "outputs/real_first_visit_20261018/checkpoint.pt",
+      "new": "artifacts/experiments/real_first_visit_20261018/checkpoint.pt",
+      "kind": "experiment",
+      "sha256_before": "a7a034ffd09784fcc4b9b93f81d8ea951b71dda9305abf9a98c447de6139e4a4",
+      "sha256_after": "a7a034ffd09784fcc4b9b93f81d8ea951b71dda9305abf9a98c447de6139e4a4"
+    },
+    {
+      "old": "outputs/real_first_visit_20261018/evaluation_report.json",
+      "new": "artifacts/experiments/real_first_visit_20261018/evaluation_report.json",
+      "kind": "experiment",
+      "sha256_before": "b64ef1a9af182e03d295a744065e838e20b1ca15bb60df86caed9c650f515766",
+      "sha256_after": "b64ef1a9af182e03d295a744065e838e20b1ca15bb60df86caed9c650f515766"
+    },
+    {
+      "old": "outputs/real_first_visit_20261018/experiment_plan.json",
+      "new": "artifacts/experiments/real_first_visit_20261018/experiment_plan.json",
+      "kind": "experiment",
+      "sha256_before": "1924e665c3b776df27a448588ba5fd37d4c481b7592cf9b02ef908a4f4b71640",
+      "sha256_after": "1924e665c3b776df27a448588ba5fd37d4c481b7592cf9b02ef908a4f4b71640"
+    },
+    {
+      "old": "outputs/real_first_visit_20261018/selection_report.json",
+      "new": "artifacts/experiments/real_first_visit_20261018/selection_report.json",
+      "kind": "experiment",
+      "sha256_before": "db6b1451585ee569a20d924dd58be5ab5f8ef6bd01d89882e3e4a9b92d22775d",
+      "sha256_after": "db6b1451585ee569a20d924dd58be5ab5f8ef6bd01d89882e3e4a9b92d22775d"
+    },
+    {
+      "old": "outputs/real_first_visit_20261018/training_report.json",
+      "new": "artifacts/experiments/real_first_visit_20261018/training_report.json",
+      "kind": "experiment",
+      "sha256_before": "a1b72cab7e04a3a63c60b6322a36cb2f2ef72115e0e5f55037aafdce20be4286",
+      "sha256_after": "a1b72cab7e04a3a63c60b6322a36cb2f2ef72115e0e5f55037aafdce20be4286"
+    },
+    {
+      "old": "outputs/real_fit_diagnostics_20261018/report.json",
+      "new": "artifacts/experiments/real_fit_diagnostics_20261018/report.json",
+      "kind": "experiment",
+      "sha256_before": "5ae9941e54a1eee0891cab7a7ead68c27032ca91573b88817be5d32389ad6018",
+      "sha256_after": "5ae9941e54a1eee0891cab7a7ead68c27032ca91573b88817be5d32389ad6018"
+    },
+    {
+      "old": "outputs/real_fixed_split_20261018/approved_training_examples.json",
+      "new": "artifacts/experiments/real_fixed_split_20261018/approved_training_examples.json",
+      "kind": "experiment",
+      "sha256_before": "32d87ed0535a03ac970883e1290b0a98c9804e30270f965627aedcc3c2940792",
+      "sha256_after": "32d87ed0535a03ac970883e1290b0a98c9804e30270f965627aedcc3c2940792"
+    },
+    {
+      "old": "outputs/real_fixed_split_20261018/evaluation_report.json",
+      "new": "artifacts/experiments/real_fixed_split_20261018/evaluation_report.json",
+      "kind": "experiment",
+      "sha256_before": "f94ebb7f7904f2cf369d95c6292a739b48fa3485ba3d9c7b6df4ca095e49f0af",
+      "sha256_after": "f94ebb7f7904f2cf369d95c6292a739b48fa3485ba3d9c7b6df4ca095e49f0af"
+    },
+    {
+      "old": "outputs/real_fixed_split_20261018/rider_split.json",
+      "new": "artifacts/experiments/real_fixed_split_20261018/rider_split.json",
+      "kind": "experiment",
+      "sha256_before": "376c4d1bf8b322f0042c9c79308bbe80ec3236761d2868f374298939697e2ce4",
+      "sha256_after": "376c4d1bf8b322f0042c9c79308bbe80ec3236761d2868f374298939697e2ce4"
+    },
+    {
+      "old": "outputs/real_fixed_split_20261018/run_manifest.json",
+      "new": "artifacts/experiments/real_fixed_split_20261018/run_manifest.json",
+      "kind": "experiment",
+      "sha256_before": "b3499ba0ab82e2b83e93da55cd087ff9bd0a89f55764d4ca884a6c9491124f6c",
+      "sha256_after": "b3499ba0ab82e2b83e93da55cd087ff9bd0a89f55764d4ca884a6c9491124f6c"
+    },
+    {
+      "old": "outputs/real_fixed_split_20261018/run_summary.json",
+      "new": "artifacts/experiments/real_fixed_split_20261018/run_summary.json",
+      "kind": "experiment",
+      "sha256_before": "d63a6e4cee9734c3a35d00a248e31a7c286390a687aa80237e44c55f6ae5124b",
+      "sha256_after": "d63a6e4cee9734c3a35d00a248e31a7c286390a687aa80237e44c55f6ae5124b"
+    },
+    {
+      "old": "outputs/real_local_choices_20261015/approved_training_examples.json",
+      "new": "artifacts/experiments/real_local_choices_20261015/approved_training_examples.json",
+      "kind": "experiment",
+      "sha256_before": "6728845f18e7f49f7fbf876d00992cc10129957884d7b380289bb0e686827bc1",
+      "sha256_after": "6728845f18e7f49f7fbf876d00992cc10129957884d7b380289bb0e686827bc1"
+    },
+    {
+      "old": "outputs/real_local_choices_20261015/candidate_review_map.html",
+      "new": "artifacts/experiments/real_local_choices_20261015/candidate_review_map.html",
+      "kind": "experiment",
+      "sha256_before": "b962ca1e1e36cc70c5c2d9ccdc05342141ee4cf9aec149c3f78a1eb2045de60a",
+      "sha256_after": "b962ca1e1e36cc70c5c2d9ccdc05342141ee4cf9aec149c3f78a1eb2045de60a"
+    },
+    {
+      "old": "outputs/real_local_choices_20261015/checkpoint_smoke.pt",
+      "new": "artifacts/experiments/real_local_choices_20261015/checkpoint_smoke.pt",
+      "kind": "experiment",
+      "sha256_before": "8c970b2f089316c3b1462d36c711ed6e7a684696e31ef07c1cc500f86230ff90",
+      "sha256_after": "8c970b2f089316c3b1462d36c711ed6e7a684696e31ef07c1cc500f86230ff90"
+    },
+    {
+      "old": "outputs/real_local_choices_20261015/choice_only_smoke_prediction.json",
+      "new": "artifacts/experiments/real_local_choices_20261015/choice_only_smoke_prediction.json",
+      "kind": "experiment",
+      "sha256_before": "81b361e8930cb2639e3b0ad3c9b0181a3579a551db1d4d7f87edc10e345907d7",
+      "sha256_after": "81b361e8930cb2639e3b0ad3c9b0181a3579a551db1d4d7f87edc10e345907d7"
+    },
+    {
+      "old": "outputs/real_local_choices_20261015/decision_candidates.geojson",
+      "new": "artifacts/experiments/real_local_choices_20261015/decision_candidates.geojson",
+      "kind": "experiment",
+      "sha256_before": "517d9f4a490be7ea6155310c8959d7ce93f600543cffaea62817207e8d57f923",
+      "sha256_after": "517d9f4a490be7ea6155310c8959d7ce93f600543cffaea62817207e8d57f923"
+    },
+    {
+      "old": "outputs/real_local_choices_20261015/decision_candidates.json",
+      "new": "artifacts/experiments/real_local_choices_20261015/decision_candidates.json",
+      "kind": "experiment",
+      "sha256_before": "854b373dadc33018c2b19919f7735352a3cd7607a6fb872d4502e7938d35b175",
+      "sha256_after": "854b373dadc33018c2b19919f7735352a3cd7607a6fb872d4502e7938d35b175"
+    },
+    {
+      "old": "outputs/real_local_choices_20261015/deviation_candidates.geojson",
+      "new": "artifacts/experiments/real_local_choices_20261015/deviation_candidates.geojson",
+      "kind": "experiment",
+      "sha256_before": "daef3c6629411d6acb74cca9952b755db7336978400048fef29a309f3fc52b77",
+      "sha256_after": "daef3c6629411d6acb74cca9952b755db7336978400048fef29a309f3fc52b77"
+    },
+    {
+      "old": "outputs/real_local_choices_20261015/deviation_candidates.json",
+      "new": "artifacts/experiments/real_local_choices_20261015/deviation_candidates.json",
+      "kind": "experiment",
+      "sha256_before": "c8d59ccfb09e76b5e80024258a5636cfe6f378016a8997a1901ccd7b85ba6d32",
+      "sha256_after": "c8d59ccfb09e76b5e80024258a5636cfe6f378016a8997a1901ccd7b85ba6d32"
+    },
+    {
+      "old": "outputs/real_local_choices_20261015/recovery_report.json",
+      "new": "artifacts/experiments/real_local_choices_20261015/recovery_report.json",
+      "kind": "experiment",
+      "sha256_before": "f23c7bf90142bcadbceefc3f4fd5c559129c2152437ff35e1c851f438d5d2f1b",
+      "sha256_after": "f23c7bf90142bcadbceefc3f4fd5c559129c2152437ff35e1c851f438d5d2f1b"
+    },
+    {
+      "old": "outputs/real_local_choices_20261015/training_smoke_report.json",
+      "new": "artifacts/experiments/real_local_choices_20261015/training_smoke_report.json",
+      "kind": "experiment",
+      "sha256_before": "d5b7a39b216015e0564b9709fd94c57307af3d535c5b00771bbd995721a108b6",
+      "sha256_after": "d5b7a39b216015e0564b9709fd94c57307af3d535c5b00771bbd995721a108b6"
+    },
+    {
+      "old": "outputs/real_navigation_20261016/approved_training_examples.json",
+      "new": "artifacts/experiments/real_navigation_20261016/approved_training_examples.json",
+      "kind": "experiment",
+      "sha256_before": "f8c5ee02b2733e702e3da3ab7f25917eeaeb28aafe1cfdf2e2c45da7b51386ce",
+      "sha256_after": "f8c5ee02b2733e702e3da3ab7f25917eeaeb28aafe1cfdf2e2c45da7b51386ce"
+    },
+    {
+      "old": "outputs/real_navigation_20261016/candidate_review_map.html",
+      "new": "artifacts/experiments/real_navigation_20261016/candidate_review_map.html",
+      "kind": "experiment",
+      "sha256_before": "9bd0e895899f483e1cc0a70f9b3e87298304c1f175940f857bc36bd6ea4ac4a1",
+      "sha256_after": "9bd0e895899f483e1cc0a70f9b3e87298304c1f175940f857bc36bd6ea4ac4a1"
+    },
+    {
+      "old": "outputs/real_navigation_20261016/decision_candidates.geojson",
+      "new": "artifacts/experiments/real_navigation_20261016/decision_candidates.geojson",
+      "kind": "experiment",
+      "sha256_before": "a9046ea84f7da48d29f2de32ab11309bc556bede1ba0e6f8a6d1a44143981bd8",
+      "sha256_after": "a9046ea84f7da48d29f2de32ab11309bc556bede1ba0e6f8a6d1a44143981bd8"
+    },
+    {
+      "old": "outputs/real_navigation_20261016/decision_candidates.json",
+      "new": "artifacts/experiments/real_navigation_20261016/decision_candidates.json",
+      "kind": "experiment",
+      "sha256_before": "a820edf7e6c2a605b133eb7bf3f79ffc2bb1cf1b4548ba4178e26c2e8c662b77",
+      "sha256_after": "a820edf7e6c2a605b133eb7bf3f79ffc2bb1cf1b4548ba4178e26c2e8c662b77"
+    },
+    {
+      "old": "outputs/real_navigation_20261016/deviation_candidates.geojson",
+      "new": "artifacts/experiments/real_navigation_20261016/deviation_candidates.geojson",
+      "kind": "experiment",
+      "sha256_before": "4eee1f9810d1947639f51051321b46ccca8eee0e03e7ad1c0731189c2abd7e60",
+      "sha256_after": "4eee1f9810d1947639f51051321b46ccca8eee0e03e7ad1c0731189c2abd7e60"
+    },
+    {
+      "old": "outputs/real_navigation_20261016/deviation_candidates.json",
+      "new": "artifacts/experiments/real_navigation_20261016/deviation_candidates.json",
+      "kind": "experiment",
+      "sha256_before": "426571ae2c6b78c90fab3416b1957d24b252c9ae71fdb5b899ce4e4d4c1d4703",
+      "sha256_after": "426571ae2c6b78c90fab3416b1957d24b252c9ae71fdb5b899ce4e4d4c1d4703"
+    },
+    {
+      "old": "outputs/real_navigation_20261016/gatv2_lstm_checkpoint.pt",
+      "new": "artifacts/experiments/real_navigation_20261016/gatv2_lstm_checkpoint.pt",
+      "kind": "experiment",
+      "sha256_before": "6b1a3342e883a83fcd5ecbe4fa1df0702d090c3dfb2e863b58fa31c9f07dc0d0",
+      "sha256_after": "6b1a3342e883a83fcd5ecbe4fa1df0702d090c3dfb2e863b58fa31c9f07dc0d0"
+    },
+    {
+      "old": "outputs/real_navigation_20261016/historical_route_prediction.json",
+      "new": "artifacts/experiments/real_navigation_20261016/historical_route_prediction.json",
+      "kind": "experiment",
+      "sha256_before": "61f3b1d667be758f3641c33574c6d8ef21544cf9e6f4843df134adfedd2b2d16",
+      "sha256_after": "61f3b1d667be758f3641c33574c6d8ef21544cf9e6f4843df134adfedd2b2d16"
+    },
+    {
+      "old": "outputs/real_navigation_20261016/inferred_choice_prediction.json",
+      "new": "artifacts/experiments/real_navigation_20261016/inferred_choice_prediction.json",
+      "kind": "experiment",
+      "sha256_before": "d212e9b57415f3c77af51d4f42e0e5064e7f56974f45117f24c880cdf099852f",
+      "sha256_after": "d212e9b57415f3c77af51d4f42e0e5064e7f56974f45117f24c880cdf099852f"
+    },
+    {
+      "old": "outputs/real_navigation_20261016/navigation_report.json",
+      "new": "artifacts/experiments/real_navigation_20261016/navigation_report.json",
+      "kind": "experiment",
+      "sha256_before": "90aee02da0acbccab89b7de15623da62894a016e3b2d264d988a7a4ab684f50e",
+      "sha256_after": "90aee02da0acbccab89b7de15623da62894a016e3b2d264d988a7a4ab684f50e"
+    },
+    {
+      "old": "outputs/real_navigation_20261016/reviewed_route_pair_prediction.json",
+      "new": "artifacts/experiments/real_navigation_20261016/reviewed_route_pair_prediction.json",
+      "kind": "experiment",
+      "sha256_before": "3f3f4f169bbafc4bc09ee9e3b840452b4e2af1ab1fdf37211c1cd94f07218bd7",
+      "sha256_after": "3f3f4f169bbafc4bc09ee9e3b840452b4e2af1ab1fdf37211c1cd94f07218bd7"
+    },
+    {
+      "old": "outputs/real_navigation_20261016/run_manifest.json",
+      "new": "artifacts/experiments/real_navigation_20261016/run_manifest.json",
+      "kind": "experiment",
+      "sha256_before": "0a6c269b5d7fefd36fd1489dcb4c8f66da5f5ff8d288fc16e4a220fbde8982ad",
+      "sha256_after": "0a6c269b5d7fefd36fd1489dcb4c8f66da5f5ff8d288fc16e4a220fbde8982ad"
+    },
+    {
+      "old": "outputs/real_navigation_20261016/run_summary.json",
+      "new": "artifacts/experiments/real_navigation_20261016/run_summary.json",
+      "kind": "experiment",
+      "sha256_before": "df77051ce6f869b301ebc23d196f3d1286f3c9dc4079e4a7ed86ab26764ed029",
+      "sha256_after": "df77051ce6f869b301ebc23d196f3d1286f3c9dc4079e4a7ed86ab26764ed029"
+    },
+    {
+      "old": "outputs/real_navigation_20261016/training_report.json",
+      "new": "artifacts/experiments/real_navigation_20261016/training_report.json",
+      "kind": "experiment",
+      "sha256_before": "10ef0ff1ccbc95bc23705f3168a504372252830571120c88def9ff84fe49813f",
+      "sha256_after": "10ef0ff1ccbc95bc23705f3168a504372252830571120c88def9ff84fe49813f"
+    },
+    {
+      "old": "outputs/real_navigation_20261016/source_snapshot/rider_exports/deviationResponses_clean.csv",
+      "new": "artifacts/experiments/real_navigation_20261016/source_snapshot/rider_exports/deviationResponses_clean.csv",
+      "kind": "experiment",
+      "sha256_before": "100ed9cd3d33d945cc201a7fbd08964bfcc1f24a187e789841720d8723269da5",
+      "sha256_after": "100ed9cd3d33d945cc201a7fbd08964bfcc1f24a187e789841720d8723269da5"
+    },
+    {
+      "old": "outputs/real_navigation_20261016/source_snapshot/rider_exports/deviations_clean.csv",
+      "new": "artifacts/experiments/real_navigation_20261016/source_snapshot/rider_exports/deviations_clean.csv",
+      "kind": "experiment",
+      "sha256_before": "1aee36828f37f9fb2783f0f524fb66d1d28c7c51804c5c7cbd377f5408c95e24",
+      "sha256_after": "1aee36828f37f9fb2783f0f524fb66d1d28c7c51804c5c7cbd377f5408c95e24"
+    },
+    {
+      "old": "outputs/real_navigation_20261016/source_snapshot/rider_exports/generated_routes_clean.csv",
+      "new": "artifacts/experiments/real_navigation_20261016/source_snapshot/rider_exports/generated_routes_clean.csv",
+      "kind": "experiment",
+      "sha256_before": "1178be1862a813a8b2fa54715e324d87033713404d8000ff96695cdff4360848",
+      "sha256_after": "1178be1862a813a8b2fa54715e324d87033713404d8000ff96695cdff4360848"
+    },
+    {
+      "old": "outputs/real_navigation_20261016/source_snapshot/rider_exports/map_points_clean.csv",
+      "new": "artifacts/experiments/real_navigation_20261016/source_snapshot/rider_exports/map_points_clean.csv",
+      "kind": "experiment",
+      "sha256_before": "c2f42fc164b6471ebcf9442f4f46abe8295a3a2386b645f0cfbcf72afc5364f7",
+      "sha256_after": "c2f42fc164b6471ebcf9442f4f46abe8295a3a2386b645f0cfbcf72afc5364f7"
+    },
+    {
+      "old": "outputs/real_navigation_20261016/source_snapshot/rider_exports/postTripQuestionnaire_clean.csv",
+      "new": "artifacts/experiments/real_navigation_20261016/source_snapshot/rider_exports/postTripQuestionnaire_clean.csv",
+      "kind": "experiment",
+      "sha256_before": "21c1551dba31d3a7a2e1f26538c55759288ec9d05707a16442d443796c1db5ec",
+      "sha256_after": "21c1551dba31d3a7a2e1f26538c55759288ec9d05707a16442d443796c1db5ec"
+    },
+    {
+      "old": "outputs/real_navigation_20261016/source_snapshot/rider_exports/rides_clean.csv",
+      "new": "artifacts/experiments/real_navigation_20261016/source_snapshot/rider_exports/rides_clean.csv",
+      "kind": "experiment",
+      "sha256_before": "9c3936b2499d8829f163cdae863ee0742aeaeb7ffff5a268f9bac298859cd3dc",
+      "sha256_after": "9c3936b2499d8829f163cdae863ee0742aeaeb7ffff5a268f9bac298859cd3dc"
+    },
+    {
+      "old": "outputs/real_no_corridor_20261015/approved_training_examples.json",
+      "new": "artifacts/experiments/real_no_corridor_20261015/approved_training_examples.json",
+      "kind": "experiment",
+      "sha256_before": "951b8acfa0d688a7a1d7720eab132f030b62dd107db00a2b08cd39ded51581bb",
+      "sha256_after": "951b8acfa0d688a7a1d7720eab132f030b62dd107db00a2b08cd39ded51581bb"
+    },
+    {
+      "old": "outputs/real_no_corridor_20261015/decision_candidates.geojson",
+      "new": "artifacts/experiments/real_no_corridor_20261015/decision_candidates.geojson",
+      "kind": "experiment",
+      "sha256_before": "87ff27168a628804e3b421143e70657f02a99d6d4a3f3f456badca3fbd6c482a",
+      "sha256_after": "87ff27168a628804e3b421143e70657f02a99d6d4a3f3f456badca3fbd6c482a"
+    },
+    {
+      "old": "outputs/real_no_corridor_20261015/decision_candidates.json",
+      "new": "artifacts/experiments/real_no_corridor_20261015/decision_candidates.json",
+      "kind": "experiment",
+      "sha256_before": "6c18ce652f3e16250cb9eeb1b9212e786995af03739b678921b0424c761574d0",
+      "sha256_after": "6c18ce652f3e16250cb9eeb1b9212e786995af03739b678921b0424c761574d0"
+    },
+    {
+      "old": "outputs/real_no_corridor_20261015/deviation_candidates.geojson",
+      "new": "artifacts/experiments/real_no_corridor_20261015/deviation_candidates.geojson",
+      "kind": "experiment",
+      "sha256_before": "0be317b128570890fcef08e7593f7c852fccc8d377154ffc7dcb3428f513cec9",
+      "sha256_after": "0be317b128570890fcef08e7593f7c852fccc8d377154ffc7dcb3428f513cec9"
+    },
+    {
+      "old": "outputs/real_no_corridor_20261015/deviation_candidates.json",
+      "new": "artifacts/experiments/real_no_corridor_20261015/deviation_candidates.json",
+      "kind": "experiment",
+      "sha256_before": "82c24125f89d278ac53d9664dfc213e4280f0e8eca0445c6a7fd047475fcec03",
+      "sha256_after": "82c24125f89d278ac53d9664dfc213e4280f0e8eca0445c6a7fd047475fcec03"
+    },
+    {
+      "old": "outputs/real_no_corridor_20261015/map_matching_audit.json",
+      "new": "artifacts/experiments/real_no_corridor_20261015/map_matching_audit.json",
+      "kind": "experiment",
+      "sha256_before": "b16c0cf7581a84dd30ffa5a5c992196f93d5ec3ec304a6fa211b04a65b4b395e",
+      "sha256_after": "b16c0cf7581a84dd30ffa5a5c992196f93d5ec3ec304a6fa211b04a65b4b395e"
+    },
+    {
+      "old": "outputs/real_no_corridor_20261015/road_network_audit.json",
+      "new": "artifacts/experiments/real_no_corridor_20261015/road_network_audit.json",
+      "kind": "experiment",
+      "sha256_before": "ee572cbe8448b13e56da87de015156fd7a62238fa6abc3b0ac599c391c030fba",
+      "sha256_after": "ee572cbe8448b13e56da87de015156fd7a62238fa6abc3b0ac599c391c030fba"
+    },
+    {
+      "old": "outputs/real_no_corridor_20261015/selection_comparison.json",
+      "new": "artifacts/experiments/real_no_corridor_20261015/selection_comparison.json",
+      "kind": "experiment",
+      "sha256_before": "11bba882f1b3f1b60251c5786dea698ccb465d399273138be60b5cf868fdb2ae",
+      "sha256_after": "11bba882f1b3f1b60251c5786dea698ccb465d399273138be60b5cf868fdb2ae"
+    },
+    {
+      "old": "outputs/real_refined_20261018/approved_training_examples.json",
+      "new": "artifacts/experiments/real_refined_20261018/approved_training_examples.json",
+      "kind": "experiment",
+      "sha256_before": "614cfbc660d66a80aea100e95bed4ac44bdf205ed1827d339d83565e9a6b9f4b",
+      "sha256_after": "614cfbc660d66a80aea100e95bed4ac44bdf205ed1827d339d83565e9a6b9f4b"
+    },
+    {
+      "old": "outputs/real_refined_20261018/checkpoint.pt",
+      "new": "artifacts/experiments/real_refined_20261018/checkpoint.pt",
+      "kind": "experiment",
+      "sha256_before": "35d334b5f0de3afb01880dc3ddfd5a7c428c6101ffd8fcdb67bde34ad15a7d25",
+      "sha256_after": "35d334b5f0de3afb01880dc3ddfd5a7c428c6101ffd8fcdb67bde34ad15a7d25"
+    },
+    {
+      "old": "outputs/real_refined_20261018/checkpoint_reload_check.json",
+      "new": "artifacts/experiments/real_refined_20261018/checkpoint_reload_check.json",
+      "kind": "experiment",
+      "sha256_before": "5e5e8e14b2ecf1cd41ded1b2403e9dd06b27b0e22e6f3cb857ea1416d31eaf82",
+      "sha256_after": "5e5e8e14b2ecf1cd41ded1b2403e9dd06b27b0e22e6f3cb857ea1416d31eaf82"
+    },
+    {
+      "old": "outputs/real_refined_20261018/evaluation_report.json",
+      "new": "artifacts/experiments/real_refined_20261018/evaluation_report.json",
+      "kind": "experiment",
+      "sha256_before": "51f417cd4ce24f062d93206ce4622a91965767184f74f851db80c01778421eef",
+      "sha256_after": "51f417cd4ce24f062d93206ce4622a91965767184f74f851db80c01778421eef"
+    },
+    {
+      "old": "outputs/real_refined_20261018/experiment_plan.json",
+      "new": "artifacts/experiments/real_refined_20261018/experiment_plan.json",
+      "kind": "experiment",
+      "sha256_before": "942a9d0a4a7d8a1e0ce92bba5665bdf6a0522bc6f8b7f33ffdb19eb94222cd54",
+      "sha256_after": "942a9d0a4a7d8a1e0ce92bba5665bdf6a0522bc6f8b7f33ffdb19eb94222cd54"
+    },
+    {
+      "old": "outputs/real_refined_20261018/new_route_prediction.json",
+      "new": "artifacts/experiments/real_refined_20261018/new_route_prediction.json",
+      "kind": "experiment",
+      "sha256_before": "a8075f62741b28038f0f94f99da7da8b376c5317252d695773189f167f2cb35f",
+      "sha256_after": "a8075f62741b28038f0f94f99da7da8b376c5317252d695773189f167f2cb35f"
+    },
+    {
+      "old": "outputs/real_refined_20261018/run_manifest.json",
+      "new": "artifacts/experiments/real_refined_20261018/run_manifest.json",
+      "kind": "experiment",
+      "sha256_before": "d031e7cc10173e7b43062ccd3bbcf6d11a0c0a93dc44804313a46ca0a54debd4",
+      "sha256_after": "d031e7cc10173e7b43062ccd3bbcf6d11a0c0a93dc44804313a46ca0a54debd4"
+    },
+    {
+      "old": "outputs/real_refined_20261018/run_summary.json",
+      "new": "artifacts/experiments/real_refined_20261018/run_summary.json",
+      "kind": "experiment",
+      "sha256_before": "8d7e7214e8eda6b5abaf08b98ce50b0e4eed6ccc8e403e59fd6e9b7d32be9c7b",
+      "sha256_after": "8d7e7214e8eda6b5abaf08b98ce50b0e4eed6ccc8e403e59fd6e9b7d32be9c7b"
+    },
+    {
+      "old": "outputs/real_refined_20261018/selection_report.json",
+      "new": "artifacts/experiments/real_refined_20261018/selection_report.json",
+      "kind": "experiment",
+      "sha256_before": "b1e52f0b98887c5f0d32ce82b3f0e321e051b0f58f88526abe47cdafac72d85e",
+      "sha256_after": "b1e52f0b98887c5f0d32ce82b3f0e321e051b0f58f88526abe47cdafac72d85e"
+    },
+    {
+      "old": "outputs/real_refined_20261018/spatial_reuse_verification.json",
+      "new": "artifacts/experiments/real_refined_20261018/spatial_reuse_verification.json",
+      "kind": "experiment",
+      "sha256_before": "4839cc713a2ad259b2d2f0977836d07842cdbd5b61bdc65738cefb475d82a6ad",
+      "sha256_after": "4839cc713a2ad259b2d2f0977836d07842cdbd5b61bdc65738cefb475d82a6ad"
+    },
+    {
+      "old": "outputs/real_refined_20261018/training_report.json",
+      "new": "artifacts/experiments/real_refined_20261018/training_report.json",
+      "kind": "experiment",
+      "sha256_before": "9f71a5046498bc9d072b88c28ae0ba985a528f3d6a3cf5d053d87f3737eb7990",
+      "sha256_after": "9f71a5046498bc9d072b88c28ae0ba985a528f3d6a3cf5d053d87f3737eb7990"
+    },
+    {
+      "old": "outputs/real_salvage_20261015/approved_training_examples.json",
+      "new": "artifacts/experiments/real_salvage_20261015/approved_training_examples.json",
+      "kind": "experiment",
+      "sha256_before": "7c51117aed27a0d41e04ab93ceb61684ff49070034ca463441bc24b62730e55f",
+      "sha256_after": "7c51117aed27a0d41e04ab93ceb61684ff49070034ca463441bc24b62730e55f"
+    },
+    {
+      "old": "outputs/real_salvage_20261015/decision_candidates.geojson",
+      "new": "artifacts/experiments/real_salvage_20261015/decision_candidates.geojson",
+      "kind": "experiment",
+      "sha256_before": "203a40e2ebc51720d603ff90880529a6a4db0a8ee1f6179fa9214a0f2085ad2d",
+      "sha256_after": "203a40e2ebc51720d603ff90880529a6a4db0a8ee1f6179fa9214a0f2085ad2d"
+    },
+    {
+      "old": "outputs/real_salvage_20261015/decision_candidates.json",
+      "new": "artifacts/experiments/real_salvage_20261015/decision_candidates.json",
+      "kind": "experiment",
+      "sha256_before": "25b41e9bc1c3ed91c8fc339f4df28260d8727bcd8d7d990ea402aa243ef3c4fe",
+      "sha256_after": "25b41e9bc1c3ed91c8fc339f4df28260d8727bcd8d7d990ea402aa243ef3c4fe"
+    },
+    {
+      "old": "outputs/real_salvage_20261015/deviation_candidates.geojson",
+      "new": "artifacts/experiments/real_salvage_20261015/deviation_candidates.geojson",
+      "kind": "experiment",
+      "sha256_before": "421273899624047eaf4a0b54a340ba7e067f424fd1d098e4810508cf7c35dda5",
+      "sha256_after": "421273899624047eaf4a0b54a340ba7e067f424fd1d098e4810508cf7c35dda5"
+    },
+    {
+      "old": "outputs/real_salvage_20261015/deviation_candidates.json",
+      "new": "artifacts/experiments/real_salvage_20261015/deviation_candidates.json",
+      "kind": "experiment",
+      "sha256_before": "84d834b6cfabaf9371f0743de4a05bbc7eb10e7c8bebdd9f7a03800f317ce71e",
+      "sha256_after": "84d834b6cfabaf9371f0743de4a05bbc7eb10e7c8bebdd9f7a03800f317ce71e"
+    },
+    {
+      "old": "outputs/real_salvage_20261015/salvage_report.json",
+      "new": "artifacts/experiments/real_salvage_20261015/salvage_report.json",
+      "kind": "experiment",
+      "sha256_before": "2b0f5e69f1db165c02c6442c6093f1077c793ee6fd0f04665ca5053d9322bdbf",
+      "sha256_after": "2b0f5e69f1db165c02c6442c6093f1077c793ee6fd0f04665ca5053d9322bdbf"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/approved_training_examples.json",
+      "new": "generated/synthetic_hotspot/approved_training_examples.json",
+      "kind": "generated",
+      "sha256_before": "a0d83f27f22d636198ec38935307d2fb106904548e075d09f38f5f2233bb58f9",
+      "sha256_after": "a0d83f27f22d636198ec38935307d2fb106904548e075d09f38f5f2233bb58f9"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/candidate_review_map.html",
+      "new": "outputs/maps/synthetic_hotspot/candidate_review_map.html",
+      "kind": "output",
+      "sha256_before": "30a34c5b3a19cb363833233adeebbb7cb4305629d6808f05204c0664d84fff6b",
+      "sha256_after": "30a34c5b3a19cb363833233adeebbb7cb4305629d6808f05204c0664d84fff6b"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/checkpoint.pt",
+      "new": "artifacts/checkpoints/synthetic_hotspot/checkpoint.pt",
+      "kind": "checkpoint",
+      "sha256_before": "d1732f6103890621bd267bbda952cc23f050ecdfc93a76b7c45aec18f79c63c9",
+      "sha256_after": "d1732f6103890621bd267bbda952cc23f050ecdfc93a76b7c45aec18f79c63c9"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/deviationResponses_clean.csv",
+      "new": "generated/synthetic_hotspot/deviationResponses_clean.csv",
+      "kind": "generated",
+      "sha256_before": "21c4da0518e7179ad15fc0ad88150293cba449a6e45b78d87954ec4244a75d54",
+      "sha256_after": "21c4da0518e7179ad15fc0ad88150293cba449a6e45b78d87954ec4244a75d54"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/deviations_clean.csv",
+      "new": "generated/synthetic_hotspot/deviations_clean.csv",
+      "kind": "generated",
+      "sha256_before": "25037e6544c67f3fe19ede8f5949f2d3dc9aaeea6857aa688d9e19724baa5c7f",
+      "sha256_after": "25037e6544c67f3fe19ede8f5949f2d3dc9aaeea6857aa688d9e19724baa5c7f"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/generated_routes_clean.csv",
+      "new": "generated/synthetic_hotspot/generated_routes_clean.csv",
+      "kind": "generated",
+      "sha256_before": "54dcad3d44f353f1b5b8466bc779d52ad32ac45fefa06c84bd3fd591aea38492",
+      "sha256_after": "54dcad3d44f353f1b5b8466bc779d52ad32ac45fefa06c84bd3fd591aea38492"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/gps_traffic_audit.json",
+      "new": "outputs/audits/synthetic_hotspot/gps_traffic_audit.json",
+      "kind": "output",
+      "sha256_before": "abb213c3d9be0228a85fed534e85eaefe0d0c3035614a5d3d865021e8065db8b",
+      "sha256_after": "abb213c3d9be0228a85fed534e85eaefe0d0c3035614a5d3d865021e8065db8b"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/manifest.json",
+      "new": "generated/synthetic_hotspot/manifest.json",
+      "kind": "generated",
+      "sha256_before": "1b4560aeec83541f583effc901ef63eec295ede46f44f9c34ecf22d3a4b4ca49",
+      "sha256_after": "1b4560aeec83541f583effc901ef63eec295ede46f44f9c34ecf22d3a4b4ca49"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/map_matching_audit.json",
+      "new": "outputs/audits/synthetic_hotspot/map_matching_audit.json",
+      "kind": "output",
+      "sha256_before": "8c51d18e962b5e5e2118d7572a3a48db82697da27f2095c8d9d4c912a9afa610",
+      "sha256_after": "8c51d18e962b5e5e2118d7572a3a48db82697da27f2095c8d9d4c912a9afa610"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/map_points_clean.csv",
+      "new": "generated/synthetic_hotspot/map_points_clean.csv",
+      "kind": "generated",
+      "sha256_before": "4067b0101f3527efedf20ad5a0e9cb04b7eed3f14274765f60a34f7699c6f62c",
+      "sha256_after": "4067b0101f3527efedf20ad5a0e9cb04b7eed3f14274765f60a34f7699c6f62c"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/postTripQuestionnaire_clean.csv",
+      "new": "generated/synthetic_hotspot/postTripQuestionnaire_clean.csv",
+      "kind": "generated",
+      "sha256_before": "8aeda21e86cd4fdcf4b8d3c4d8093d481f8738a874f445aae14c58eae2f65ebd",
+      "sha256_after": "8aeda21e86cd4fdcf4b8d3c4d8093d481f8738a874f445aae14c58eae2f65ebd"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/reconstructed_approved_training_examples.json",
+      "new": "generated/synthetic_hotspot/reconstructed_approved_training_examples.json",
+      "kind": "generated",
+      "sha256_before": "fad10bbcdaab81aae42754bcc44be0ba3c22021d3ba2d1055d3013b64d7f04e5",
+      "sha256_after": "fad10bbcdaab81aae42754bcc44be0ba3c22021d3ba2d1055d3013b64d7f04e5"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/reconstructed_decision_candidates.geojson",
+      "new": "generated/synthetic_hotspot/reconstructed_decision_candidates.geojson",
+      "kind": "generated",
+      "sha256_before": "366ce7d7aa090fa464077a527fe15e8ec239bbcad5e4d2a9b69f6d3b79b26bc5",
+      "sha256_after": "366ce7d7aa090fa464077a527fe15e8ec239bbcad5e4d2a9b69f6d3b79b26bc5"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/reconstructed_decision_candidates.json",
+      "new": "generated/synthetic_hotspot/reconstructed_decision_candidates.json",
+      "kind": "generated",
+      "sha256_before": "299f149abefb554d10898d030ad075321461425b2f10b1675d5c1a42964c7988",
+      "sha256_after": "299f149abefb554d10898d030ad075321461425b2f10b1675d5c1a42964c7988"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/reconstructed_deviation_candidates.geojson",
+      "new": "generated/synthetic_hotspot/reconstructed_deviation_candidates.geojson",
+      "kind": "generated",
+      "sha256_before": "af4f3e0cccaa618cf3fd7b3fcaeb410cbb935b7e6f0a99d3e2d674340062cc07",
+      "sha256_after": "af4f3e0cccaa618cf3fd7b3fcaeb410cbb935b7e6f0a99d3e2d674340062cc07"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/reconstructed_deviation_candidates.json",
+      "new": "generated/synthetic_hotspot/reconstructed_deviation_candidates.json",
+      "kind": "generated",
+      "sha256_before": "45ebb4c5130a3552b4b02bc23f9c615f5fdb1eedff6373033bf7f5ec81450208",
+      "sha256_after": "45ebb4c5130a3552b4b02bc23f9c615f5fdb1eedff6373033bf7f5ec81450208"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/recovering_route_prediction.json",
+      "new": "outputs/predictions/synthetic_hotspot/recovering_route_prediction.json",
+      "kind": "output",
+      "sha256_before": "8f5a74b5ef5848e02e66a590eec66992f8c83b17093f62257d6cc042a95e1f12",
+      "sha256_after": "8f5a74b5ef5848e02e66a590eec66992f8c83b17093f62257d6cc042a95e1f12"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/reviewed_example_prediction.json",
+      "new": "outputs/predictions/synthetic_hotspot/reviewed_example_prediction.json",
+      "kind": "output",
+      "sha256_before": "9e967aa9577f7dbce6f98ec85fa855d48a20ce0188f828c72c3f999c9333fd43",
+      "sha256_after": "9e967aa9577f7dbce6f98ec85fa855d48a20ce0188f828c72c3f999c9333fd43"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/rider_data_audit.json",
+      "new": "outputs/audits/synthetic_hotspot/rider_data_audit.json",
+      "kind": "output",
+      "sha256_before": "a2ee167f02fb5e5aa71da2dcbf02dd2b4ce6d4336e2dc996ae0ae680a3280914",
+      "sha256_after": "a2ee167f02fb5e5aa71da2dcbf02dd2b4ce6d4336e2dc996ae0ae680a3280914"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/rider_holdout_evaluation.json",
+      "new": "outputs/reports/synthetic_hotspot/rider_holdout_evaluation.json",
+      "kind": "output",
+      "sha256_before": "491606c1bcdbd2a24820d6aee65e40131aba8fe6a352a5e7b7da2f514700ce2f",
+      "sha256_after": "491606c1bcdbd2a24820d6aee65e40131aba8fe6a352a5e7b7da2f514700ce2f"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/rides_clean.csv",
+      "new": "generated/synthetic_hotspot/rides_clean.csv",
+      "kind": "generated",
+      "sha256_before": "d37ab6ef31d9f92c33418bf71684bddd041286797a8cb3efc09dd71f4c489b3d",
+      "sha256_after": "d37ab6ef31d9f92c33418bf71684bddd041286797a8cb3efc09dd71f4c489b3d"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/road_network_audit.json",
+      "new": "outputs/audits/synthetic_hotspot/road_network_audit.json",
+      "kind": "output",
+      "sha256_before": "6da00118469106a8daccce2cee28d8f81f959bbc4c097c9d89fbb2da1023708c",
+      "sha256_after": "6da00118469106a8daccce2cee28d8f81f959bbc4c097c9d89fbb2da1023708c"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/training_report.json",
+      "new": "outputs/reports/synthetic_hotspot/training_report.json",
+      "kind": "output",
+      "sha256_before": "5f79a0e46706aeb9ea2690e838c74a67092c6467f09331d2e368913d008d93f3",
+      "sha256_after": "5f79a0e46706aeb9ea2690e838c74a67092c6467f09331d2e368913d008d93f3"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/worsening_route_prediction.json",
+      "new": "outputs/predictions/synthetic_hotspot/worsening_route_prediction.json",
+      "kind": "output",
+      "sha256_before": "eb3f3cf8713df890767772b953bd7007e11796a7c47162c43a4910b27e589709",
+      "sha256_after": "eb3f3cf8713df890767772b953bd7007e11796a7c47162c43a4910b27e589709"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/traffic_probes/map_points_clean.csv",
+      "new": "generated/synthetic_hotspot/traffic_probes/map_points_clean.csv",
+      "kind": "generated",
+      "sha256_before": "a995bae883e2b09665940d9cb5050fc908d444e0ad3247667d2987a550fbb7c8",
+      "sha256_after": "a995bae883e2b09665940d9cb5050fc908d444e0ad3247667d2987a550fbb7c8"
+    },
+    {
+      "old": "outputs/synthetic_hotspot/traffic_probes/rides_clean.csv",
+      "new": "generated/synthetic_hotspot/traffic_probes/rides_clean.csv",
+      "kind": "generated",
+      "sha256_before": "07d66c486bbcde987f6f2531a9d50feb549286cd1e0d1c70c50608a756c29994",
+      "sha256_after": "07d66c486bbcde987f6f2531a9d50feb549286cd1e0d1c70c50608a756c29994"
+    },
+    {
+      "old": "outputs/traffic/current_traffic.json",
+      "new": "generated/traffic/samples/current_traffic.json",
+      "kind": "generated",
+      "sha256_before": "0be048c43da19f6e2015de0e0096eb9595d7a9579c3d3ba44e73a36077f2a630",
+      "sha256_after": "0be048c43da19f6e2015de0e0096eb9595d7a9579c3d3ba44e73a36077f2a630"
+    },
+    {
+      "old": "outputs/traffic/experiments/taft_001.json",
+      "new": "generated/traffic/samples/experiments/taft_001.json",
+      "kind": "generated",
+      "sha256_before": "fea93bdee6cad542fd1087874fddf432b1c3ce34f7d23623618b74a24a4f8d4b",
+      "sha256_after": "fea93bdee6cad542fd1087874fddf432b1c3ce34f7d23623618b74a24a4f8d4b"
+    },
+    {
+      "old": "outputs/traffic/experiments/taft_test_02.json",
+      "new": "generated/traffic/samples/experiments/taft_test_02.json",
+      "kind": "generated",
+      "sha256_before": "94a40cb3aca6a89863e915b85f3b993c89812a93cf8a356088c0c841196759aa",
+      "sha256_after": "94a40cb3aca6a89863e915b85f3b993c89812a93cf8a356088c0c841196759aa"
+    },
+    {
+      "old": "outputs/traffic/experiments/taft_test_03.json",
+      "new": "generated/traffic/samples/experiments/taft_test_03.json",
+      "kind": "generated",
+      "sha256_before": "8e746a391f5afd0834a3db8be52a7d4e2d13d4268b3d5424fe47db138c917cd7",
+      "sha256_after": "8e746a391f5afd0834a3db8be52a7d4e2d13d4268b3d5424fe47db138c917cd7"
+    },
+    {
+      "old": "outputs/traffic_archive/traffic_20260929T053917340235Z.json",
+      "new": "generated/traffic/archive/traffic_20260929T053917340235Z.json",
+      "kind": "generated",
+      "sha256_before": "1c3cf3d7de22aa1506da47882a9b9bc8d2822878469279da50827e46d05fe331",
+      "sha256_after": "1c3cf3d7de22aa1506da47882a9b9bc8d2822878469279da50827e46d05fe331"
+    },
+    {
+      "old": "outputs/traffic_archive/traffic_20260929T054720056410Z.json",
+      "new": "generated/traffic/archive/traffic_20260929T054720056410Z.json",
+      "kind": "generated",
+      "sha256_before": "118eac7bc65cdf8a176d7f800cbb254023a8bf5d98c1ea2186ebd50be36ee44a",
+      "sha256_after": "118eac7bc65cdf8a176d7f800cbb254023a8bf5d98c1ea2186ebd50be36ee44a"
+    }
+  ],
+  "verification": {
+    "all_moved_non_source_files_preserved_byte_for_byte": true,
+    "official_data_and_original_plan_unchanged": true,
+    "architecture_source_unchanged_byte_for_byte": true,
+    "archived_manifest_artifact_hashes_valid": true,
+    "archived_manifests_checked": [
+      "artifacts\\experiments\\real_final_20261014\\run_manifest.json",
+      "artifacts\\experiments\\real_fixed_split_20261018\\run_manifest.json",
+      "artifacts\\experiments\\real_navigation_20261016\\run_manifest.json",
+      "artifacts\\experiments\\real_refined_20261018\\run_manifest.json"
+    ],
+    "unit_tests_passed": 98,
+    "commands_import_and_help_checked": 14,
+    "dashboard_root_and_template_resolve": true,
+    "relocated_checkpoint_real_osm_route_smoke_check": true,
+    "checkpoints_loaded_with_strict_state_dict": [
+      "artifacts/experiments/real_refined_20261018/checkpoint.pt",
+      "artifacts/experiments/real_first_visit_20261018/checkpoint.pt",
+      "artifacts/checkpoints/synthetic_hotspot/checkpoint.pt"
+    ]
+  },
+  "cleanup_20261020": {
+    "date": "2026-10-20",
+    "status": "completed",
+    "note": "Archive old input versions and stale standalone outputs; preserve all dated experiments and synthetic records. Follow these mappings after the original layout moves.",
+    "moves": [
+      {
+        "old": "data/real/osm/road_node_features_OLD.csv",
+        "new": "artifacts/inputs/osm_before_amenity_cleanup/road_node_features.csv",
+        "sha256": "68ede82f8c2a58632360456b7747496fff829565349efa1704beeaae736c508d"
+      },
+      {
+        "old": "data/real/osm/road_nodes_with_features_OLD.geojson",
+        "new": "artifacts/inputs/osm_before_amenity_cleanup/road_nodes_with_features.geojson",
+        "sha256": "6f3c7e9330debd48b7cd89005030d8a8d0d7aa9e7740d184f6ccea59c297a2f3"
+      },
+      {
+        "old": "artifacts/checkpoints/gatv2_lstm_checkpoint.pt",
+        "new": "artifacts/archive/pre_cleaned_osm_20261020/checkpoints/gatv2_lstm_checkpoint.pt",
+        "sha256": "fe0a57fb6d2e231bab033b4d4655fd7f59139687a57cb4617e8d88481380a1e9"
+      },
+      {
+        "old": "artifacts/checkpoints/gps_test_checkpoint.pt",
+        "new": "artifacts/archive/pre_cleaned_osm_20261020/checkpoints/gps_test_checkpoint.pt",
+        "sha256": "a9f59a13ffcf895c9de70565fd7529722895fa77a19261965984f9660a70173d"
+      },
+      {
+        "old": "outputs/reports/detour_constraint_check.json",
+        "new": "artifacts/archive/pre_cleaned_osm_20261020/reports/detour_constraint_check.json",
+        "sha256": "835ea67bf83ac08ecad9b0fb68b4b116f60451cfe0fd632dc9f839e61c6689b4"
+      },
+      {
+        "old": "outputs/reports/gps_test_training_report.json",
+        "new": "artifacts/archive/pre_cleaned_osm_20261020/reports/gps_test_training_report.json",
+        "sha256": "ae9bb22a6609ac109c36683fdcf1c41710c25d56dae00f2a44d19017890c5bc9"
+      },
+      {
+        "old": "outputs/reports/rider_holdout_evaluation.json",
+        "new": "artifacts/archive/pre_cleaned_osm_20261020/reports/rider_holdout_evaluation.json",
+        "sha256": "0f2d558e7c5057bcd05bfff20876984196758a0e830ecbf1b656317ce579641d"
+      },
+      {
+        "old": "outputs/reports/training_report.json",
+        "new": "artifacts/archive/pre_cleaned_osm_20261020/reports/training_report.json",
+        "sha256": "094886772ff0ed8a2dec02867b98381f1faa303403d2833410f2388e7ca16ad1"
+      },
+      {
+        "old": "outputs/predictions/new_route_prediction.json",
+        "new": "artifacts/archive/pre_cleaned_osm_20261020/predictions/new_route_prediction.json",
+        "sha256": "26211abc851e721e9bc240aa91c5713b7054094d21e7817fbdb8e47c983b6f0f"
+      },
+      {
+        "old": "outputs/predictions/reviewed_example_prediction.json",
+        "new": "artifacts/archive/pre_cleaned_osm_20261020/predictions/reviewed_example_prediction.json",
+        "sha256": "9777eaa1ceacd03ac6ba9c2105678e8c63ea93713b3c1aacf643e2ca80696c1f"
+      },
+      {
+        "old": "outputs/predictions/route_prediction.json",
+        "new": "artifacts/archive/pre_cleaned_osm_20261020/predictions/route_prediction.json",
+        "sha256": "51dedb31a041fd39a35b02949f44a8e4d2dc1cc34818edc5059640b72cf03555"
+      },
+      {
+        "old": "outputs/audits/road_network_audit.json",
+        "new": "artifacts/archive/pre_cleaned_osm_20261020/audits/road_network_audit.json",
+        "sha256": "ee572cbe8448b13e56da87de015156fd7a62238fa6abc3b0ac599c391c030fba"
+      },
+      {
+        "old": "outputs/audits/model_features_audit.json",
+        "new": "artifacts/archive/pre_cleaned_osm_20261020/audits/model_features_audit.json",
+        "sha256": "9be8b7b214e41c85031708d42c5c7dfcd0cf0ef1f7652d16416d756b0806f4dd"
+      },
+      {
+        "old": "outputs/audits/gps_traffic_audit.json",
+        "new": "artifacts/archive/pre_cleaned_osm_20261020/audits/gps_traffic_audit.json",
+        "sha256": "9cd6a84547ef56a2a2d9d6d7162c5f2dbb49cbbdcdc194171d052048d91b60fa"
+      },
+      {
+        "old": "generated/real/candidate_review_decisions.json",
+        "new": "artifacts/archive/pre_cleaned_osm_20261020/review/candidate_review_decisions.json",
+        "sha256": "c25244c8d8074dad440c87c26c602fdfbd34c0ccb12f7c8a2cb5cb0024002691"
+      }
+    ],
+    "protected_sha256": {
+      "data/real/osm/road_node_features.csv": "c77aaa746dff0c72f6de1f872f87c1db99b2e0ef6f089e7078b4844689671a3d",
+      "data/real/osm/metro_manila_processed.graphml": "b3e3b09db14dd6f0d75eba6e08faba6400cb870149f3994327089d278b35260b",
+      "docs/ORIGPLAN.md": "ab0b5a2e22050fd8ba31d15da8b608ff908e08b6a2ecbcf39a1f9e459a83b6d0",
+      "data/real/osm/road_nodes_with_features.geojson": "d9566a6e3a780838ac01ab9d08b0c1fbda261629c9ac31daa5bdc53b969c4975"
+    },
+    "removed_cache_directories": [
+      "stgat_lstm/__pycache__",
+      "tests/__pycache__"
+    ],
+    "verification": {
+      "all_15_archived_files_preserved": true,
+      "active_osm_files_and_original_plan_unchanged": true,
+      "python_source_unchanged": true,
+      "runbook_cli_arguments_validated_without_training": true,
+      "frozen_approved_hash_and_9_3_3_rider_split_valid": true,
+      "frozen_gps_exports_match_current_official_exports": true,
+      "new_experiment_folder_not_created_or_overwritten": true,
+      "training_executed": false
+    }
+  }
+}

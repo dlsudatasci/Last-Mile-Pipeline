@@ -6,9 +6,9 @@ import unittest
 
 import networkx as nx
 
-from stgat_lstm.geometry import GeoPoint
-from stgat_lstm.map_matching import HiddenMarkovMatcher, TimedObservation
-from stgat_lstm.audit_road_network import RoadEdgeIndex
+from stgat_lstm.preprocessing.geometry import GeoPoint
+from stgat_lstm.preprocessing.map_matching import HiddenMarkovMatcher, TimedObservation
+from stgat_lstm.preprocessing.audit_road_network import RoadEdgeIndex
 
 
 class HiddenMarkovMatcherTests(unittest.TestCase):
@@ -46,6 +46,30 @@ class HiddenMarkovMatcherTests(unittest.TestCase):
             matcher.match(
                 [self.observation(283_920.0, 1_610_000.0, 10_000), self.observation(283_950.0, 1_610_000.0, 10_000)]
             )
+
+    def test_small_backward_jitter_can_be_matched_without_a_detour(self) -> None:
+        observations = [self.observation(283_950.0, 1_610_000.0, 0),
+                        self.observation(283_945.0, 1_610_000.0, 2000),
+                        self.observation(283_960.0, 1_610_000.0, 4000)]
+        with self.assertRaisesRegex(ValueError, "No feasible directed transition"):
+            HiddenMarkovMatcher(self.graph, self.index, search_radius_m=5).match(observations)
+        result = HiddenMarkovMatcher(
+            self.graph, self.index, search_radius_m=5, backward_jitter_tolerance_m=8,
+        ).match(observations)
+        self.assertEqual(result.traversed_edge_ids, (("a", "b", "ab"),))
+
+    def test_jitter_tolerance_does_not_allow_large_reverse_moves_or_excessive_speed(self) -> None:
+        matcher = HiddenMarkovMatcher(
+            self.graph, self.index, search_radius_m=5, backward_jitter_tolerance_m=8,
+        )
+        for observations in (
+            [self.observation(283_950.0, 1_610_000.0, 0),
+             self.observation(283_930.0, 1_610_000.0, 2000)],
+            [self.observation(283_920.0, 1_610_000.0, 0),
+             self.observation(284_080.0, 1_610_000.0, 1)],
+        ):
+            with self.assertRaisesRegex(ValueError, "No feasible directed transition"):
+                matcher.match(observations)
 
 
 if __name__ == "__main__":
